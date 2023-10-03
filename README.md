@@ -1,5 +1,11 @@
-# BlendOsim
-An add-on to import Opensim and motion capture data to Blender
+# Sim2Blend
+
+
+Import OpenSim results in Blender.
+
+This add-on is heavily inspired from [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). However, it is end-to-end and does not require using Matlab to export OpenSim files to a .csv format. 
+
+
 
 ## Installation
 
