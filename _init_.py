@@ -1,23 +1,26 @@
 bl_info = {
-    "name": "BlendOsim",
+    "name": "Sim2Blend",
     "category": "Import",
     "version": (0, 0, 1),
     "blender": (2, 80, 0),
 }
 
+import os
+os.add_dll_directory("C:/OpenSim 4.4/bin")
+import opensim
 import bpy
-import blendosim
-from blendosim.model import addModel
-from blendosim.common import readNames,loadAnimation
-from blendosim.markers import loadMarkers
-from blendosim.forces import loadForces
-from blendosim.moments import loadMoments
+import Sim2Blend
+from Sim2Blend.model import addModel
+from Sim2Blend.motion import readNames,loadAnimation
+from Sim2Blend.markers import loadMarkers
+from Sim2Blend.forces import loadForces
+from Sim2Blend.moments import loadMoments
 import numpy as np
 
 import os
 
 rootpath=os.path.dirname(os.path.abspath(__file__))
-stlFolder=os.path.join(rootpath,'blendosim','resources')
+stlFolder=os.path.join(rootpath,'Sim2Blend','resources')
 
 
 class MyProperties(bpy.types.PropertyGroup):
@@ -60,7 +63,7 @@ class addModel(bpy.types.Operator):
     def execute(self, context):
         scene=context.scene
         mytool=scene.my_tool          
-        blendosim.model.addModel(bpy.path.abspath(mytool.modelfile),stlRoot=stlFolder)
+        Sim2Blend.model.addModel(bpy.path.abspath(mytool.modelfile),stlRoot=stlFolder)
         return {'FINISHED'}
     
 class addMotion(bpy.types.Operator):
@@ -75,7 +78,7 @@ class addMotion(bpy.types.Operator):
         data = np.genfromtxt(csvFile, dtype=float, delimiter=',', names=True,skip_header=0) 
         objectNames=readNames(data.dtype.names[1:])          
         collection=bpy.data.collections['osimModel']        
-        blendosim.model.loadAnimation(collection,data,objectNames)
+        Sim2Blend.model.loadAnimation(collection,data,objectNames)
         #bpy.context.scene.update()
         return {'FINISHED'}
     
@@ -88,7 +91,7 @@ class addMarkers(bpy.types.Operator):
         scene=context.scene
         mytool=scene.my_tool  
         csvFile=bpy.path.abspath(mytool.markersfile)
-        blendosim.markers.loadMarkers(csvFile)
+        Sim2Blend.markers.loadMarkers(csvFile)
         #bpy.context.scene.update()        
         return {'FINISHED'}
 
@@ -101,7 +104,7 @@ class addForces(bpy.types.Operator):
         scene=context.scene
         mytool=scene.my_tool  
         csvFile=bpy.path.abspath(mytool.forcesfile)
-        blendosim.forces.loadForces(csvFile)
+        Sim2Blend.forces.loadForces(csvFile)
         #bpy.context.scene.update()        
         return {'FINISHED'}
 
@@ -114,17 +117,17 @@ class addMoments(bpy.types.Operator):
         scene=context.scene
         mytool=scene.my_tool  
         csvFile=bpy.path.abspath(mytool.momentsfile)
-        blendosim.moments.loadMoments(csvFile)
+        Sim2Blend.moments.loadMoments(csvFile)
         #bpy.context.scene.update()        
         return {'FINISHED'}
 
 
 class panel1(bpy.types.Panel):
-    bl_idname = "A1_panel.panel1_PT_blendosimlel"
-    bl_label = "BlendOsim"
+    bl_idname = "A1_panel.panel1_PT_Sim2Blendlel"
+    bl_label = "Sim2Blend"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "BlendOsim"
+    bl_category = "Sim2Blend"
 
     
     

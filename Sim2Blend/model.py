@@ -14,9 +14,9 @@ from xml.dom import minidom
 
 import os.path
 
-from blendosim.common import readNames,loadAnimation
+from Sim2Blend.common import readNames,loadAnimation
 
-defaultOsimPath='C:\\OpenSim 4.0\\Geometry'
+defaultOsimPath='C:\\OpenSim 4.4\\Geometry'
 
 def addModel(osimFile,modelRoot='',stlRoot='.',collection=''):
     if collection=='':
