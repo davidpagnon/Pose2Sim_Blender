@@ -1,59 +1,68 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+'''
+    ####################################################
+    ## Sim2Blend: import data from OpenSim to Blender ##
+    ####################################################
+    
+    A Blender addon to import data from OpenSim to Blender.
+
+    - addModel: import an .osim model file
+    - addMotion: import a .mot (OpenSim API required) or .csv motion file
+    - addMarkers: import a .trc marker file
+    - addGRF: import a .mot or .csv ground reaction force file
+
+'''
+
+
+## INIT
+import bpy
+import Sim2Blend
+import os
+
+rootpath=os.path.dirname(os.path.abspath(__file__))
+stlFolder=os.path.join(rootpath,'Sim2Blend','Geometry')
+
+
+## AUTHORSHIP INFORMATION
+__author__ = "David Pagnon, Jonathan Camargo"
+__copyright__ = "Copyright 2021, BlendOSim & Sim2Blend"
+__credits__ = ["David Pagnon", "Jonathan Camargo"]
+__license__ = "MIT License"
+__version__ = "0.0.1"
+__maintainer__ = "David Pagnon"
+__email__ = "contact@david-pagnon.com"
+__status__ = "Development"
+
+
+## CLASSES
 bl_info = {
     "name": "Sim2Blend",
     "category": "Import",
     "version": (0, 0, 1),
-    "blender": (2, 80, 0),
+    "blender": (3, 6, 0),
 }
-
-import os
-os.add_dll_directory("C:/OpenSim 4.4/bin")
-import opensim
-import bpy
-import Sim2Blend
-from Sim2Blend.model import addModel
-from Sim2Blend.motion import readNames,loadAnimation
-from Sim2Blend.markers import loadMarkers
-from Sim2Blend.forces import loadForces
-from Sim2Blend.moments import loadMoments
-import numpy as np
-
-import os
-
-rootpath=os.path.dirname(os.path.abspath(__file__))
-stlFolder=os.path.join(rootpath,'Sim2Blend','resources')
 
 
 class MyProperties(bpy.types.PropertyGroup):
-    markersfile : bpy.props.StringProperty(
-        name='Markers file',
-        subtype="FILE_PATH")
-    
-    forcesfile : bpy.props.StringProperty(
-        name='Forces file',
-        subtype="FILE_PATH")            
     modelfile : bpy.props.StringProperty(
         name='Model file',
         subtype="FILE_PATH")
-
     motionfile : bpy.props.StringProperty(
         name='Motion file',
         subtype="FILE_PATH")
+    markersfile : bpy.props.StringProperty(
+        name='Markers file',
+        subtype="FILE_PATH")
+    forcesfile : bpy.props.StringProperty(
+        name='Forces file',
+        subtype="FILE_PATH")            
     momentsfile : bpy.props.StringProperty(
         name='Moments file',
         subtype="FILE_PATH")   
 
-    
-
-
-
-class addCubeSample(bpy.types.Operator):
-    bl_idname = 'mesh.add_cube_sample'
-    bl_label = 'Add Cube'
-    bl_options = {'REGISTER', 'UNDO'}
-      
-    def execute(self, context):
-        bpy.ops.mesh.primitive_cube_add()
-        return {'FINISHED'}
     
 class addModel(bpy.types.Operator):
     bl_idname = 'mesh.add_osim_model'
@@ -62,10 +71,12 @@ class addModel(bpy.types.Operator):
       
     def execute(self, context):
         scene=context.scene
-        mytool=scene.my_tool          
-        Sim2Blend.model.addModel(bpy.path.abspath(mytool.modelfile),stlRoot=stlFolder)
+        mytool=scene.my_tool
+        osim_path = bpy.path.abspath(mytool.modelfile)
+        Sim2Blend.model.import_model(osim_path,stlRoot=stlFolder)
         return {'FINISHED'}
     
+
 class addMotion(bpy.types.Operator):
     bl_idname = 'motion.add_osim_motion'
     bl_label = 'Add Motion'
@@ -74,14 +85,12 @@ class addMotion(bpy.types.Operator):
     def execute(self, context):
         scene=context.scene
         mytool=scene.my_tool  
-        csvFile=bpy.path.abspath(mytool.motionfile)
-        data = np.genfromtxt(csvFile, dtype=float, delimiter=',', names=True,skip_header=0) 
-        objectNames=readNames(data.dtype.names[1:])          
-        collection=bpy.data.collections['osimModel']        
-        Sim2Blend.model.loadAnimation(collection,data,objectNames)
-        #bpy.context.scene.update()
+        osim_path = bpy.path.abspath(mytool.modelfile)
+        mot_path=bpy.path.abspath(mytool.motionfile)
+        Sim2Blend.motion.apply_mot_to_model(mot_path, osim_path, direction='zup')
         return {'FINISHED'}
     
+
 class addMarkers(bpy.types.Operator):
     bl_idname = 'mesh.add_osim_markers'
     bl_label = 'Add Markers'
@@ -90,10 +99,11 @@ class addMarkers(bpy.types.Operator):
     def execute(self, context):
         scene=context.scene
         mytool=scene.my_tool  
-        csvFile=bpy.path.abspath(mytool.markersfile)
-        Sim2Blend.markers.loadMarkers(csvFile)
+        trc_path=bpy.path.abspath(mytool.markersfile)
+        Sim2Blend.markers.import_trc(trc_path)
         #bpy.context.scene.update()        
         return {'FINISHED'}
+
 
 class addForces(bpy.types.Operator):
     bl_idname = 'mesh.add_osim_forces'
@@ -103,10 +113,11 @@ class addForces(bpy.types.Operator):
     def execute(self, context):
         scene=context.scene
         mytool=scene.my_tool  
-        csvFile=bpy.path.abspath(mytool.forcesfile)
-        Sim2Blend.forces.loadForces(csvFile)
+        force_path=bpy.path.abspath(mytool.forcesfile)
+        Sim2Blend.forces.loadForces(force_path)
         #bpy.context.scene.update()        
         return {'FINISHED'}
+
 
 class addMoments(bpy.types.Operator):
     bl_idname = 'mesh.add_osim_moments'
@@ -116,8 +127,8 @@ class addMoments(bpy.types.Operator):
     def execute(self, context):
         scene=context.scene
         mytool=scene.my_tool  
-        csvFile=bpy.path.abspath(mytool.momentsfile)
-        Sim2Blend.moments.loadMoments(csvFile)
+        force_path=bpy.path.abspath(mytool.momentsfile)
+        Sim2Blend.moments.loadMoments(force_path)
         #bpy.context.scene.update()        
         return {'FINISHED'}
 
@@ -128,12 +139,10 @@ class panel1(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Sim2Blend"
-
-    
     
     def draw(self, context):
         layout=self.layout
-        layout.label(text='Add data from opensim') 
+        layout.label(text='Import OpenSim data') 
         scene=context.scene
         mytool=scene.my_tool  
         layout.prop(mytool,"modelfile")
@@ -149,7 +158,6 @@ class panel1(bpy.types.Panel):
         
 def register():
     print('Addon Registered')
-    bpy.utils.register_class(addCubeSample)
     bpy.utils.register_class(addModel)
     bpy.utils.register_class(addMotion)            
     bpy.utils.register_class(addMarkers)
@@ -160,8 +168,7 @@ def register():
     bpy.types.Scene.my_tool = bpy.props.PointerProperty(type=MyProperties)
 
 def unregister():
-    print('chao')
-    bpy.utils.unregister_class(addCubeSample)
+    print('bye')
     bpy.utils.unregister_class(addModel)
     bpy.utils.unregister_class(addMotion)            
     bpy.utils.unregister_class(addMarkers)

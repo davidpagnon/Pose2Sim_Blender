@@ -3,7 +3,7 @@
 
 Import OpenSim results in Blender.
 
-This add-on is heavily inspired from [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). However, it is end-to-end and does not require using Matlab to export OpenSim files to a .csv format. 
+This add-on is built on top of [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). Unlike the other, it does not require using Matlab as an intermediary software between OpenSim and Blender. 
 
 
 
@@ -81,16 +81,21 @@ Open miniconda, and copy-paste:
 conda create -n Sim2Blend python=3.10.12 -y
 conda activate Sim2Blend
 conda install -c opensim-org opensim -y
-# pip install bpy
 pip uninstall numpy
-pip install numpy bpy
+pip install numpy bpy vtk
 
 You will need admin rights for the next steps:
-Rename python in "C:\Program Files\Blender Foundation\Blender 3.6\3.6\" to python_old. 
-Copy-paste there Sim2Blend folder (see location with "conda env list"), rename to python
-Open "C:\Program Files\Blender Foundation\Blender 3.6\3.6\python\Lib\opensim\__init__.py" 
-- comment out the line # from .moco import *
-- line 4, add the path to your OpenSim bin "os.add_dll_directory("C:/OpenSim 4.4/bin")" 
+- Rename python in "C:\Program Files\Blender Foundation\Blender 3.6\3.6\python" to python_old. 
+- Copy-paste there Sim2Blend environment folder (see location with "conda env list"), rename to python
+- Open "C:\Program Files\Blender Foundation\Blender 3.6\3.6\python\Lib\opensim\__init__.py" 
+  - comment out the line # from .moco import *
+  - line 4, add the path to your OpenSim bin folder: "os.add_dll_directory(r"C:/OpenSim 4.4/bin")" 
+
+Install add-on in Blender: 
+- Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.py
+- Check Sim2Blend to enable it
+- Find the Add-on on the right panel, and click on the arrow to open it
+
 
 Launch Blender, Shift+F4
 import os

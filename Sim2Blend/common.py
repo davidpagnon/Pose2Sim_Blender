@@ -1,42 +1,6 @@
-import bpy
-from bpy.types import Operator
-from bpy.props import FloatVectorProperty
-from bpy_extras.object_utils import AddObjectHelper, object_data_add
-from mathutils import Vector
-
-import bmesh
-
 import numpy as np
-
 import math
 
-import glob
-
-def copyPose(src,dest):
-    if isinstance(src,str):
-        src=bpy.data.objects[src]
-    if isinstance(dest,str):
-        dest=bpy.data.objects[dest]    
-    dest.location=src.location
-    dest.rotation_euler=src.rotation_euler
-    
-def matchFiles(path,ext=''):
-    return glob.glob(path+ext,recursive=True)
-
-def deleteCollection(collection):
-#Delete the collection with all its objects
-    if isinstance(collection,str):
-        collection=bpy.data.collections[collection]
-    
-    for obj in collection.all_objects:
-        obj.select_set(True)
-    bpy.ops.object.delete()       
-    bpy.context.scene.collection.children.unlink(collection)
-    for c in bpy.data.collections:
-        if not c.users:
-            bpy.data.collections.remove(c)    
-    bpy.ops.wm.save_as_mainfile(filepath=bpy.data.filepath)
-    bpy.ops.wm.open_mainfile(filepath=bpy.data.filepath)
     
 
 def readNames(columnNames):

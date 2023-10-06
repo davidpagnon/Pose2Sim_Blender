@@ -1,16 +1,8 @@
 import bpy
-from bpy.types import Operator
-from bpy.props import FloatVectorProperty
-from bpy_extras.object_utils import AddObjectHelper, object_data_add
 from mathutils import Vector
-
-import bmesh
-
 import numpy as np
-
 import math
-
-from blendosim.common import data2keyframes, loadAnimation, readNames
+from Sim2Blend.common import data2keyframes, loadAnimation, readNames
 
 import os
 rootpath=os.path.dirname(os.path.abspath(__file__))
