@@ -39,6 +39,7 @@ direction = 'zup'
 RADIUS=24/1000
 FONTSIZE=0.05
 OFFSET=(-0.1,0.1,0.1)
+COLOR =  (0, 1, 0, 0.8)
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
@@ -79,10 +80,46 @@ def import_trc(trc_path):
     return trc_data_np, markerNames
 
 
-def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER"):        
+def label(scene, depsgraph):
     '''
     
     '''
+    
+    cam = scene.camera.evaluated_get(depsgraph)
+    mw = cam.matrix_world
+    mwi = mw.inverted()
+    R = mw.to_3x3().normalized().to_4x4()
+    labels = [o.evaluated_get(depsgraph) for o in scene.objects
+            if "label" in o.keys()
+            ]
+    for label in labels:
+        ob = label.parent
+        omw = ob.matrix_world
+        bbox = [mwi @ (omw @ Vector(b)) for b in ob.bound_box]
+        bbox.sort(key=lambda v:v.y)
+
+        M = R.copy()
+        p = bbox.pop()
+        M.translation = mw @ p
+        S = Matrix.Diagonal(
+            (scale_factor * -p.z,) * 3).to_4x4()
+
+        label.matrix_world = M @ S
+
+
+def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER", color=COLOR):
+    '''
+
+    '''
+
+    # Color
+    matg = bpy.data.materials.new("Green")
+    matg.use_nodes = True
+    tree = matg.node_tree
+    nodes = tree.nodes
+    bsdf = nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = COLOR
+    matg.diffuse_color = COLOR
     
     #Add sphere
     mySphere=bpy.data.meshes.new('sphere')
@@ -92,6 +129,7 @@ def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER"):
     bm.to_mesh(mySphere)
     bm.free()
     sphere.location=position
+    sphere.active_material = matg
     collection.objects.link(sphere)
     
     #Add text
@@ -101,11 +139,12 @@ def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER"):
     myFontObj.data.size=FONTSIZE
     myFontObj.location=np.asarray(position)+np.asarray(OFFSET)
     myFontObj.rotation_euler=(1,0,3.1416)
+    myFontObj.active_material = matg
     myFontObj.parent=sphere
     collection.objects.link(myFontObj)
            
  
-def loadMarkers(trc_path):	 
+def import_trc(trc_path, direction='zup'):	 
     '''
     
     '''
@@ -127,9 +166,15 @@ def loadMarkers(trc_path):
 	# animate markers
     for n in range(len(times)):
         for i, m in enumerate(markerNames):
-            loc_x = trc_data_np[n,3*i+1]
-            loc_y = trc_data_np[n,3*i+2]
-            loc_z = trc_data_np[n,3*i+3]
+            # y-up to z-up
+            if direction=='zup':
+                loc_x = trc_data_np[n,3*i+1]
+                loc_z = trc_data_np[n,3*i+2]
+                loc_y = -trc_data_np[n,3*i+3]
+            else:
+                loc_x = trc_data_np[n,3*i+1]
+                loc_y = trc_data_np[n,3*i+2]
+                loc_z = trc_data_np[n,3*i+3]
             obj=marker_collection.objects[m]
             obj.location=loc_x,loc_y,loc_z
             obj.keyframe_insert('location',frame=n+1)

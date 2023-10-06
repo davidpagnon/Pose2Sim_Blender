@@ -100,7 +100,7 @@ class addMarkers(bpy.types.Operator):
         scene=context.scene
         mytool=scene.my_tool  
         trc_path=bpy.path.abspath(mytool.markersfile)
-        Sim2Blend.markers.import_trc(trc_path)
+        Sim2Blend.markers.import_trc(trc_path, direction='zup')
         #bpy.context.scene.update()        
         return {'FINISHED'}
 
