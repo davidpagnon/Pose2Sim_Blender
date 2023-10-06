@@ -1,14 +1,13 @@
+
+
 import bpy
 from mathutils import Vector
 import numpy as np
 
-import math
-
-from Sim2Blend.common import data2keyframes, loadAnimation, readNames
 
 import os
 rootpath=os.path.dirname(os.path.abspath(__file__))
-arrowFile=os.path.join(rootpath,'resources','arrow.stl')
+arrowFile=os.path.join(rootpath,'Geometry','arrow.stl')
     
 
 
@@ -36,7 +35,7 @@ def fpdata2locrot(data):
     fpNames=readNames(data.dtype.names[1:])    
     headerNames=data.dtype.names[1:]
     
-    d=data.view(np.float,np.ndarray).reshape(data.shape[0],len(headerNames)+1)
+    d=data.view(float,np.ndarray).reshape(data.shape[0],len(headerNames)+1)
     
     N=len(fpNames)
     locidx=np.array([4,5,6]).astype(int)
@@ -66,9 +65,9 @@ def fpdata2locrot(data):
             normarrow=thisarrow.normalized()             
             quat=originalarrow.rotation_difference(normarrow)
             eul=quat.to_euler('XYZ') #maybe use compatibility arg
-            rotvals[i,3*j]=math.degrees(eul[0])
-            rotvals[i,3*j+1]=math.degrees(eul[1])
-            rotvals[i,3*j+2]=math.degrees(eul[2])
+            rotvals[i,3*j] = eul[0]*180/np.pi
+            rotvals[i,3*j+1] = eul[1]*180/np.pi
+            rotvals[i,3*j+2] = eul[2]*180/np.pi
             #Genarate scale in x based on magnitude of arrow
             scalevals[i,j*3]=thisarrow.magnitude/700
             if (thisarrow.magnitude<20):
@@ -113,7 +112,7 @@ def fpdata2locrot(data):
     
     return out
     
-def loadForces(csvFileName):    
+def import_forces(csvFileName):    
     '''
     Load forces by reading a csv file containing the frame index and the p v (and optional m) values.
     '''

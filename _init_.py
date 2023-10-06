@@ -12,14 +12,13 @@
     - addModel: import an .osim model file
     - addMotion: import a .mot (OpenSim API required) or .csv motion file
     - addMarkers: import a .trc marker file
-    - addGRF: import a .mot or .csv ground reaction force file
-
+    - addGRF: import a .mot ground reaction force file
 '''
 
 
 ## INIT
 import bpy
-import Sim2Blend
+import Sim2Blend.model, Sim2Blend.motion, Sim2Blend.markers, Sim2Blend.forces
 import os
 
 rootpath=os.path.dirname(os.path.abspath(__file__))
@@ -58,10 +57,7 @@ class MyProperties(bpy.types.PropertyGroup):
         subtype="FILE_PATH")
     forcesfile : bpy.props.StringProperty(
         name='Forces file',
-        subtype="FILE_PATH")            
-    momentsfile : bpy.props.StringProperty(
-        name='Moments file',
-        subtype="FILE_PATH")   
+        subtype="FILE_PATH") 
 
     
 class addModel(bpy.types.Operator):
@@ -101,7 +97,6 @@ class addMarkers(bpy.types.Operator):
         mytool=scene.my_tool  
         trc_path=bpy.path.abspath(mytool.markersfile)
         Sim2Blend.markers.import_trc(trc_path, direction='zup')
-        #bpy.context.scene.update()        
         return {'FINISHED'}
 
 
@@ -114,22 +109,7 @@ class addForces(bpy.types.Operator):
         scene=context.scene
         mytool=scene.my_tool  
         force_path=bpy.path.abspath(mytool.forcesfile)
-        Sim2Blend.forces.loadForces(force_path)
-        #bpy.context.scene.update()        
-        return {'FINISHED'}
-
-
-class addMoments(bpy.types.Operator):
-    bl_idname = 'mesh.add_osim_moments'
-    bl_label = 'Add Moments'
-    bl_options = {'REGISTER', 'UNDO'}
-  
-    def execute(self, context):
-        scene=context.scene
-        mytool=scene.my_tool  
-        force_path=bpy.path.abspath(mytool.momentsfile)
-        Sim2Blend.moments.loadMoments(force_path)
-        #bpy.context.scene.update()        
+        Sim2Blend.forces.import_forces(force_path)
         return {'FINISHED'}
 
 
@@ -153,16 +133,14 @@ class panel1(bpy.types.Panel):
         layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Add Markers") 
         layout.prop(mytool,"forcesfile")            
         layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Add Forces") 
-        layout.prop(mytool,"momentsfile")            
-        layout.operator("mesh.add_osim_moments",icon='EMPTY_SINGLE_ARROW', text="Add Moments") 
         
+
 def register():
     print('Addon Registered')
     bpy.utils.register_class(addModel)
     bpy.utils.register_class(addMotion)            
     bpy.utils.register_class(addMarkers)
     bpy.utils.register_class(addForces)
-    bpy.utils.register_class(addMoments)
     bpy.utils.register_class(panel1)
     bpy.utils.register_class(MyProperties)
     bpy.types.Scene.my_tool = bpy.props.PointerProperty(type=MyProperties)
@@ -173,7 +151,6 @@ def unregister():
     bpy.utils.unregister_class(addMotion)            
     bpy.utils.unregister_class(addMarkers)
     bpy.utils.unregister_class(addForces)
-    bpy.utils.unregister_class(addMoments)
     bpy.utils.unregister_class(panel1)
     bpy.utils.unregister_class(MyProperties)
 

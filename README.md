@@ -66,6 +66,7 @@ Pipeline:
 
 
 ```
+Download Sim2Blend.py
 Install Blender (haven't tried with versions other than 3.6)
 Install OpenSim (haven't tried with versions other than 4.4)
 Install Miniconda
@@ -96,11 +97,8 @@ Install add-on in Blender:
 - Check Sim2Blend to enable it
 - Find the Add-on on the right panel, and click on the arrow to open it
 
+You can find the add-on on the upper-right corner of the 3D Viewport. Click on the tiny arrow and select the tab Sim2Blend.
 
-Launch Blender, Shift+F4
-import os
-
-Try import sys, import bpy, import numpy, import opensim
 ```
 
 pip install opencv-python -> ok

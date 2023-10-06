@@ -159,5 +159,10 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
             mesh_obj.parent=obj[i]
             mesh_obj.users_collection[0].objects.unlink(mesh_obj)
             collection.objects.link(mesh_obj)
+
+    # hide axes
+    bpy.ops.object.select_by_type(extend=False, type='EMPTY')
+    empties = bpy.context.selected_objects
+    [empt.hide_set(True) for empt in empties]
             
 

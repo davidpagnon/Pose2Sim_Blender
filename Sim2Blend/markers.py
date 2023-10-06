@@ -7,24 +7,15 @@
     ## Import OpenSim .trc markers into Blender     ##
     ##################################################
     
-    Computes the coordinates of each opensim bodies in the ground plane
-    from a .mot motion file (joint angles) and a .osim model file,
-    saves to a .csv file (body positions and orientations).
-    Animates a previously loaded .osim model.
-    Requires OpenSim API to be installed in Blender (see Readme.md).
+    Import a .trc marker file into Blender.
+    OpenSim API is not required.
 
-    Can also import the resulting csv file,
-    in which case OpenSim API is not required.
-    
     INPUTS: 
-    - mot_path: path to a .mot motion file (joint angles) 
-                or to a .csv file (body positions and orientations)
-    - osim_path: path to the .osim model file
+    - trc_path: path to a .trc marker file
     - direction: 'zup' or 'yup' (default: 'zup')
 
     OUTPUTS:
-    - mot_path.csv (file with body positions and orientations)
-    - Animated .osim model
+    - Animated markers
 '''
 
 
@@ -33,13 +24,11 @@ import os
 import numpy as np
 import bpy
 import bmesh
-from mathutils import Vector, Matrix
 
 direction = 'zup'
-RADIUS=24/1000
-FONTSIZE=0.05
-OFFSET=(-0.1,0.1,0.1)
+RADIUS = 12/1000
 COLOR =  (0, 1, 0, 0.8)
+
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
@@ -53,7 +42,7 @@ __status__ = "Development"
 
 
 ## FUNCTIONS
-def import_trc(trc_path):
+def load_trc(trc_path):
     '''
     Retrieve data and marker names from trc
 
@@ -80,36 +69,18 @@ def import_trc(trc_path):
     return trc_data_np, markerNames
 
 
-def label(scene, depsgraph):
+def addMarker(collection,position=(0,0,0),text="MARKER", color=COLOR):
     '''
-    
-    '''
-    
-    cam = scene.camera.evaluated_get(depsgraph)
-    mw = cam.matrix_world
-    mwi = mw.inverted()
-    R = mw.to_3x3().normalized().to_4x4()
-    labels = [o.evaluated_get(depsgraph) for o in scene.objects
-            if "label" in o.keys()
-            ]
-    for label in labels:
-        ob = label.parent
-        omw = ob.matrix_world
-        bbox = [mwi @ (omw @ Vector(b)) for b in ob.bound_box]
-        bbox.sort(key=lambda v:v.y)
+    Add one marker to the scene
 
-        M = R.copy()
-        p = bbox.pop()
-        M.translation = mw @ p
-        S = Matrix.Diagonal(
-            (scale_factor * -p.z,) * 3).to_4x4()
+    INPUTS:
+    - collection: collection to add the marker to
+    - position: marker position (default: (0,0,0))
+    - text: marker name (default: "MARKER")
+    - color: marker color (default: COLOR)
 
-        label.matrix_world = M @ S
-
-
-def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER", color=COLOR):
-    '''
-
+    OUTPUTS:
+    - Created new marker
     '''
 
     # Color
@@ -118,8 +89,8 @@ def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER", color=
     tree = matg.node_tree
     nodes = tree.nodes
     bsdf = nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = COLOR
-    matg.diffuse_color = COLOR
+    bsdf.inputs["Base Color"].default_value = color
+    matg.diffuse_color = color
     
     #Add sphere
     mySphere=bpy.data.meshes.new('sphere')
@@ -131,26 +102,23 @@ def addMarker(collection,position=(0,0,0),rotation=(0,0,0),text="MARKER", color=
     sphere.location=position
     sphere.active_material = matg
     collection.objects.link(sphere)
-    
-    #Add text
-    myFontCurve = bpy.data.curves.new(type="FONT",name="myFontcurve")
-    myFontObj = bpy.data.objects.new(text,myFontCurve)
-    myFontObj.data.body = text
-    myFontObj.data.size=FONTSIZE
-    myFontObj.location=np.asarray(position)+np.asarray(OFFSET)
-    myFontObj.rotation_euler=(1,0,3.1416)
-    myFontObj.active_material = matg
-    myFontObj.parent=sphere
-    collection.objects.link(myFontObj)
            
  
 def import_trc(trc_path, direction='zup'):	 
     '''
-    
+    Import a .trc marker file into Blender.
+    OpenSim API is not required.
+
+    INPUTS: 
+    - trc_path: path to a .trc marker file
+    - direction: 'zup' or 'yup' (default: 'zup')
+
+    OUTPUTS:
+    - Animated markers
     '''
 
     # import trc    
-    trc_data_np, markerNames = import_trc(trc_path)
+    trc_data_np, markerNames = load_trc(trc_path)
 
     # set framerate
     times = trc_data_np[:,0]
@@ -178,14 +146,4 @@ def import_trc(trc_path, direction='zup'):
             obj=marker_collection.objects[m]
             obj.location=loc_x,loc_y,loc_z
             obj.keyframe_insert('location',frame=n+1)
-            
-	
-
     
-
-''' 
-#Example
-trc_path = r'D:\softs\github_david\Openpose-to-Opensim\temp\Moco\to_martin_jake\0.Balancing.trc'
-
-'''
-
