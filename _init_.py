@@ -27,7 +27,7 @@ stlFolder=os.path.join(rootpath,'Sim2Blend','Geometry')
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
-__copyright__ = "Copyright 2021, BlendOSim & Sim2Blend"
+__copyright__ = "Copyright 2023, BlendOSim & Sim2Blend"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
 __version__ = "0.0.1"
@@ -108,8 +108,8 @@ class addForces(bpy.types.Operator):
     def execute(self, context):
         scene=context.scene
         mytool=scene.my_tool  
-        force_path=bpy.path.abspath(mytool.forcesfile)
-        Sim2Blend.forces.import_forces(force_path)
+        grf_path=bpy.path.abspath(mytool.forcesfile)
+        Sim2Blend.forces.import_forces(grf_path)
         return {'FINISHED'}
 
 

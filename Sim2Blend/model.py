@@ -32,7 +32,7 @@ import os
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
-__copyright__ = "Copyright 2021, BlendOSim & Sim2Blend"
+__copyright__ = "Copyright 2023, BlendOSim & Sim2Blend"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
 __version__ = "0.0.1"

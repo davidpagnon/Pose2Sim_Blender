@@ -32,7 +32,7 @@ COLOR =  (0, 1, 0, 0.8)
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
-__copyright__ = "Copyright 2021, BlendOSim & Sim2Blend"
+__copyright__ = "Copyright 2023, BlendOSim & Sim2Blend"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
 __version__ = "0.0.1"
@@ -50,31 +50,31 @@ def load_trc(trc_path):
     - trc_path: path to the .trc file
 
     OUTPUT:
-    - trc_data: 2D numpy array with marker coordinates at each time step
+    - trc_data_np: 2D numpy array with marker coordinates at each time step
     - markerNames: list of marker names
     '''
 
     # read data
-    trc_data_np = np.loadtxt(trc_path, delimiter="\t", skiprows=5)[:,1:] 
+    trc_data_np = np.loadtxt(trc_path, skiprows=5)[:,1:] 
     
     # read marker names
     with open(trc_path) as f:
         for i, line in enumerate(f):
             if i == 2:
                 trc_header = f.readline()[12:-3]
-            elif i > 4:
+            elif i > 2:
                 break
     markerNames = trc_header.split('\t\t\t')
     
     return trc_data_np, markerNames
 
 
-def addMarker(collection,position=(0,0,0),text="MARKER", color=COLOR):
+def addMarker(marker_collection, position=(0,0,0), text="MARKER", color=COLOR):
     '''
     Add one marker to the scene
 
     INPUTS:
-    - collection: collection to add the marker to
+    - marker_collection: collection to add the marker to
     - position: marker position (default: (0,0,0))
     - text: marker name (default: "MARKER")
     - color: marker color (default: COLOR)
@@ -101,7 +101,7 @@ def addMarker(collection,position=(0,0,0),text="MARKER", color=COLOR):
     bm.free()
     sphere.location=position
     sphere.active_material = matg
-    collection.objects.link(sphere)
+    marker_collection.objects.link(sphere)
            
  
 def import_trc(trc_path, direction='zup'):	 

@@ -39,7 +39,7 @@ export_to_csv = True
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
-__copyright__ = "Copyright 2021, BlendOSim & Sim2Blend"
+__copyright__ = "Copyright 2023, BlendOSim & Sim2Blend"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
 __version__ = "0.0.1"
@@ -106,6 +106,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         # animate model
         state = model.initSystem()
         loc_rot_frame_all = []
+        H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
         for n in range(motion_data.getNumRows()):
             
             # set model struct in each time state
@@ -125,7 +126,6 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                 
                 # y-up to z-up
                 if direction=='zup':
-                    H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
                     H = H_zup @ H
                 
                 # convert matrix to loc and rot, and export to csv
