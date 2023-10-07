@@ -3,7 +3,7 @@
 
 Import OpenSim results in Blender.
 
-This add-on is built on top of [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). Unlike the other, it does not require using Matlab as an intermediary software between OpenSim and Blender. 
+This add-on is inspired from [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). Unlike this one, it does not require using Matlab as an intermediary software between OpenSim and Blender. 
 
 
 
@@ -43,16 +43,16 @@ Try the files in the example folder!
 
 
 
-- Remove cube
 - Explanation on where to find add-on with screenshot
 - Installing OpenSim (for mot files)
-- Change file hierarchy (cf Pose2Sim, Sports2D)
 - Run when file selected
 
 Pipeline:
 - Add cameras, scene, film from cameras, import cameras, import videos
 - Pose2Sim: Detection, Calibration/Sync/Identification, Triangulation/Filtering, Scaling/IK
 - Import model, mot, markers
+
+To do list: 
 
 
 

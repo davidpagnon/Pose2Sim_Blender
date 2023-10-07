@@ -154,4 +154,9 @@ def import_forces(grf_path):
             obj.keyframe_insert('location', frame=n+1)
             obj.keyframe_insert('rotation_euler', frame=n+1)
             obj.keyframe_insert('scale', frame=n+1)
+
+    # hide axes
+    bpy.ops.object.select_by_type(extend=False, type='EMPTY')
+    empties = bpy.context.selected_objects
+    [empt.hide_set(True) for empt in empties]
             
