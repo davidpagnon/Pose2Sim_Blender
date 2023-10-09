@@ -76,6 +76,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         collection=bpy.data.collections['osimModel']
     except:
         raise('First import a model.')
+    collection = [c for c in bpy.data.collections if c.name.startswith('osimModel')][-1]
     
     # If chosen file is .mot (joint angles)
     if os.path.splitext(mot_path)[1] == '.mot':
@@ -144,7 +145,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                     loc_rot_frame.extend([loc_x, loc_y, loc_z, rot_x, rot_y, rot_z])
             
                 # set coordinates of blender bodies to this state
-                obj=collection.objects[b.getName()]
+                b_iterated = [o.name for o in collection.objects if o.name.startswith(b.getName())][0]
+                obj=collection.objects[b_iterated]
                 obj.matrix_world = H.T
                 obj.keyframe_insert('location',frame=n+1)
                 obj.keyframe_insert('rotation_euler',frame=n+1)
@@ -184,7 +186,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                 rot_y = loc_rot_frame_all_np[n,6*i+5]
                 rot_z = loc_rot_frame_all_np[n,6*i+6]
 
-                obj=collection.objects[b]
+                b_nameiterated = [o.name for o in collection.objects if o.name.startswith(b)][0]
+                obj=collection.objects[b_nameiterated]
                 obj.location=loc_x,loc_y,loc_z
                 obj.rotation_euler=rot_x,rot_y,rot_z
                 obj.keyframe_insert('location',frame=n+1)

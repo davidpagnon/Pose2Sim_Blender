@@ -18,6 +18,7 @@
 
 ## INIT
 import bpy
+import bpy_extras.io_utils
 import Sim2Blend.model, Sim2Blend.motion, Sim2Blend.markers, Sim2Blend.forces
 import os
 
@@ -45,71 +46,73 @@ bl_info = {
 }
 
 
-class MyProperties(bpy.types.PropertyGroup):
-    modelfile : bpy.props.StringProperty(
-        name='Model file',
-        subtype="FILE_PATH")
-    motionfile : bpy.props.StringProperty(
-        name='Motion file',
-        subtype="FILE_PATH")
-    markersfile : bpy.props.StringProperty(
-        name='Markers file',
-        subtype="FILE_PATH")
-    forcesfile : bpy.props.StringProperty(
-        name='Forces file',
-        subtype="FILE_PATH") 
-
-    
-class addModel(bpy.types.Operator):
+class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
     bl_label = 'Add Model'
     bl_options = {'REGISTER', 'UNDO'}
+
+    filter_glob : bpy.props.StringProperty(
+        name='Model file',
+        default="*.osim",
+        options={'HIDDEN'},
+        subtype="FILE_PATH")
       
     def execute(self, context):
-        scene=context.scene
-        mytool=scene.my_tool
-        osim_path = bpy.path.abspath(mytool.modelfile)
+        global osim_path
+        osim_path= bpy.path.abspath(self.filepath)
         Sim2Blend.model.import_model(osim_path,stlRoot=stlFolder)
         return {'FINISHED'}
     
 
-class addMotion(bpy.types.Operator):
-    bl_idname = 'motion.add_osim_motion'
+class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+    bl_idname = 'mesh.add_osim_motion'
     bl_label = 'Add Motion'
     bl_options = {'REGISTER', 'UNDO'}
+
+    filter_glob : bpy.props.StringProperty(
+        name='Motion file',
+        default="*.mot;*.csv",
+        options={'HIDDEN'},
+        subtype="FILE_PATH")
       
     def execute(self, context):
-        scene=context.scene
-        mytool=scene.my_tool  
-        osim_path = bpy.path.abspath(mytool.modelfile)
-        mot_path=bpy.path.abspath(mytool.motionfile)
+        global osim_path
+        mot_path=bpy.path.abspath(self.filepath)
         Sim2Blend.motion.apply_mot_to_model(mot_path, osim_path, direction='zup')
         return {'FINISHED'}
     
 
-class addMarkers(bpy.types.Operator):
+class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_markers'
     bl_label = 'Add Markers'
     bl_options = {'REGISTER', 'UNDO'}
+
+    filter_glob : bpy.props.StringProperty(
+        name='Markers file',
+        default="*.trc",
+        options={'HIDDEN'},
+        subtype="FILE_PATH")
   
     def execute(self, context):
-        scene=context.scene
-        mytool=scene.my_tool  
-        trc_path=bpy.path.abspath(mytool.markersfile)
+        trc_path=bpy.path.abspath(self.filepath)
         Sim2Blend.markers.import_trc(trc_path, direction='zup')
         return {'FINISHED'}
 
 
-class addForces(bpy.types.Operator):
+class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
     bl_label = 'Add Forces'
     bl_options = {'REGISTER', 'UNDO'}
+
+    filter_glob : bpy.props.StringProperty(
+        name='Force file',
+        default="*.mot",
+        options={'HIDDEN'},
+        subtype="FILE_PATH")
   
     def execute(self, context):
-        scene=context.scene
-        mytool=scene.my_tool  
-        grf_path=bpy.path.abspath(mytool.forcesfile)
-        Sim2Blend.forces.import_forces(grf_path)
+        grf_path=bpy.path.abspath(self.filepath)
+        Sim2Blend.forces.import_forces(grf_path, direction='zup')
         return {'FINISHED'}
 
 
@@ -123,15 +126,9 @@ class panel1(bpy.types.Panel):
     def draw(self, context):
         layout=self.layout
         layout.label(text='Import OpenSim data') 
-        scene=context.scene
-        mytool=scene.my_tool  
-        layout.prop(mytool,"modelfile")
         layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Add Model")      
-        layout.prop(mytool,"motionfile")   
-        layout.operator("motion.add_osim_motion",icon='CURVE_PATH', text="Add Motion")     
-        layout.prop(mytool,"markersfile")            
+        layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Add Motion")     
         layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Add Markers") 
-        layout.prop(mytool,"forcesfile")            
         layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Add Forces") 
         
 
@@ -142,8 +139,6 @@ def register():
     bpy.utils.register_class(addMarkers)
     bpy.utils.register_class(addForces)
     bpy.utils.register_class(panel1)
-    bpy.utils.register_class(MyProperties)
-    bpy.types.Scene.my_tool = bpy.props.PointerProperty(type=MyProperties)
 
 def unregister():
     print('bye')
@@ -152,7 +147,6 @@ def unregister():
     bpy.utils.unregister_class(addMarkers)
     bpy.utils.unregister_class(addForces)
     bpy.utils.unregister_class(panel1)
-    bpy.utils.unregister_class(MyProperties)
 
         
 # This allows you to run the script directly from Blender's Text editor

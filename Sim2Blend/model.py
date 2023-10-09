@@ -93,8 +93,7 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
         bpy.context.scene.collection.children.link(collection)
     if modelRoot=='':
         modelRoot=os.path.dirname(osim_path)
-    print('collection:')
-    print(collection)
+        
     xmldoc = minidom.parse(osim_path)
     bodySet = xmldoc.getElementsByTagName('BodySet')[0]
     
@@ -140,13 +139,17 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
                                 else:                       # in other OpenSim Geometry directory?
                                     try:
                                         import opensim
-                                        fullFile=os.path.join(f'C:\\OpenSim {opensim.__version__[:3]}\\Geometry',filename)
-                                        if not os.path.exists(fullFile):
-                                            fullFile_vtp=os.path.join('C:\\OpenSim 4.4\\Geometry',filename_vtp)
-                                            if os.path.exists(fullFile_vtp):
-                                                vtp2stl(fullFile_vtp)
                                     except:
-                                        pass
+                                        raise Exception('OpenSim API not installed on Blender')
+                                    fullFile=os.path.join(f'C:\\OpenSim {opensim.__version__[:3]}\\Geometry',filename)
+                                    if not os.path.exists(fullFile):
+                                        fullFile_vtp=os.path.join('C:\\OpenSim 4.4\\Geometry',filename_vtp)
+                                        if os.path.exists(fullFile_vtp):
+                                            vtp2stl(fullFile_vtp)
+            if not os.path.exists(fullFile):
+                print(f'File {filename} or {filename_vtp} not found on system')
+                raise Exception(f'File {filename} or {filename_vtp} not found on system')
+                                    
             
             # import all meshes for each object
             [obj.select_set(False) for obj in bpy.data.objects] # first deselect all
@@ -156,6 +159,11 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
             selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
             mesh_obj=selected_objects[0]
             mesh_obj.scale=scaleFactor
+            try:
+                mesh_obj.location = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('translation')[0].firstChild.nodeValue.split()]
+                mesh_obj.rotation_euler = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('orientation')[0].firstChild.nodeValue.split()]
+            except:
+                pass
             mesh_obj.parent=obj[i]
             mesh_obj.users_collection[0].objects.unlink(mesh_obj)
             collection.objects.link(mesh_obj)

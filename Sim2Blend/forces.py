@@ -108,7 +108,7 @@ def addForce(force_collection, forceName='', text="FORCE", color=COLOR):
     force_collection.objects.link(obj)
     
 
-def import_forces(grf_path):    
+def import_forces(grf_path, direction='zup'):    
     '''
     Import a .mot force file into Blender.
     OpenSim API is not required.
