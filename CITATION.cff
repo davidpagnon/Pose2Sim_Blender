@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use Sim2Blend, please cite it as below."
+authors:
+- family-names: "Pagnon"
+  given-names: "David"
+  orcid: "https://orcid.org/0000-0002-6891-8331"
+- family-names: "Camargo"
+  given-names: "Jonathan"
+  orcid: "https://orcid.org/0000-0001-5219-2110"
+title: "Sports2D - OpenSim results in Blender"
+version: 0.1.0
+doi: '10.5281/zenodo.7903963'
+date-released: 2023-05-05
+url: "https://github.com/davidpagnon/Sim2Blend"
+journal: "GitHub repository"
