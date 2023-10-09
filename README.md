@@ -70,6 +70,8 @@ You will need admin rights for the next steps:
 
 ![Where to find Sim2Blend add-on](Content/Show_Sim2Blend.png)
 
+<br>
+
 ## Demonstration
 
 Find example files in the `Examples` folder, or use it with you own OpenSim data.
@@ -81,6 +83,7 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
 
 `Warning:` All files must be sampled at the same framerate.
 
+<br>
 
 ## How to cite and how to contribute
 
@@ -98,7 +101,6 @@ If you use Sim2Blend, please cite [Pagnon and Camargo, 2023].
        howpublished = {\url{https://github.com/davidpagnon/Sim2Blend}},
      }
 
-
 ### How to contribute
 
 I would happily welcome any proposal for new features, code improvement, and more!\
@@ -112,3 +114,4 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Create Example data
 - [ ] Rig model
 - [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
+- [ ] Tutorial for Mac/Linux
