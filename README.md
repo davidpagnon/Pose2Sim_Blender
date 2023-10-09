@@ -92,7 +92,7 @@ If you use Sim2Blend, please cite [Pagnon and Camargo, 2023].
        author = {Pagnon, David and Camargo, Jonathan},
        title = {Sim2Blend - OpenSim results in Blender},
        year = {2023},
-       <!-- doi= {10.5281/zenodo.7903963}, -->
+       doi= {10.5281/zenodo.8421820},
        publisher = {GitHub},
        journal = {GitHub repository},
        howpublished = {\url{https://github.com/davidpagnon/Sim2Blend}},
@@ -111,4 +111,4 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
 - [ ] Rig model
-- [ ] Add other tool for importing or exporting cameras, and for importing videos or filming
+- [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
