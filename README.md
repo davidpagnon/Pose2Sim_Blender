@@ -24,7 +24,7 @@ Feel free to try [Pose2Sim](https://github.com/perfanalytics/pose2sim), an open-
 
 ## Installation
 
-Installation is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues).
+Installation is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues). It is still only available on Windows, but feel free to contribute and adapt it on other platforms!
 
 #### Prerequisites
 
