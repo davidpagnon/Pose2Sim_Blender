@@ -1,6 +1,6 @@
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
-<!-- [![DOI](https://zenodo.org/badge/634044634.svg)](https://zenodo.org/badge/latestdoi/634044634)\ -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8421820.svg)](https://doi.org/10.5281/zenodo.8421820)
 
 
 # Sim2Blend
@@ -24,7 +24,7 @@ Feel free to try [Pose2Sim](https://github.com/perfanalytics/pose2sim), an open-
 
 ## Installation
 
-Installation is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues).
+Installation is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues). It is still only available on Windows, but feel free to contribute and adapt it on other platforms!
 
 #### Prerequisites
 
@@ -70,6 +70,8 @@ You will need admin rights for the next steps:
 
 ![Where to find Sim2Blend add-on](Content/Show_Sim2Blend.png)
 
+<br>
+
 ## Demonstration
 
 Find example files in the `Examples` folder, or use it with you own OpenSim data.
@@ -81,6 +83,7 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
 
 `Warning:` All imported files should be sampled at the same framerate.
 
+<br>
 
 ## How to cite and how to contribute
 
@@ -92,12 +95,11 @@ If you use Sim2Blend, please cite [Pagnon and Camargo, 2023].
        author = {Pagnon, David and Camargo, Jonathan},
        title = {Sim2Blend - OpenSim results in Blender},
        year = {2023},
-       <!-- doi= {10.5281/zenodo.7903963}, -->
+       doi= {10.5281/zenodo.8421820},
        publisher = {GitHub},
        journal = {GitHub repository},
        howpublished = {\url{https://github.com/davidpagnon/Sim2Blend}},
      }
-
 
 ### How to contribute
 
@@ -111,4 +113,5 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
 - [ ] Rig model
-- [ ] Add other tool for importing or exporting cameras, and for importing videos or filming
+- [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
+- [ ] Tutorial for Mac/Linux
