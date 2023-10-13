@@ -40,9 +40,14 @@ __status__ = "Development"
 ## CLASSES
 bl_info = {
     "name": "Sim2Blend",
-    "category": "Import",
+    "author": "David Pagnon, Jonathan Camargo",
     "version": (0, 0, 1),
     "blender": (3, 6, 0),
+    "location": "VIEW_3D > UI > Sidebar (press N)",
+    "category": "Import",
+    "description": "Import OpenSim results",
+    "doc_url": "https://github.com/davidpagnon/Sim2Blend",
+    "tracker_url": "https://github.com/davidpagnon/Sim2Blend/issues"
 }
 
 
