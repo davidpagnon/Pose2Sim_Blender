@@ -19,7 +19,7 @@
 ## INIT
 import bpy
 import bpy_extras.io_utils
-import Sim2Blend.model, Sim2Blend.motion, Sim2Blend.markers, Sim2Blend.forces
+from Sim2Blend.Sim2Blend import model, motion, markers, forces
 import os
 
 rootpath=os.path.dirname(os.path.abspath(__file__))
@@ -65,7 +65,7 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     def execute(self, context):
         global osim_path
         osim_path= bpy.path.abspath(self.filepath)
-        Sim2Blend.model.import_model(osim_path,stlRoot=stlFolder)
+        model.import_model(osim_path,stlRoot=stlFolder)
         return {'FINISHED'}
     
 
@@ -83,7 +83,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     def execute(self, context):
         global osim_path
         mot_path=bpy.path.abspath(self.filepath)
-        Sim2Blend.motion.apply_mot_to_model(mot_path, osim_path, direction='zup')
+        motion.apply_mot_to_model(mot_path, osim_path, direction='zup')
         return {'FINISHED'}
     
 
@@ -100,7 +100,7 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
   
     def execute(self, context):
         trc_path=bpy.path.abspath(self.filepath)
-        Sim2Blend.markers.import_trc(trc_path, direction='zup')
+        markers.import_trc(trc_path, direction='zup')
         return {'FINISHED'}
 
 
@@ -117,7 +117,7 @@ class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
   
     def execute(self, context):
         grf_path=bpy.path.abspath(self.filepath)
-        Sim2Blend.forces.import_forces(grf_path, direction='zup')
+        forces.import_forces(grf_path, direction='zup')
         return {'FINISHED'}
 
 
