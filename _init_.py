@@ -44,7 +44,7 @@ bl_info = {
     "version": (0, 0, 1),
     "blender": (3, 6, 0),
     "location": "VIEW_3D > UI > Sidebar (press N)",
-    "category": "Import",
+    "category": "Import-Export",
     "description": "Import OpenSim results",
     "doc_url": "https://github.com/davidpagnon/Sim2Blend",
     "tracker_url": "https://github.com/davidpagnon/Sim2Blend/issues"
