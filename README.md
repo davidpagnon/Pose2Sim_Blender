@@ -37,7 +37,7 @@ Installation is a little tricky, but the following steps should do it smoothly. 
 
 Open Blender, press Shift+F4, type the following lines:
 
-```
+``` python
 import sys
 sys.version
 ```
@@ -45,7 +45,7 @@ sys.version
 #### Install Sim2Blend libraries
 
 Open Miniconda, and copy-paste these lines. Replace with the Python version you just found:
-```
+``` cmd
 conda create -n Sim2Blend python=3.10.12 -y 
 conda activate Sim2Blend
 conda install -c opensim-org opensim -y
