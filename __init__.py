@@ -54,6 +54,7 @@ bl_info = {
 class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
     bl_label = 'Add Model'
+    bl_description ="Import the 'bodies' of an `.osim` model"
     bl_options = {'REGISTER', 'UNDO'}
 
     filter_glob : bpy.props.StringProperty(
@@ -72,6 +73,7 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_motion'
     bl_label = 'Add Motion'
+    bl_description = "Import a `.mot` or a `.csv` motion file"
     bl_options = {'REGISTER', 'UNDO'}
 
     filter_glob : bpy.props.StringProperty(
@@ -90,6 +92,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_markers'
     bl_label = 'Add Markers'
+    bl_description = "Import a `.trc` marker file"
     bl_options = {'REGISTER', 'UNDO'}
 
     filter_glob : bpy.props.StringProperty(
@@ -107,6 +110,7 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
     bl_label = 'Add Forces'
+    bl_description = "Import a `.mot` force file"
     bl_options = {'REGISTER', 'UNDO'}
 
     filter_glob : bpy.props.StringProperty(
