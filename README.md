@@ -76,7 +76,7 @@ You will need admin rights for the next steps:
 
 Find example files in the `Examples` folder, or use it with you own OpenSim data.
 
-- **Add Model**: Import a `.osim` model. 
+- **Add Model**: Import the "bodies" of an `.osim` model. If the stl files do not already exist, create them by converting from the vtp Geometry path.
 - **Add Motion**: Import a `.mot` or a `.csv` motion file. Calculating all body segment positions may take a while if the model is complex or the motion long. Creates a .csv file for faster loading next time.
 - **Add Markers**: Import a `.trc` marker file. If you need to convert from `.c3d` to `.trc`, use [this Pose2Sim utility](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/c3d_to_trc.py).
 - **Add Forces**: Import a `.mot` GRF force file.
