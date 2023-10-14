@@ -66,7 +66,7 @@ You will need admin rights for the next steps:
 
 - Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.py
 - Check `Sim2Blend` to enable it
-- Click on the tiny arrow on the upper-right corner of the 3D viewport to open it
+- Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
 
 ![Where to find Sim2Blend add-on](Content/Show_Sim2Blend.png)
 
