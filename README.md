@@ -115,3 +115,4 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [ ] Rig model
 - [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
 - [ ] Tutorial for Mac/Linux
+- [ ] Install OpenSim (for motion .mot files) with a click within the addon (create a venv with the right Python version [cf CEB](https://drive.google.com/file/d/1x3JfKfUXwi-61AqsbDeMVRS_h66Ap-dW/view), install OpenSim and the other dependencies)
