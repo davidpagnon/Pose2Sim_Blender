@@ -47,6 +47,9 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
 
 ## Quick install
 
+> N.B.: You will not be able to read .mot files (they will have to be converted outside of Blender via [this utility script](Sim2Blend/csv_from_mot_osim.py)), nor\
+> to read .vtp geometry files that are not shipped in the Sim2Blend Geometry folder.
+
 - Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
 - Download [Sim2Blend.zip](https://github.com/davidpagnon/Sim2Blend/raw/main/Sim2Blend.zip)
 
