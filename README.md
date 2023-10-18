@@ -135,6 +135,7 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Save segment angles to .csv files for faster loading of motion next time
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
+- [x] Quick install option
 - [ ] Rig model
 - [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
 - [ ] Tutorial for Mac/Linux
