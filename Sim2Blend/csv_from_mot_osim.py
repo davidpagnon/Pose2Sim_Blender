@@ -14,7 +14,7 @@
     orientations due to their use of Euler angle instead of homography matrices
     
     Usage: 
-    from from Sim2Blend import csv_from_mot_osim; csv_from_mot_osim.csv_from_mot_osim_func(r'<input_mot_file>', r'<output_osim_file>', r'<output_csv_file>')
+    from Sim2Blend import csv_from_mot_osim; csv_from_mot_osim.csv_from_mot_osim_func(r'<input_mot_file>', r'<output_osim_file>', r'<output_csv_file>')
     python -m csv_from_mot_osim -m input_mot_file -o input_osim_file
     python -m csv_from_mot_osim -m input_mot_file -o input_osim_file -c output_csv_file
 '''
