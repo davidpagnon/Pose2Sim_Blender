@@ -39,12 +39,6 @@ __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
 
 
-input_dir = r'C:\Users\david\AppData\Roaming\Blender Foundation\Blender\3.6\scripts\addons\Sim2Blend\Examples'
-input_osim_file = os.path.join(input_dir, 'model.osim')
-input_mot_file = os.path.join(input_dir, 'motion.mot')
-output_csv_file = os.path.join(input_dir, 'motion.csv')
-
-
 def csv_from_mot_osim_func(*args):
     '''
     Build a csv file which stores locations and orientations of all bodies
