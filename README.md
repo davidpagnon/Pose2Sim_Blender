@@ -33,7 +33,7 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
 - **Add Motion**: \
   Import a `.mot` or a `.csv` motion file. \
   *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or the motion long. Creates a .csv file for faster loading next time.* \
-  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [csv_from_mot_osim.py](Sim2Blend\csv_from_mot_osim.py) to convert it to .csv.*
+  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [csv_from_mot_osim.py](Sim2Blend/csv_from_mot_osim.py) to convert it to .csv.*
 - **Add Markers**: \
   Import a `.trc` marker file. \
   *If you need to convert from `.c3d` to `.trc`, use [this Pose2Sim utility](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/c3d_to_trc.py).*
