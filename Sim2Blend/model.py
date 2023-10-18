@@ -25,7 +25,6 @@
 
 ## INIT
 import bpy
-import vtk
 from xml.dom import minidom
 import os
 
@@ -56,7 +55,8 @@ def vtp2stl(vtp_path):
     OUTPUT:
     - .stl file: same name, same folder
     '''
-
+    
+    import vtk
     if os.path.isfile(vtp_path):
         outfile = os.path.splitext(vtp_path)[0]+".stl"
         reader = vtk.vtkXMLPolyDataReader()
