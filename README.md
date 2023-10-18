@@ -17,19 +17,56 @@ Feel free to try [Pose2Sim](https://github.com/perfanalytics/pose2sim), an open-
 
 
 ## Contents
-1. [Installation](#installation)
-2. [Demonstration](#demonstration)
-3. [How to cite and how to contribute](#how-to-cite-and-how-to-contribute)
+1. [Demonstration](#demonstration)
+2. [Quick install](#quick-install)
+3. [Full install](#full-install)
+4. [How to cite and how to contribute](#how-to-cite-and-how-to-contribute)
 
 
-## Installation
+## Demonstration
 
-Installation is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues). It is still only available on Windows, but feel free to contribute and adapt it on other platforms!
+Find example files in the `Examples` folder, or use it with you own OpenSim data.
+
+- **Add Model**: \
+  Import the "bodies" of an `.osim` model. \
+  *If you did the [full install](#full-install) and some Geometry files exist only as .vtp, they will automatically be converted to .stl.*
+- **Add Motion**: \
+  Import a `.mot` or a `.csv` motion file. \
+  *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or the motion long. Creates a .csv file for faster loading next time.* \
+  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [csv_from_mot_osim.py](Sim2Blend\csv_from_mot_osim.py) to convert it to .csv.*
+- **Add Markers**: \
+  Import a `.trc` marker file. \
+  *If you need to convert from `.c3d` to `.trc`, use [this Pose2Sim utility](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/c3d_to_trc.py).*
+- **Add Forces**: \
+  Import a `.mot` GRF force file.
+
+`Warning:` All imported files should be sampled at the same framerate.
+
+<br>
+
+
+## Quick install
+
+- Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
+- Download [Sim2Blend.zip](https://github.com/davidpagnon/Sim2Blend/raw/main/Sim2Blend.zip)
+
+<br>
+
+- Open Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.zip
+- Check `Sim2Blend` to enable it
+- Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
+
+![Where to find Sim2Blend add-on](Content/Show_Sim2Blend.png)
+
+<br>
+
+## Full install
+
+Full install requires admin rights on your computer. It is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues). It is still only available on Windows, but feel free to contribute and adapt it on other platforms!
 
 #### Prerequisites
 
 - Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
-- Install [OpenSim](https://simtk.org/projects/opensim) (haven't tried with versions other than 4.4)
 - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 - Download [Sim2Blend.zip](https://github.com/davidpagnon/Sim2Blend/raw/main/Sim2Blend.zip)
 
@@ -64,26 +101,12 @@ You will need admin rights for the next steps:
 
 #### Install Sim2Blend add-on in Blender
 
-- Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.py
+- Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.zip
 - Check `Sim2Blend` to enable it
 - Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
 
-![Where to find Sim2Blend add-on](Content/Show_Sim2Blend.png)
-
 <br>
 
-## Demonstration
-
-Find example files in the `Examples` folder, or use it with you own OpenSim data.
-
-- **Add Model**: Import the "bodies" of an `.osim` model. If the stl files do not already exist, create them by converting from the vtp Geometry path.
-- **Add Motion**: Import a `.mot` or a `.csv` motion file. Calculating all body segment positions may take a while if the model is complex or the motion long. Creates a .csv file for faster loading next time.
-- **Add Markers**: Import a `.trc` marker file. If you need to convert from `.c3d` to `.trc`, use [this Pose2Sim utility](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/c3d_to_trc.py).
-- **Add Forces**: Import a `.mot` GRF force file.
-
-`Warning:` All imported files should be sampled at the same framerate.
-
-<br>
 
 ## How to cite and how to contribute
 
