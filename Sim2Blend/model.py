@@ -156,7 +156,7 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
             mesh_obj=selected_objects[0]
             mesh_obj.scale=scaleFactor
             try:
-                mesh_obj.location = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('translation')[0].firstChild.nodeValue.split()]
+                # mesh_obj.location = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('translation')[0].firstChild.nodeValue.split()]
                 mesh_obj.rotation_euler = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('orientation')[0].firstChild.nodeValue.split()]
             except:
                 pass

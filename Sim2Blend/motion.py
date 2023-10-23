@@ -108,6 +108,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                         motion_data_np[:,i] = motion_data_np[:,i] * np.pi/180 # if rotation, convert to radians
             except:
                 pass
+        
         # animate model
         state = model.initSystem()
         loc_rot_frame_all = []
