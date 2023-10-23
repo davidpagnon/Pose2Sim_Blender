@@ -92,27 +92,33 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
 
         # model: get model coordinates and bodies
         model_coordSet = model.getCoordinateSet()
-        coordinates = [model_coordSet.get(i) for i in range(model_coordSet.getSize())]
-        coordinateNames = [c.getName() for c in coordinates]
         model_bodySet = model.getBodySet()
         bodies = [model_bodySet.get(i) for i in range(model_bodySet.getSize())]
         bodyNames = [b.getName() for b in bodies]
 
-        # motion: read coordinates and convert to radians
+        # motion: read coordinates and convert rotations to radians
+        # coordinateNames = [c.getName() for c in coordinates]
+        # coordinates = [model_coordSet.get(i) for i in range(model_coordSet.getSize())]
+        coordinateNames = motion_data.getColumnLabels()
         motion_data_np = motion_data.getMatrix().to_numpy()
-        for i in range(len(coordinates)):
-            if coordinates[i].getMotionType() == 1: # 1: rotation, 2: translation, 3: coupled
-                motion_data_np[:,i] = motion_data_np[:,i] * np.pi/180 # if rotation, convert to radians
-
+        for i, c in enumerate(coordinateNames):
+            try:
+                if model_coordSet.get(c).getMotionType() == 1: # 1: rotation, 2: translation, 3: coupled
+                    if  motion_data.getTableMetaDataAsString('inDegrees') == 'yes':
+                        motion_data_np[:,i] = motion_data_np[:,i] * np.pi/180 # if rotation, convert to radians
+            except:
+                pass
         # animate model
         state = model.initSystem()
         loc_rot_frame_all = []
         H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
         for n in range(motion_data.getNumRows()):
-            
             # set model struct in each time state
             for c, coord in enumerate(coordinateNames):
-                model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c])
+                try:
+                    model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c])
+                except:
+                    pass
             
             # use state of model to get body coordinates in ground
             loc_rot_frame = []

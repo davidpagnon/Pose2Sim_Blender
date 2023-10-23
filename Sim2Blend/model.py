@@ -27,6 +27,10 @@
 import bpy
 from xml.dom import minidom
 import os
+try:
+    import vtk
+except ImportError:
+    pass
 
 
 ## AUTHORSHIP INFORMATION
@@ -56,7 +60,6 @@ def vtp2stl(vtp_path):
     - .stl file: same name, same folder
     '''
     
-    import vtk
     if os.path.isfile(vtp_path):
         outfile = os.path.splitext(vtp_path)[0]+".stl"
         reader = vtk.vtkXMLPolyDataReader()
@@ -66,12 +69,14 @@ def vtp2stl(vtp_path):
         writer.SetInputConnection(reader.GetOutputPort())
         writer.SetFileName(outfile)
         writer.Write()
+        print(f'{vtp_path} file converted')
 
 
 def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
     '''
     Reads an .osim model file, lists bodies and corresponding meshes
-    Searches the meshes on the computer, converts them to .stl if only defined as .vtp
+    Searches the meshes (stl, ply, vtp) on the computer, 
+    converts them to .stl if only defined as .vtp
     Adds meshes and their parent bodies to the scene and scale them.
 
     OpenSim API is not required.
@@ -93,14 +98,19 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
         bpy.context.scene.collection.children.link(collection)
     if modelRoot=='':
         modelRoot=os.path.dirname(osim_path)
-        
+    
+    geometry_directories = [os.path.join(modelRoot,'Geometry'), stlRoot, 'C:\\OpenSim 4.4\\Geometry']
+    try:
+        import opensim as osim
+        geometry_directories.append(os.path.join('C:\\', f'OpenSim {osim.__version__[:3]}', 'Geometry'))
+    except ImportError:
+        pass
+    
     xmldoc = minidom.parse(osim_path)
     bodySet = xmldoc.getElementsByTagName('BodySet')[0]
-    
     bodies=bodySet.getElementsByTagName('Body')
     obj = []
     for i,body in enumerate(bodies): 
-    
         # add object to collection
         bodyName=body.getAttribute('name')
         obj += [bpy.data.objects.new(bodyName,None)]
@@ -109,52 +119,38 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
         # an object can be composed of several meshes
         meshes=body.getElementsByTagName('Mesh')  
         for mesh in meshes:
-            # mesh file and scale factors
+            # import mesh file
             files=mesh.getElementsByTagName('mesh_file')
             scaleFactorElems=mesh.getElementsByTagName('scale_factors')
             scaleFactorStr=scaleFactorElems[0].firstChild.nodeValue
             scaleFactor=[float(x) for x in scaleFactorStr.split()]
             file=files[0]
             filename_vtp=file.firstChild.nodeValue
-            filename=str.replace(filename_vtp,'.vtp','.stl')
-    
-            # Check in different directories if stl or vtp file exists. If only vtp file, convert to stl
-            fullFile=os.path.join(modelRoot,'Geometry',filename)    # in model directory?
-            if not os.path.exists(fullFile):
-                fullFile_vtp=os.path.join(modelRoot,filename_vtp)
-                if os.path.exists(fullFile_vtp):
-                    vtp2stl(fullFile_vtp)
-                else:                                               # in add-on\Sim2Blend\Geometry directory?
-                    fullFile=os.path.join(stlRoot,filename)
-                    if not os.path.exists(fullFile):
-                        fullFile_vtp=os.path.join(stlRoot,filename_vtp)
-                        if os.path.exists(fullFile_vtp):
-                            vtp2stl(fullFile_vtp)
-                        else:                                       # in OpenSim 4.4 Geometry directory?
-                            fullFile=os.path.join('C:\\OpenSim 4.4\\Geometry',filename)
-                            if not os.path.exists(fullFile): #
-                                fullFile_vtp=os.path.join('C:\\OpenSim 4.4\\Geometry',filename_vtp)
-                                if os.path.exists(fullFile_vtp):
-                                    vtp2stl(fullFile_vtp)
-                                else:                       # in other OpenSim Geometry directory?
-                                    try:
-                                        import opensim
-                                    except:
-                                        raise Exception('OpenSim API not installed on Blender')
-                                    fullFile=os.path.join(f'C:\\OpenSim {opensim.__version__[:3]}\\Geometry',filename)
-                                    if not os.path.exists(fullFile):
-                                        fullFile_vtp=os.path.join('C:\\OpenSim 4.4\\Geometry',filename_vtp)
-                                        if os.path.exists(fullFile_vtp):
-                                            vtp2stl(fullFile_vtp)
-            if not os.path.exists(fullFile):
-                print(f'File {filename} or {filename_vtp} not found on system')
-                raise Exception(f'File {filename} or {filename_vtp} not found on system')
-                                    
+            filename_stl=str.replace(filename_vtp,'.vtp','.stl')
+            filename_ply=str.replace(filename_vtp,'.vtp','.vtp.ply')
+            bpy.ops.object.select_all(action='DESELECT')
             
-            # import all meshes for each object
-            [obj.select_set(False) for obj in bpy.data.objects] # first deselect all
-            bpy.ops.import_mesh.stl(filepath=fullFile)
-    
+            for dir in geometry_directories:
+                fullFile_stl = os.path.join(dir, filename_stl)
+                fullFile_ply = os.path.join(dir, filename_ply)
+                fullFile_vtp = os.path.join(dir, filename_vtp)
+                if os.path.exists(fullFile_stl):
+                    bpy.ops.import_mesh.stl(filepath=fullFile_stl)
+                    break
+                elif os.path.exists(fullFile_ply):
+                    bpy.ops.import_mesh.ply(filepath=fullFile_ply)
+                    break
+                elif os.path.exists(fullFile_vtp):
+                    try:
+                        vtp2stl(fullFile_vtp)
+                        bpy.ops.import_mesh.stl(filepath=fullFile_stl)
+                    except:
+                        print('VTK not installed on Blender. Try Sim2Blend Full install instead')
+                    break
+            else:
+                print(f'File {filename_stl} or {filename_vtp} not found on system')
+                raise Exception(f'File {filename_stl} or {filename_vtp} not found on system')
+            
             # scale meshes and parent to object
             selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
             mesh_obj=selected_objects[0]
