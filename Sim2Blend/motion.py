@@ -156,8 +156,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                 b_iterated = [o.name for o in collection.objects if o.name.startswith(b.getName())][0]
                 obj=collection.objects[b_iterated]
                 obj.matrix_world = H.T
-                obj.keyframe_insert('location',frame=n+1)
-                obj.keyframe_insert('rotation_euler',frame=n+1)
+                obj.keyframe_insert('location',frame=n*conv_fac_frame_rate+1)
+                obj.keyframe_insert('rotation_euler',frame=n*conv_fac_frame_rate+1)
             
             if export_to_csv:
                 loc_rot_frame_all.append(loc_rot_frame)
@@ -182,7 +182,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         # set framerate
         times = loc_rot_frame_all_np[:,0]
         fps = int(len(times) / (times[-1] - times[0]))
-        bpy.data.scenes['Scene'].render.fps = fps
+        conv_fac_frame_rate = bpy.context.scene.render.fps / fps
 
         # animate model
         for n in range(len(times)):

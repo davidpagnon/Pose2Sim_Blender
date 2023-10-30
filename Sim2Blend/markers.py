@@ -12,6 +12,7 @@
 
     INPUTS: 
     - trc_path: path to a .trc marker file
+                or to a a .c3d marker file
     - direction: 'zup' or 'yup' (default: 'zup')
 
     OUTPUTS:
@@ -117,36 +118,43 @@ def import_trc(trc_path, direction='zup'):
     - Animated markers
     '''
 
-    # import trc    
-    trc_data_np, markerNames = load_trc(trc_path)
+    if trc_path.endswith('.trc'):
+        # import trc    
+        trc_data_np, markerNames = load_trc(trc_path)
 
-    # set framerate
-    times = trc_data_np[:,0]
-    fps = int(len(times) / (times[-1] - times[0]))
-    conv_fac_frame_rate = bpy.context.scene.render.fps / fps
-    # bpy.data.scenes['Scene'].render.fps = fps
+        # set framerate
+        times = trc_data_np[:,0]
+        fps = int(len(times) / (times[-1] - times[0]))
+        conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+        # bpy.data.scenes['Scene'].render.fps = fps
+            
+        # create markers
+        marker_collection = bpy.data.collections.new('markers')
+        bpy.context.scene.collection.children.link(marker_collection)
+        for markerName in markerNames:
+            addMarker(marker_collection,text=markerName)
         
-    # create markers
-    marker_collection = bpy.data.collections.new('markers')
-    bpy.context.scene.collection.children.link(marker_collection)
-    for markerName in markerNames:
-        addMarker(marker_collection,text=markerName)
+        # animate markers
+        for i, m in enumerate(markerNames):
+            coll_marker_names = [ob.name for ob in marker_collection.objects]
+            m = [coll_m for coll_m in coll_marker_names if m in coll_m][0]
+            for n in range(len(times)):
+                # y-up to z-up
+                if direction=='zup':
+                    loc_x = trc_data_np[n,3*i+1]
+                    loc_z = trc_data_np[n,3*i+2]
+                    loc_y = -trc_data_np[n,3*i+3]
+                else:
+                    loc_x = trc_data_np[n,3*i+1]
+                    loc_y = trc_data_np[n,3*i+3]
+                    loc_z = trc_data_np[n,3*i+2]
+                obj=marker_collection.objects[m]
+                obj.location=loc_x,loc_y,loc_z
+                obj.keyframe_insert('location',frame=n*conv_fac_frame_rate +1)
     
-    # animate markers
-    for i, m in enumerate(markerNames):
-        coll_marker_names = [ob.name for ob in marker_collection.objects]
-        m = [coll_m for coll_m in coll_marker_names if m in coll_m][0]
-        for n in range(len(times)):
-            # y-up to z-up
-            if direction=='zup':
-                loc_x = trc_data_np[n,3*i+1]
-                loc_z = trc_data_np[n,3*i+2]
-                loc_y = trc_data_np[n,3*i+3]
-            else:
-                loc_x = trc_data_np[n,3*i+1]
-                loc_y = trc_data_np[n,3*i+3]
-                loc_z = trc_data_np[n,3*i+2]
-            obj=marker_collection.objects[m]
-            obj.location=loc_x,loc_y,loc_z
-            obj.keyframe_insert('location',frame=n*conv_fac_frame_rate +1)
-    
+    elif trc_path.endswith('.c3d'):
+        bpy.ops.preferences.addon_enable(module='io_anim_c3d')
+        from io_anim_c3d import c3d_importer
+        operator = bpy.types.Operator
+        c3d_importer.load(operator, bpy.context, filepath = trc_path)
+        

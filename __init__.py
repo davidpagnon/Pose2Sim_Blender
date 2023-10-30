@@ -97,7 +97,7 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
     filter_glob : bpy.props.StringProperty(
         name='Markers file',
-        default="*.trc",
+        default="*.trc;*.c3d",
         options={'HIDDEN'},
         subtype="FILE_PATH")
   
@@ -186,6 +186,9 @@ class panel1(bpy.types.Panel):
         layout.operator("mesh.add_osim_model",icon='EXPORT', text='Export all')
 
 
+# def enable_external_addon(dummy):
+#     bpy.ops.wm.addon_enable(module='io_anim_c3d')
+
 def register():
     print('Addon Registered')
     bpy.utils.register_class(addModel)
@@ -193,6 +196,9 @@ def register():
     bpy.utils.register_class(addMarkers)
     bpy.utils.register_class(addForces)
     bpy.utils.register_class(panel1)
+    # bpy.ops.preferences.addon_enable(module='io_anim_c3d')
+    # bpy.ops.wm.addon_enable(module='io_anim_c3d')
+
 
 def unregister():
     print('bye')
@@ -202,7 +208,7 @@ def unregister():
     bpy.utils.unregister_class(addForces)
     bpy.utils.unregister_class(panel1)
 
-        
+
 # This allows you to run the script directly from Blender's Text editor
 # to test the add-on without having to install it.
 if __name__ == "__main__":

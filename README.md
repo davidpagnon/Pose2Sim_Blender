@@ -33,20 +33,19 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
 - **Add Motion**: \
   Import a `.mot` or a `.csv` motion file. \
   *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or the motion long. Creates a .csv file for faster loading next time.* \
-  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [csv_from_mot_osim.py](Sim2Blend/csv_from_mot_osim.py) to convert it to .csv.*
+  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [csv_from_mot_osim.py](Sim2Blend\csv_from_mot_osim.py) to convert it to .csv.*
 - **Add Markers**: \
   Import a `.trc` marker file. \
   *If you need to convert from `.c3d` to `.trc`, use [this Pose2Sim utility](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/c3d_to_trc.py).*
 - **Add Forces**: \
   Import a `.mot` GRF force file.
 
+`Warning:` All imported files should be sampled at the same framerate.
+
 <br>
 
 
 ## Quick install
-
-> N.B.: You will not be able to read .mot files (they will have to be converted outside of Blender via [this utility script](Sim2Blend/csv_from_mot_osim.py)), nor\
-> to read .vtp geometry files that are not shipped in the Sim2Blend Geometry folder.
 
 - Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
 - Download [Sim2Blend.zip](https://github.com/davidpagnon/Sim2Blend/raw/main/Sim2Blend.zip)
@@ -136,8 +135,6 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Save segment angles to .csv files for faster loading of motion next time
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
-- [x] Quick install option
-- [x] Handle different fps from marker, forces, and motion files
 - [ ] Rig model
 - [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
 - [ ] Tutorial for Mac/Linux
