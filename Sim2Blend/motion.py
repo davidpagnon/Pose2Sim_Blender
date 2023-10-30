@@ -88,7 +88,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         # set framerate
         times = motion_data.getIndependentColumn()
         fps = int(len(times) / (times[-1] - times[0]))
-        bpy.data.scenes['Scene'].render.fps = fps
+        conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+        # bpy.data.scenes['Scene'].render.fps = fps
 
         # model: get model coordinates and bodies
         model_coordSet = model.getCoordinateSet()
@@ -115,7 +116,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
         for n in range(motion_data.getNumRows()):
             # set model struct in each time state
-            for c, coord in enumerate(coordinateNames):
+            for c, coord in enumerate(coordinateNames): ## PROBLEME QUAND HEADERS DE MOTION_DATA_NP ET COORDINATENAMES SONT PAS DANS LE MEME ORDRE
                 try:
                     model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c])
                 except:
@@ -197,6 +198,6 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                 obj=collection.objects[b_nameiterated]
                 obj.location=loc_x,loc_y,loc_z
                 obj.rotation_euler=rot_x,rot_y,rot_z
-                obj.keyframe_insert('location',frame=n+1)
-                obj.keyframe_insert('rotation_euler',frame=n+1)
+                obj.keyframe_insert('location',frame=n*conv_fac_frame_rate+1)
+                obj.keyframe_insert('rotation_euler',frame=n*conv_fac_frame_rate+1)
 

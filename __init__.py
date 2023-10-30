@@ -19,7 +19,7 @@
 ## INIT
 import bpy
 import bpy_extras.io_utils
-from Sim2Blend.Sim2Blend import model, motion, markers, forces
+from Sim2Blend.Sim2Blend import model, motion, markers, forces, cameras
 import os
 
 rootpath=os.path.dirname(os.path.abspath(__file__))
@@ -92,7 +92,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_markers'
     bl_label = 'Add Markers'
-    bl_description = "Import a `.trc` marker file"
+    bl_description = "Import a `.trc` or a `.c3d` marker file"
     bl_options = {'REGISTER', 'UNDO'}
 
     filter_glob : bpy.props.StringProperty(
@@ -125,6 +125,33 @@ class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         return {'FINISHED'}
 
 
+class importCal(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+    bl_idname = 'mesh.add_cam_cal'
+    bl_label = 'Import calibration'
+    bl_description = "Import a `.toml` Pose2Sim camera calibration file"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    filter_glob : bpy.props.StringProperty(
+        name='Pose2Sim calibration file',
+        default="*.toml",
+        options={'HIDDEN'},
+        subtype="FILE_PATH")
+        
+    def execute(self, context):
+        toml_path=bpy.path.abspath(self.filepath)
+        cameras.import_cameras(toml_path)
+        return {'FINISHED'}
+
+
+# class exportCal
+
+# class showImages
+
+# class filmWithCameras
+
+# class overlaySelection
+
+
 class panel1(bpy.types.Panel):
     bl_idname = "A1_panel.panel1_PT_Sim2Blendlel"
     bl_label = "Sim2Blend"
@@ -134,12 +161,30 @@ class panel1(bpy.types.Panel):
     
     def draw(self, context):
         layout=self.layout
+        
         layout.label(text='Import OpenSim data') 
         layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Add Model")      
         layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Add Motion")     
         layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Add Markers") 
         layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Add Forces") 
         
+        layout.label(text='')
+        layout.label(text='Cameras')
+        column_layout = layout.column_flow(columns=2, align=False)
+        column_layout.operator("mesh.add_osim_model",icon='STICKY_UVS_DISABLE', text="Import")
+        column_layout.operator("mesh.add_osim_model",icon='STICKY_UVS_LOC', text="Export")
+
+        layout.label(text='Images/Videos')
+        column_layout2 = layout.column_flow(columns=2, align=False)
+        column_layout2.operator("mesh.add_osim_model",icon='PASTEDOWN', text="Show")
+        column_layout2.operator("mesh.add_osim_model",icon='COPYDOWN', text="Film")
+        
+        layout.label(text='')
+        layout.label(text='Other tools')
+        layout.operator("mesh.add_osim_model",icon='IMAGE_RGB_ALPHA', text='Overlay selected objects') 
+        layout.operator("mesh.add_osim_model",icon='TRANSFORM_ORIGINS', text='Camera to image point line')
+        layout.operator("mesh.add_osim_model",icon='EXPORT', text='Export all')
+
 
 def register():
     print('Addon Registered')

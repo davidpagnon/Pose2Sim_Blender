@@ -128,7 +128,8 @@ def import_forces(grf_path, direction='zup'):
     # set framerate
     times = grf_data_np[:,0]
     fps = int(len(times) / (times[-1] - times[0]))
-    bpy.data.scenes['Scene'].render.fps = fps
+    conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+    # bpy.data.scenes['Scene'].render.fps = fps
         
     # create forces
     force_collection = bpy.data.collections.new('Forces')
@@ -151,9 +152,9 @@ def import_forces(grf_path, direction='zup'):
             obj = force_collection.objects[f]
             obj.matrix_world = H.T
             obj.scale = scale_arrow
-            obj.keyframe_insert('location', frame=n+1)
-            obj.keyframe_insert('rotation_euler', frame=n+1)
-            obj.keyframe_insert('scale', frame=n+1)
+            obj.keyframe_insert('location', frame=n*conv_fac_frame_rate+1)
+            obj.keyframe_insert('rotation_euler', frame=n*conv_fac_frame_rate+1)
+            obj.keyframe_insert('scale', frame=n*conv_fac_frame_rate+1)
 
     # hide axes
     bpy.ops.object.select_by_type(extend=False, type='EMPTY')

@@ -11,12 +11,10 @@
     calculated from a .mot motion file and a .osim model file.
     
     Equivalent to OpenSim Analysis -> BodyKinematics but without the bugs in 
-    orientations due to their use of Euler angle instead of homography matrices.
-
-    Transforms from OpenSim's yup to Blender's zup unless you set direction = 'yup'.
+    orientations due to their use of Euler angle instead of homography matrices
     
     Usage: 
-    from Sim2Blend import csv_from_mot_osim; csv_from_mot_osim.csv_from_mot_osim_func(r'<input_mot_file>', r'<output_osim_file>', r'<output_csv_file>')
+    from from Sim2Blend import csv_from_mot_osim; csv_from_mot_osim.csv_from_mot_osim_func(r'<input_mot_file>', r'<output_osim_file>', r'<output_csv_file>')
     python -m csv_from_mot_osim -m input_mot_file -o input_osim_file
     python -m csv_from_mot_osim -m input_mot_file -o input_osim_file -c output_csv_file
 '''
@@ -28,7 +26,7 @@ import numpy as np
 import opensim as osim
 import argparse
 
-direction = 'zup' # 'zup' or 'yup'
+direction = 'zup'
 
 ## AUTHORSHIP INFORMATION
 __author__ = "David Pagnon, Jonathan Camargo"
@@ -39,6 +37,12 @@ __version__ = "0.0.1"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
+
+
+input_dir = r'C:\Users\david\AppData\Roaming\Blender Foundation\Blender\3.6\scripts\addons\Sim2Blend\Examples'
+input_osim_file = os.path.join(input_dir, 'model.osim')
+input_mot_file = os.path.join(input_dir, 'motion.mot')
+output_csv_file = os.path.join(input_dir, 'motion.csv')
 
 
 def csv_from_mot_osim_func(*args):
@@ -72,8 +76,8 @@ def csv_from_mot_osim_func(*args):
     
     
     # Read model and motion files
-    model = osim.Model(osim_path)
-    motion_data = osim.TimeSeriesTable(motion_path)
+    model = osim.Model(input_osim_file)
+    motion_data = osim.TimeSeriesTable(input_mot_file)
 
     # Model: get model coordinates and bodies
     model_coordSet = model.getCoordinateSet()

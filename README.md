@@ -40,8 +40,6 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
 - **Add Forces**: \
   Import a `.mot` GRF force file.
 
-`Warning:` All imported files should be sampled at the same framerate.
-
 <br>
 
 
@@ -139,6 +137,7 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
 - [x] Quick install option
+- [x] Handle different fps from marker, forces, and motion files
 - [ ] Rig model
 - [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
 - [ ] Tutorial for Mac/Linux
