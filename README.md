@@ -131,6 +131,7 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Save segment angles to .csv files for faster loading of motion next time
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
+- [x] Import c3d files (borrowed and adapted from [io_anim_c3d](https://github.com/MattiasFredriksson/io_anim_c3d) )
 - [ ] Rig model
 - [ ] Import .c3d and .trc files with the same appearance
 - [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
