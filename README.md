@@ -13,8 +13,8 @@ Feel free to try [Pose2Sim](https://github.com/perfanalytics/pose2sim), an open-
 
 <img src='Content/Demo_Sim2Blend.gif' title='Sim2Blend demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results.'  width="760">
 
-> N.B.: Sim2Blend is inspired from [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). Unlike BlendOsim, Sim2Blend does not require using Matlab as an intermediary (and expensive) software between two open-source ones.
-
+> N.B.: Sim2Blend is inspired from [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). Unlike BlendOsim, Sim2Blend does not require using Matlab as an intermediary (and expensive) software between two open-source ones.\
+> N.B.: This is still an alpha version, and some of the buttons displayed in the GUI won't lead to any action.
 
 ## Contents
 1. [Demonstration](#demonstration)
