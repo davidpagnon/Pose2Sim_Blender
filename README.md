@@ -32,8 +32,8 @@ Find example files in the `Examples` folder, or use it with you own OpenSim data
   *If you did the [full install](#full-install) and some Geometry files exist only as .vtp, they will automatically be converted to .stl.*
 - **Add Motion**: \
   Import a `.mot` or a `.csv` motion file. \
-  *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or the motion long. Creates a .csv file for faster loading next time.* \
-  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [csv_from_mot_osim.py](Sim2Blend/csv_from_mot_osim.py) to convert it to .csv.*
+  *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or if there are many time frames. Creates a .csv file for faster loading next time.* \
+  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [bodykin_from_mot_osim.py](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/bodykin_from_mot_osim.py) to convert it to .csv.*
 - **Add Markers**: \
   Import a `.trc` or a `.c3d` marker file. 
 - **Add Forces**: \
@@ -94,6 +94,14 @@ You will need admin rights for the next steps:
 - Open `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python\Lib\opensim\__init__.py` 
   - comment out the line `# from .moco import *`
   - line 4, add the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.4/bin")`
+
+
+#### If you need the last OpenSim beta version
+- Replace the conda install line by  
+`conda install https://anaconda.org/opensim-org/opensim/4.5/download/win-64/opensim-4.5-py310np121.tar.bz2 -y`
+- Line 17 (instead of 4), `add os.add_dll_directory(r"C:/OpenSim 4.5/bin")`
+- You may also need to install [OpenSim 4.5 beta](https://simtk.org/frs/?group_id=91#:~:text=OpenSim%20Release%20Betas) first, and to change its path from something like `C:/OpenSim 4.5-2023-12-04-cfbf426` to `C:/OpenSim 4.5`.
+
 
 #### Install Sim2Blend add-on in Blender
 

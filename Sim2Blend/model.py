@@ -99,7 +99,7 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
     if modelRoot=='':
         modelRoot=os.path.dirname(osim_path)
     
-    geometry_directories = [os.path.join(modelRoot,'Geometry'), stlRoot, 'C:\\OpenSim 4.4\\Geometry']
+    geometry_directories = ['C:\\OpenSim 4.5\\Geometry', os.path.join(modelRoot,'Geometry'), stlRoot]
     try:
         import opensim as osim
         geometry_directories.append(os.path.join('C:\\', f'OpenSim {osim.__version__[:3]}', 'Geometry'))
@@ -113,14 +113,23 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
     for i,body in enumerate(bodies): 
         # add object to collection
         bodyName=body.getAttribute('name')
+        
+        try:
+            physicalOffset_translation = body.getElementsByTagName('components')[0].getElementsByTagName('PhysicalOffsetFrame')[0].getElementsByTagName('translation')[0].firstChild.nodeValue
+            physicalOffset_translation = [float(x) for x in physicalOffset_translation.split()]
+        except: 
+            physicalOffset_translation = [0., 0., 0.]
+        
         obj += [bpy.data.objects.new(bodyName,None)]
         collection.objects.link(obj[i])
     
         # an object can be composed of several meshes
+        print('\nImporting ',bodyName)
         meshes=body.getElementsByTagName('Mesh')  
         for mesh in meshes:
             # import mesh file
             files=mesh.getElementsByTagName('mesh_file')
+            # print([file.firstChild.nodeValue for file in files])
             scaleFactorElems=mesh.getElementsByTagName('scale_factors')
             scaleFactorStr=scaleFactorElems[0].firstChild.nodeValue
             scaleFactor=[float(x) for x in scaleFactorStr.split()]
@@ -134,6 +143,7 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
                 fullFile_stl = os.path.join(dir, filename_stl)
                 fullFile_ply = os.path.join(dir, filename_ply)
                 fullFile_vtp = os.path.join(dir, filename_vtp)
+                # print(f'{fullFile_ply} exists: {os.path.exists(fullFile_ply)}')
                 if os.path.exists(fullFile_stl):
                     bpy.ops.import_mesh.stl(filepath=fullFile_stl)
                     break
@@ -147,9 +157,10 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
                     except:
                         print('VTK not installed on Blender. Try Sim2Blend Full install instead')
                     break
+                break
             else:
-                print(f'File {filename_stl} or {filename_vtp} not found on system')
-                raise Exception(f'File {filename_stl} or {filename_vtp} not found on system')
+                print(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
+                raise Exception(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
             
             # scale meshes and parent to object
             selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
@@ -157,6 +168,7 @@ def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):
             mesh_obj.scale=scaleFactor
             try:
                 # mesh_obj.location = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('translation')[0].firstChild.nodeValue.split()]
+                mesh_obj.location = physicalOffset_translation
                 mesh_obj.rotation_euler = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('orientation')[0].firstChild.nodeValue.split()]
             except:
                 pass

@@ -114,7 +114,9 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         state = model.initSystem()
         loc_rot_frame_all = []
         H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
+        print('Time frame:')
         for n in range(motion_data.getNumRows()):
+            print(times[n], 's')
             # set model struct in each time state
             for c, coord in enumerate(coordinateNames): ## PROBLEME QUAND HEADERS DE MOTION_DATA_NP ET COORDINATENAMES SONT PAS DANS LE MEME ORDRE
                 try:
