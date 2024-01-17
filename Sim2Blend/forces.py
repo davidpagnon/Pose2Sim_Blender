@@ -108,7 +108,7 @@ def addForce(force_collection, forceName='', text="FORCE", color=COLOR):
     force_collection.objects.link(obj)
     
 
-def import_forces(grf_path, direction='zup'):    
+def import_forces(grf_path, direction='zup', target_framerate=30):
     '''
     Import a .mot force file into Blender.
     OpenSim API is not required.
@@ -126,9 +126,11 @@ def import_forces(grf_path, direction='zup'):
     grfNames = [g[:-3] for g in grf_header if g.endswith('vx')]
 
     # set framerate
+    bpy.context.scene.render.fps = target_framerate
+    
     times = grf_data_np[:,0]
-    fps = int(len(times) / (times[-1] - times[0]))
-    conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+    fps = int((len(times)-1) / (times[-1] - times[0]))
+    conv_fac_frame_rate = int(fps / target_framerate)
     # bpy.data.scenes['Scene'].render.fps = fps
         
     # create forces
@@ -140,7 +142,7 @@ def import_forces(grf_path, direction='zup'):
     # create arrows
     x_unit_arrow=Vector([1,0,0])
     H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
-    for n in range(len(times)):
+    for n in range(0, len(times), conv_fac_frame_rate):
         for i, f in enumerate(grfNames):
             T = grf_data_np[n, 1+3+9*i : 1+3+9*i+3]
             grf_vec = grf_data_np[n, 1+9*i : 1+9*i+3]
@@ -152,9 +154,9 @@ def import_forces(grf_path, direction='zup'):
             obj = force_collection.objects[f]
             obj.matrix_world = H.T
             obj.scale = scale_arrow
-            obj.keyframe_insert('location', frame=n*conv_fac_frame_rate+1)
-            obj.keyframe_insert('rotation_euler', frame=n*conv_fac_frame_rate+1)
-            obj.keyframe_insert('scale', frame=n*conv_fac_frame_rate+1)
+            obj.keyframe_insert('location', frame=int(n/conv_fac_frame_rate)+1)
+            obj.keyframe_insert('rotation_euler', frame=int(n/conv_fac_frame_rate)+1)
+            obj.keyframe_insert('scale', frame=int(n/conv_fac_frame_rate)+1)
 
     # hide axes
     bpy.ops.object.select_by_type(extend=False, type='EMPTY')

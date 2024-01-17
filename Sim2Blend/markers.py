@@ -105,7 +105,7 @@ def addMarker(marker_collection, position=(0,0,0), text="MARKER", color=COLOR):
     marker_collection.objects.link(sphere)
            
  
-def import_trc(trc_path, direction='zup'):	 
+def import_trc(trc_path, direction='zup', target_framerate=30):
     '''
     Import a .trc marker file into Blender.
     OpenSim API is not required.
@@ -123,9 +123,11 @@ def import_trc(trc_path, direction='zup'):
         trc_data_np, markerNames = load_trc(trc_path)
 
         # set framerate
+        bpy.context.scene.render.fps = target_framerate
+        
         times = trc_data_np[:,0]
-        fps = int(len(times) / (times[-1] - times[0]))
-        conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+        fps = int((len(times)-1) / (times[-1] - times[0]))
+        conv_fac_frame_rate = int(fps / target_framerate)
         # bpy.data.scenes['Scene'].render.fps = fps
             
         # create markers
@@ -138,7 +140,7 @@ def import_trc(trc_path, direction='zup'):
         for i, m in enumerate(markerNames):
             coll_marker_names = [ob.name for ob in marker_collection.objects]
             m = [coll_m for coll_m in coll_marker_names if m in coll_m][0]
-            for n in range(len(times)):
+            for n in range(0, len(times), conv_fac_frame_rate):
                 # y-up to z-up
                 if direction=='zup':
                     loc_x = trc_data_np[n,3*i+1]
@@ -150,7 +152,7 @@ def import_trc(trc_path, direction='zup'):
                     loc_z = trc_data_np[n,3*i+2]
                 obj=marker_collection.objects[m]
                 obj.location=loc_x,loc_y,loc_z
-                obj.keyframe_insert('location',frame=n*conv_fac_frame_rate +1)
+                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
     
     elif trc_path.endswith('.c3d'):
         bpy.ops.preferences.addon_enable(module='io_anim_c3d')

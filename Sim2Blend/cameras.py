@@ -7,6 +7,7 @@
     ## Import/export Cameras, show/film images      ##
     ##################################################
     
+    OpenCV not needed
     Reads an .osim model file, lists bodies and corresponding meshes
     Searches the meshes on the computer, converts them to .stl if only defined as .vtp
     Adds meshes and their parent bodies to the scene and scale them.
@@ -38,6 +39,48 @@ __status__ = "Development"
 
 
 ## FUNCTIONS
+def rod_to_mat(rodrigues_vec):
+    '''
+    Transform Rodrigues vector to rotation matrix without cv2
+    https://stackoverflow.com/questions/62345076/how-to-convert-a-rodrigues-vector-to-a-rotation-matrix-without-opencv
+-using-pyth
+    '''
+    rodrigues_vec = rodrigues_vec.flatten()
+    theta = np.linalg.norm(rodrigues_vec)
+    if theta < sys.float_info.epsilon:
+        rotation_mat = np.eye(3, dtype=float)
+    else:
+        r = rodrigues_vec / theta
+        I = np.eye(3, dtype=float)
+        r_rT = np.array([
+            [r[0]*r[0], r[0]*r[1], r[0]*r[2]],
+            [r[1]*r[0], r[1]*r[1], r[1]*r[2]],
+            [r[2]*r[0], r[2]*r[1], r[2]*r[2]]
+        ])
+        r_cross = np.array([
+            [0, -r[2], r[1]],
+            [r[2], 0, -r[0]],
+            [-r[1], r[0], 0]
+        ])
+        rotation_mat = np.cos(theta) * I + (1 - np.cos(theta)) * r_rT + np.sin(theta) * r_cross
+    return rotation_mat
+
+def mat_to_rod(rotation_mat):
+    '''
+    Transform rotation matrix to Rodrigues vector without cv2
+    https://docs.opencv.org/4.2.0/d9/d0c/group__calib3d.html#ga61585db663d9da06b68e70cfbf6a1eac
+    '''
+    tr = np.trace(rotation_mat) # tr=1+2cos(theta)
+    if tr == 3.0: # no rotation
+        return np.array([0.,0.,0.])
+    theta = np.arccos((tr-1)/2)
+
+    r_cross_sin = (rotation_mat - rotation_mat.T) /2
+    r_sin = np.array([-r_cross_sin[1][2], r_cross_sin[0][2], -r_cross_sin[0][1]])
+    r_vec = r_sin / np.sin(theta)
+    r_vec *= theta
+    return r_vec
+
 def import_cameras(toml_path):
     '''
     Convert a .vtp file to .stl

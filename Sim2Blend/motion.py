@@ -49,7 +49,7 @@ __status__ = "Development"
 
 
 ## FUNCTIONS
-def apply_mot_to_model(mot_path, osim_path, direction='zup'):
+def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30):
     '''
     Computes the coordinates of each opensim bodies in the ground plane
     from a .mot motion file (joint angles) and a .osim model file,
@@ -86,9 +86,11 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         motion_data = osim.TimeSeriesTable(mot_path)
 
         # set framerate
+        bpy.context.scene.render.fps = target_framerate
+        
         times = motion_data.getIndependentColumn()
-        fps = int(len(times) / (times[-1] - times[0]))
-        conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+        fps = int((len(times)-1) / (times[-1] - times[0]))
+        conv_fac_frame_rate = int(fps / target_framerate)
         # bpy.data.scenes['Scene'].render.fps = fps
 
         # model: get model coordinates and bodies
@@ -115,7 +117,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         loc_rot_frame_all = []
         H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
         print('Time frame:')
-        for n in range(motion_data.getNumRows()):
+        for n in range(0, len(times), conv_fac_frame_rate):
             print(times[n], 's')
             # set model struct in each time state
             for c, coord in enumerate(coordinateNames): ## PROBLEME QUAND HEADERS DE MOTION_DATA_NP ET COORDINATENAMES SONT PAS DANS LE MEME ORDRE
@@ -158,8 +160,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                 b_iterated = [o.name for o in collection.objects if o.name.startswith(b.getName())][0]
                 obj=collection.objects[b_iterated]
                 obj.matrix_world = H.T
-                obj.keyframe_insert('location',frame=n*conv_fac_frame_rate+1)
-                obj.keyframe_insert('rotation_euler',frame=n*conv_fac_frame_rate+1)
+                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
+                obj.keyframe_insert('rotation_euler',frame=int(n/conv_fac_frame_rate)+1)
             
             if export_to_csv:
                 loc_rot_frame_all.append(loc_rot_frame)
@@ -167,7 +169,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         # export to csv
         if export_to_csv:
             loc_rot_frame_all_np = np.array(loc_rot_frame_all)
-            loc_rot_frame_all_np = np.insert(loc_rot_frame_all_np, 0, times, axis=1) # insert time column
+            loc_rot_frame_all_np = np.insert(loc_rot_frame_all_np, 0, times[::conv_fac_frame_rate], axis=1) # insert time column
             bodyHeader = 'times, ' + ''.join([f'{b}_x, {b}_y, {b}_z, {b}_rotx, {b}_roty, {b}_rotz, ' for b in bodyNames])[:-2]
             np.savetxt(os.path.splitext(mot_path)[0]+'.csv', loc_rot_frame_all_np, delimiter=',', header=bodyHeader)
         
@@ -182,12 +184,14 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
         bodyNames = [b[1:-2] for b in bodyNames]
 
         # set framerate
+        bpy.context.scene.render.fps = target_framerate
+        
         times = loc_rot_frame_all_np[:,0]
-        fps = int(len(times) / (times[-1] - times[0]))
-        conv_fac_frame_rate = bpy.context.scene.render.fps / fps
+        fps = int((len(times)-1) / (times[-1] - times[0]))
+        conv_fac_frame_rate = int(fps / target_framerate)
 
         # animate model
-        for n in range(len(times)):
+        for n in range(0, len(times), conv_fac_frame_rate):
             for i, b in enumerate(bodyNames):
                 loc_x = loc_rot_frame_all_np[n,6*i+1]
                 loc_y = loc_rot_frame_all_np[n,6*i+2]
@@ -200,6 +204,6 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup'):
                 obj=collection.objects[b_nameiterated]
                 obj.location=loc_x,loc_y,loc_z
                 obj.rotation_euler=rot_x,rot_y,rot_z
-                obj.keyframe_insert('location',frame=n*conv_fac_frame_rate+1)
-                obj.keyframe_insert('rotation_euler',frame=n*conv_fac_frame_rate+1)
+                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
+                obj.keyframe_insert('rotation_euler',frame=int(n/conv_fac_frame_rate)+1)
 

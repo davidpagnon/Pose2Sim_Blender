@@ -19,6 +19,7 @@
 ## INIT
 import bpy
 import bpy_extras.io_utils
+from bpy.props import IntProperty
 from Sim2Blend.Sim2Blend import model, motion, markers, forces, cameras
 import os
 
@@ -81,11 +82,19 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         default="*.mot;*.csv",
         options={'HIDDEN'},
         subtype="FILE_PATH")
-      
+    
+    target_framerate: IntProperty(
+        name="Target framerate [fps]",
+        description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
+        default=30,
+        min = 1,
+        max = 120
+    )
+    
     def execute(self, context):
         global osim_path
         mot_path=bpy.path.abspath(self.filepath)
-        motion.apply_mot_to_model(mot_path, osim_path, direction='zup')
+        motion.apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=self.target_framerate)
         return {'FINISHED'}
     
 
@@ -100,10 +109,18 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         default="*.trc;*.c3d",
         options={'HIDDEN'},
         subtype="FILE_PATH")
-  
+    
+    target_framerate: IntProperty(
+        name="Target framerate [fps]",
+        description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
+        default=30,
+        min = 1,
+        max = 120
+    )
+    
     def execute(self, context):
         trc_path=bpy.path.abspath(self.filepath)
-        markers.import_trc(trc_path, direction='zup')
+        markers.import_trc(trc_path, direction='zup', target_framerate=self.target_framerate)
         return {'FINISHED'}
 
 
@@ -118,10 +135,18 @@ class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         default="*.mot",
         options={'HIDDEN'},
         subtype="FILE_PATH")
-  
+    
+    target_framerate: IntProperty(
+        name="Target framerate [fps]",
+        description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
+        default=30,
+        min = 1,
+        max = 120
+    )
+    
     def execute(self, context):
         grf_path=bpy.path.abspath(self.filepath)
-        forces.import_forces(grf_path, direction='zup')
+        forces.import_forces(grf_path, direction='zup', target_framerate=self.target_framerate)
         return {'FINISHED'}
 
 
@@ -182,8 +207,8 @@ class panel1(bpy.types.Panel):
         layout.label(text='')
         layout.label(text='Other tools')
         layout.operator("mesh.add_osim_model",icon='IMAGE_RGB_ALPHA', text='Overlay selected objects') 
-        layout.operator("mesh.add_osim_model",icon='TRANSFORM_ORIGINS', text='Camera to image point line')
-        layout.operator("mesh.add_osim_model",icon='EXPORT', text='Export all')
+        layout.operator("mesh.add_osim_model",icon='TRANSFORM_ORIGINS', text='Camera to image point')
+        layout.operator("mesh.add_osim_model",icon='EXPORT', text='Export to Alembic')
 
 
 # def enable_external_addon(dummy):
