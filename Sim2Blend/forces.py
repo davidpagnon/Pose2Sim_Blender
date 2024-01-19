@@ -130,7 +130,7 @@ def import_forces(grf_path, direction='zup', target_framerate=30):
     
     times = grf_data_np[:,0]
     fps = int((len(times)-1) / (times[-1] - times[0]))
-    conv_fac_frame_rate = int(fps / target_framerate)
+    conv_fac_frame_rate = int(np.round(fps / target_framerate))
     # bpy.data.scenes['Scene'].render.fps = fps
         
     # create forces

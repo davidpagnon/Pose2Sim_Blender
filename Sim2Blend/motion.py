@@ -90,7 +90,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
         
         times = motion_data.getIndependentColumn()
         fps = int((len(times)-1) / (times[-1] - times[0]))
-        conv_fac_frame_rate = int(fps / target_framerate)
+        conv_fac_frame_rate = int(np.round(fps / target_framerate))
         # bpy.data.scenes['Scene'].render.fps = fps
 
         # model: get model coordinates and bodies
@@ -188,7 +188,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
         
         times = loc_rot_frame_all_np[:,0]
         fps = int((len(times)-1) / (times[-1] - times[0]))
-        conv_fac_frame_rate = int(fps / target_framerate)
+        conv_fac_frame_rate = int(np.round(fps / target_framerate))
 
         # animate model
         for n in range(0, len(times), conv_fac_frame_rate):
