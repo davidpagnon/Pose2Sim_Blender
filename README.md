@@ -83,7 +83,7 @@ conda create -n Sim2Blend python=3.10.12 -y
 conda activate Sim2Blend
 conda install -c opensim-org opensim -y
 pip uninstall numpy
-pip install numpy bpy vtk
+pip install numpy bpy toml vtk
 ```
 
 #### Install Sim2Blend add-on

@@ -7,30 +7,25 @@
     ## Import/export Cameras, show/film images      ##
     ##################################################
     
-    OpenCV not needed
-    Reads an .osim model file, lists bodies and corresponding meshes
-    Searches the meshes on the computer, converts them to .stl if only defined as .vtp
-    Adds meshes and their parent bodies to the scene and scale them.
-
-    OpenSim API is not required.
+    OpenCV or OpenSim not needed
+    Reads a .toml calibration file and imports cameras
 
 '''
 
 
 ## INIT
 import bpy
-# from xml.dom import minidom
-# import os
-# try:
-    # import vtk
-# except ImportError:
-    # pass
+import mathutils
+import numpy as np
+import os
+import toml
+import sys
 
 
 ## AUTHORSHIP INFORMATION
-__author__ = "David Pagnon, Jonathan Camargo"
-__copyright__ = "Copyright 2023, BlendOSim & Sim2Blend"
-__credits__ = ["David Pagnon", "Jonathan Camargo"]
+__author__ = "David Pagnon"
+__copyright__ = "Copyright 2023, Sim2Blend"
+__credits__ = ["David Pagnon"]
 __license__ = "MIT License"
 __version__ = "0.0.1"
 __maintainer__ = "David Pagnon"
@@ -65,6 +60,7 @@ def rod_to_mat(rodrigues_vec):
         rotation_mat = np.cos(theta) * I + (1 - np.cos(theta)) * r_rT + np.sin(theta) * r_cross
     return rotation_mat
 
+
 def mat_to_rod(rotation_mat):
     '''
     Transform rotation matrix to Rodrigues vector without cv2
@@ -81,6 +77,98 @@ def mat_to_rod(rotation_mat):
     r_vec *= theta
     return r_vec
 
+
+def world_to_camera_persp(r, t):
+    '''
+    Converts rotation R and translation T 
+    from Qualisys world centered perspective
+    to OpenCV camera centered perspective
+    and inversely.
+
+    Qc = RQ+T --> Q = R-1.Qc - R-1.T
+    '''
+
+    r = r.T
+    t = - r @ t
+
+    return r, t
+    
+
+def set_loc_rotation(obj, value):
+    '''
+    Rotate object around local axis
+    See https://blender.stackexchange.com/a/255375/174689
+    '''
+    
+    rot = mathutils.Euler(value, 'ZYX')
+    obj.rotation_euler = (obj.rotation_euler.to_matrix() @ rot.to_matrix()).to_euler(obj.rotation_mode)
+    
+    
+def retrieveCal(toml_path):
+    '''
+    Retrieve calibration parameters from toml file.
+    Output a dialog window to choose calibration file.
+    '''
+    S, D, K, R, T, P = {}, {}, {}, {}, {}, {}
+    Kh, H = [], []
+    cal = toml.load(toml_path)
+    cal_keys = [i for i in cal.keys() if 'metadata' not in i] # exclude metadata key
+    for i, cam in enumerate(cal_keys):
+        S[cam] = np.array(cal[cam]['size'])
+        D[cam] = np.array(cal[cam]['distortions'])
+        
+        K[cam] = np.array(cal[cam]['matrix'])
+        Kh = np.block([K[cam], np.zeros(3).reshape(3,1)])
+        
+        R[cam] = rod_to_mat(np.array(cal[cam]['rotation']))
+        T[cam] = np.array(cal[cam]['translation'])
+        H = np.block([[R[cam],T[cam].reshape(3,1)], [np.zeros(3), 1 ]])
+        
+        P[cam] = Kh.dot(H)
+        
+    return S, D, K, R, T, P
+
+
+def setCamsfromCal_callback(*args):
+    '''
+    Set cameras from calibration file.
+    Create cameras according to the calibration file chosen from dialog window.
+    '''
+    px_size = float(cmds.textFieldGrp(pxsize_field, query=1, text=1)) * 1e-6
+    binning_factor = float(cmds.textFieldGrp(binning_field, query=1, text=1))
+    
+    # open file dialog (fm = 0 pour sauver plutot qu'ouvrir)
+    singleFilter = "Toml calibration files (*.toml)"
+    path = cmds.fileDialog2(fileFilter=singleFilter, dialogStyle=2, cap="Open Calibration File", fm=1)[0]
+    # retrieve calibration
+    S, D, K, R, T, P = maya_utils.retrieveCal(path)
+    
+    # set cameras
+    cams=[]
+    for c in range(len(R)): # Pour chaque cam
+        Rc =  R['cam_%02d' %(c+1)].T
+        Tc = -R['cam_%02d' %(c+1)].T . dot(T['cam_%02d' %(c+1)])# / 1000 # Pour l'avoir en m
+        M = np.block([[Rc,Tc.reshape(3,1)], [np.zeros(3), 1 ]])
+        Mlist = M.T.reshape(1,-1)[0].tolist()
+        
+        fm = K['cam_%02d' %(c+1)][0, 0] * px_size * 1000 # fp*px*1000 [mm]
+        
+        W, H = S['cam_%02d' %(c+1)]        
+        
+        cam, camShape = cmds.camera(n='cam_%02d' %(c+1), focalLength=fm, horizontalFilmAperture = W*px_size*39.3701*binning_factor, verticalFilmAperture = H*px_size*39.3701*binning_factor)  # m->inch : *39.3701
+        cams.append(cam) 
+
+        cmds.setAttr(camShape + '.aiRadialDistortion', float(-D['cam_%02d' %(c+1)][0]*4)) # Cuisine pour passer de la distorsion de maya (fisheye?) a celle de opencv (pinhole?)
+        cmds.xform(cam, m=Mlist)
+        cmds.setAttr("defaultResolution.width", float(W)) 
+        cmds.setAttr("defaultResolution.height", float(H)) 
+        cmds.select(cam)
+        cmds.rotate(180,0,0, objectSpace=1, relative=1)
+
+    cmds.select(cams)
+    cmds.group(n='cameras')
+
+
 def import_cameras(toml_path):
     '''
     Convert a .vtp file to .stl
@@ -96,16 +184,60 @@ def import_cameras(toml_path):
     - .stl file: same name, same folder
     '''
     
-    if os.path.isfile(vtp_path):
-        outfile = os.path.splitext(vtp_path)[0]+".stl"
-        reader = vtk.vtkXMLPolyDataReader()
-        reader.SetFileName(vtp_path)
-        reader.Update()
-        writer = vtk.vtkSTLWriter()
-        writer.SetInputConnection(reader.GetOutputPort())
-        writer.SetFileName(outfile)
-        writer.Write()
-        print(f'{vtp_path} file converted')
+    if os.path.isfile(toml_path):
+        outfile = os.path.splitext(toml_path)[0]+".toml"
+        S, D, K, R, T, P = retrieveCal(toml_path)
+        
+        cam_collection = bpy.data.collections.new('importedCameras')
+        bpy.context.scene.collection.children.link(cam_collection)
+        
+        for i, c in enumerate(S.keys()):
+            bpy.ops.object.camera_add()
+            camera = bpy.context.active_object
+            camera.name = c
+            
+            # image dimensions
+            w, h = [int(i) for i in S[c]]
+            
+            # field of view
+            fx, fy = K[c][0,0], K[c][1,1]
+            fov_x = 2 * np.arctan2(w, 2 * fx)
+            fov_y = 2 * np.arctan2(h, 2 * fy)
+            
+            camera.data.type = 'PERSP'
+            camera.data.lens_unit = 'FOV'
+            camera.data.angle = np.max([fov_x, fov_y])
+            
+            # rotation and translation
+            r, t = world_to_camera_persp(R[c], T[c])
+            homog_matrix = np.block([[r,t.reshape(3,1)], 
+                                    [np.zeros(3), 1 ]])
+            camera.matrix_world = mathutils.Matrix(homog_matrix)
+            set_loc_rotation(camera, np.radians([180,0,0]))
+            
+            # principal point # see https://blender.stackexchange.com/a/58236/174689
+            principal_point =  K[c][0,2],  K[c][1,2]
+            max_wh = np.max([w,h])
+            
+            camera.data.shift_x = -2/max_wh*(w/2 - principal_point[0])
+            camera.data.shift_y = 2/max_wh*(h/2 - principal_point[1])
+
+            # render settings
+            render_settings = bpy.context.scene.render
+            render_settings.resolution_x = w
+            render_settings.resolution_y = h
+            
+            
+            cam_collection.objects.link(camera)
+        
+        scene = bpy.context.scene
+        scene.unit_settings.system = 'METRIC'
+        scene.unit_settings.length_unit = 'METERS'
+        scene.unit_settings.scale_length = 1.0
+            
+        
+        print(f'Cameras imported from {toml_path} calibration file.')
+
 
 
 def import_model(osim_path,modelRoot='',stlRoot='.',collection=''):

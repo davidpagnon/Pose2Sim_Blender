@@ -196,7 +196,7 @@ class panel1(bpy.types.Panel):
         layout.label(text='')
         layout.label(text='Cameras')
         column_layout = layout.column_flow(columns=2, align=False)
-        column_layout.operator("mesh.add_osim_model",icon='STICKY_UVS_DISABLE', text="Import")
+        column_layout.operator("mesh.add_cam_cal",icon='STICKY_UVS_DISABLE', text="Import")
         column_layout.operator("mesh.add_osim_model",icon='STICKY_UVS_LOC', text="Export")
 
         layout.label(text='Images/Videos')
@@ -220,17 +220,21 @@ def register():
     bpy.utils.register_class(addMotion)            
     bpy.utils.register_class(addMarkers)
     bpy.utils.register_class(addForces)
+    bpy.utils.register_class(importCal)
+    
     bpy.utils.register_class(panel1)
     # bpy.ops.preferences.addon_enable(module='io_anim_c3d')
     # bpy.ops.wm.addon_enable(module='io_anim_c3d')
 
 
 def unregister():
-    print('bye')
+    print('Addon Unregistered')
     bpy.utils.unregister_class(addModel)
     bpy.utils.unregister_class(addMotion)            
     bpy.utils.unregister_class(addMarkers)
     bpy.utils.unregister_class(addForces)
+    bpy.utils.unregister_class(importCal)
+    
     bpy.utils.unregister_class(panel1)
 
 
