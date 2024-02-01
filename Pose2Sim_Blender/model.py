@@ -157,7 +157,6 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection=''):
                     except:
                         print('VTK not installed on Blender. Try Pose2Sim_Blender Full install instead')
                     break
-                break
             else:
                 print(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
                 raise Exception(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
