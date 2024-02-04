@@ -37,3 +37,25 @@ def ShowMessageBox(message = "", title = "Message Box", icon = 'INFO'):
         self.layout.label(text=message)
     bpy.context.window_manager.popup_menu(draw, title = title, icon = icon)
 
+
+def createMaterial(color=(0.8, 0.8, 0.8, 1), metallic = 0.5, roughness = 0.5):
+    '''
+    Create a material
+    '''
+    
+    color_count = [m.name for m in bpy.data.materials].count(str(color))
+    if color_count > 0:
+        color_index = [m.name for m in bpy.data.materials].index(str(color))
+        matg = bpy.data.materials[color_index]
+    else:
+        matg = bpy.data.materials.new(str(color))
+        matg.use_nodes = True
+        tree = matg.node_tree
+        nodes = tree.nodes
+        bsdf = nodes["Principled BSDF"]
+        bsdf.inputs["Base Color"].default_value = color
+        matg.diffuse_color = color
+        matg.metallic = metallic
+        matg.roughness = roughness
+    
+    return matg

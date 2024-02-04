@@ -25,6 +25,7 @@ import os
 import numpy as np
 import bpy
 import bmesh
+from Pose2Sim_Blender.Pose2Sim_Blender.common import createMaterial
 
 direction = 'zup'
 RADIUS = 20/1000 # 12
@@ -70,7 +71,7 @@ def load_trc(trc_path):
     return trc_data_np, markerNames
 
 
-def addMarker(marker_collection, position=(0,0,0), text="MARKER", color=COLOR):
+def addMarker(marker_collection, position=(0,0,0), text="MARKER", material=bpy.types.Material):
     '''
     Add one marker to the scene
 
@@ -84,16 +85,6 @@ def addMarker(marker_collection, position=(0,0,0), text="MARKER", color=COLOR):
     - Created new marker
     '''
 
-    # Color
-    matg = bpy.data.materials.new("Green")
-    matg.use_nodes = True
-    tree = matg.node_tree
-    nodes = tree.nodes
-    bsdf = nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = color
-    matg.diffuse_color = color
-    
-    #Add sphere
     mySphere=bpy.data.meshes.new('sphere')
     sphere = bpy.data.objects.new(text, mySphere)
     bm = bmesh.new()
@@ -101,7 +92,7 @@ def addMarker(marker_collection, position=(0,0,0), text="MARKER", color=COLOR):
     bm.to_mesh(mySphere)
     bm.free()
     sphere.location=position
-    sphere.active_material = matg
+    sphere.active_material = material
     marker_collection.objects.link(sphere)
            
  
@@ -134,7 +125,8 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
         marker_collection = bpy.data.collections.new('markers')
         bpy.context.scene.collection.children.link(marker_collection)
         for markerName in markerNames:
-            addMarker(marker_collection,text=markerName)
+            matg = createMaterial(color=COLOR, metallic = 0.5, roughness = 0.5)
+            addMarker(marker_collection,text=markerName, material=matg)
         
         # animate markers
         for i, m in enumerate(markerNames):

@@ -34,7 +34,7 @@
 ## INIT
 import bpy
 import bpy_extras.io_utils
-from bpy.props import IntProperty, BoolProperty
+from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty
 from Pose2Sim_Blender.Pose2Sim_Blender import model, motion, markers, forces, cameras
 from Pose2Sim_Blender.Pose2Sim_Blender.common import ShowMessageBox
 import os
@@ -140,34 +140,87 @@ class showImages(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class filmWithCameras(bpy.types.Operator): #,bpy_extras.io_utils.ExportHelper):
     bl_idname = 'mesh.film_from_cam'
-    bl_label = 'Export calibration'
-    bl_description = "Export your cameras as a `.toml` Pose2Sim camera calibration file"
+    bl_label = 'Film from cameras'
+    bl_description = "Render videos from selected cameras in chosen directory"
     bl_options = {'REGISTER', 'UNDO'}
     
-    # filename_ext = '.toml'
+    directory: StringProperty(
+        name="Output directory",
+        description="Root directory of saved films/image sequences"
+        )
+        
+    filter_folder: BoolProperty(
+        default=True,
+        options={"HIDDEN"}
+        )
     
-    # filter_glob : bpy.props.StringProperty(
-        # name='Pose2Sim calibration file',
-        # default="*.toml",
-        # options={'HIDDEN'},
-        # subtype="FILE_PATH")
-        
-    # image sequences or video
-    # framerate
-        
-    # def invoke(self, context, _event):
-        # calib_filepath = 'Calib_blender'
-        # self.filepath = calib_filepath + self.filename_ext
-        # context.window_manager.fileselect_add(self)
-        # return {'RUNNING_MODAL'}
-        
-    # def execute(self, context):
-        # toml_path=bpy.path.abspath(self.filepath)
-        # cameras.export_cameras(toml_path)
-        # return {'FINISHED'}
+    all_cams: BoolProperty(
+        name="Film with all cameras",
+        description="If checked, all cameras will film the scene",
+        default=False,
+    )
+    
+    movie_or_sequence: EnumProperty(
+        name="Save as",
+        description="Save as movie or image sequence",
+        items=[ ('movie',"Movie","Save as movie"),
+                ('images',"Image sequence","Save as image sequence")],
+        default = 'movie'
+    )
+    
+    target_framerate: IntProperty(
+        name="Output framerate [fps]",
+        description="Framerate of the output movie. Ignored if image_sequence",
+        default=30,
+        min = 1
+    )
+    
+    first_frame: IntProperty(
+        name="First frame",
+        description="First frame to render",
+        default=0,
+        min = 0
+    )
+    
+    last_frame: IntProperty(
+        name="Last frame",
+        description="Last frame to render",
+        default=100,
+        min = 1
+    )
+    
+    render_quality: IntProperty(
+        name="Render quality (%)",
+        description="Best quality is nicer but slower to render",
+        default=100,
+        min = 0, 
+        max = 100
+    )
+    
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
         
     def execute(self, context):
-        ShowMessageBox("Coming soon!", "Almost there...")
+        dir_path = bpy.path.abspath(self.directory)  
+        cams = bpy.context.selected_objects
+        if len(cams) == 0 and self.all_cams == False:
+            ShowMessageBox("Please first select one or several cameras", "No camera selected")
+            raise TypeError("Please first select one or several cameras")
+        for i, cam in enumerate(cams):
+            if cam.type != 'CAMERA':
+                ShowMessageBox(f"{cam.name} is not a camera", "Not a camera")
+                raise TypeError(f"{cam.name} is not a camera")
+                    
+        cameras.film_from_cams( dir_path, 
+                                cams,
+                                all_cameras=self.all_cams, 
+                                movie_or_sequence=self.movie_or_sequence, 
+                                target_framerate=self.target_framerate, 
+                                first_frame = self.first_frame, 
+                                last_frame = self.last_frame, 
+                                render_quality=self.render_quality)
+        
         return {'FINISHED'}
 
 
@@ -187,8 +240,7 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         name="Target framerate [fps]",
         description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
         default=30,
-        min = 1,
-        max = 500
+        min = 1
     )
     
     def execute(self, context):
@@ -232,8 +284,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         name="Target framerate [fps]",
         description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
         default=30,
-        min = 1,
-        max = 500
+        min = 1
     )
     
     def execute(self, context):
@@ -259,8 +310,7 @@ class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         name="Target framerate [fps]",
         description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
         default=30,
-        min = 1,
-        max = 500
+        min = 1
     )
     
     def execute(self, context):
@@ -295,20 +345,16 @@ class raysFrom3Dpoint(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        # points = bpy.context.active_object
-        # if points == None:
-            # ShowMessageBox("Please first select one or several objects", "No object selected")
-            # raise TypeError("Please first select one or several objects")
-        # elif points.type == 'CAMERA':
-            # ShowMessageBox("Please first select one or several objects", "No object selected")
-            # raise TypeError("Please first select one or several objects")
-        # else:
-            # ShowMessageBox("Coming soon!", "Almost there...")
-            # # cameras.reproject_3D_points()
-            # return {'FINISHED'}
-        ShowMessageBox("Coming soon!", "Almost there...")
-        # cameras.reproject_3D_points()
-        return {'FINISHED'}
+        points = bpy.context.active_object
+        if points == None:
+            ShowMessageBox("Please first select one or several objects", "No object selected")
+            raise TypeError("Please first select one or several objects")
+        elif points.type == 'CAMERA':
+            ShowMessageBox("Selected objects cannot be cameras", "No object selected")
+            raise TypeError("Selected objects cannot be cameras")
+        else:
+            cameras.reproject_3D_points()
+            return {'FINISHED'}
 
 
 class rayFromImagePoint(bpy.types.Operator):
@@ -328,9 +374,9 @@ class alembicExport(bpy.types.Operator):#,bpy_extras.io_utils.ExportHelper):
     bl_description = "Alembic format can be read by most other 3D animation softwares"
     bl_options = {'REGISTER', 'UNDO'}
     
-    # filename_ext = '.mp4'
     
     def execute(self, context):
+        bpy.ops.wm.alembic_export('INVOKE_DEFAULT')
         ShowMessageBox("Coming soon!", "Almost there...")
         return {'FINISHED'}
 
@@ -423,6 +469,5 @@ def unregister():
 # to test the add-on without having to install it.
 if __name__ == "__main__":
     register()
-    print('test done')
     
     

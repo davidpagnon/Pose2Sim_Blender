@@ -5,16 +5,22 @@
 
 # Sim2Blend
 
-**`Sim2Blend` is a Blender add-on for importing OpenSim data:** model, motion, markers, and forces.
+**`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results -- and more.**
 
-[OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap). [Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering. 
+[Pose2Sim](https://github.com/perfanalytics/pose2sim) is an open-source pipeline for obtaining research-grade 3D motion analysis from consumer-grade cameras (**such as phones, webcams, GoPros, etc**).
 
-Feel free to try [Pose2Sim](https://github.com/perfanalytics/pose2sim), an open-source pipeline for obtaining research-grade OpenSim results from consumer-grade cameras.
+This add-on can be used to visualize:
+- Camera calibration (from a .toml file)
+- Markers (from a .trc or .c3d file)
+- OpenSim data (such as models, motions, and forces)
+- And much more...
 
-<img src='Content/Demo_Sim2Blend.gif' title='Sim2Blend demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results.'  width="760">
+<img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760">
 
-> N.B.: Sim2Blend is inspired from [BlendOsim](https://github.com/JonathanCamargo/BlendOsim). Unlike BlendOsim, Sim2Blend does not require using Matlab as an intermediary (and expensive) software between two open-source ones.\
-> N.B.: This is still an alpha version, and some of the buttons displayed in the GUI won't lead to any action.
+> N.B.:\
+[OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
+[Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering. \
+[Pose2Sim_Blender](https://github.com/davidpagnon/Pose2Sim_Blender) was originally meant to be a simple up-to-date fork of [BlendOsim](https://github.com/JonathanCamargo/BlendOsim).
 
 ## Contents
 1. [Demonstration](#demonstration)
@@ -25,7 +31,7 @@ Feel free to try [Pose2Sim](https://github.com/perfanalytics/pose2sim), an open-
 
 ## Demonstration
 
-Find example files in the `Examples` folder, or use it with you own OpenSim data.
+Find example files in the `Examples` folder, or use it with your own OpenSim data.
 
 - **Add Model**: \
   Import the "bodies" of an `.osim` model. \

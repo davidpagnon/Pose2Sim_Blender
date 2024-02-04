@@ -27,10 +27,13 @@
 import bpy
 from xml.dom import minidom
 import os
+from Pose2Sim_Blender.Pose2Sim_Blender.common import createMaterial
 try:
     import vtk
 except ImportError:
     pass
+
+COLOR = (0.8, 0.8, 0.8, 1)
 
 
 ## AUTHORSHIP INFORMATION
@@ -72,7 +75,7 @@ def vtp2stl(vtp_path):
         print(f'{vtp_path} file converted')
 
 
-def import_model(osim_path, modelRoot='',stlRoot='.',collection=''):
+def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLOR):
     '''osim_path
     Reads an .osim model file, lists bodies and corresponding meshes
     Searches the meshes (stl, ply, vtp) on the computer, 
@@ -175,8 +178,14 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection=''):
             mesh_obj.users_collection[0].objects.unlink(mesh_obj)
             collection.objects.link(mesh_obj)
 
-    # hide axes
+    # hide axes, add material, add smooth shading
     objects = collection.objects
+    for obj in objects:
+        matg = createMaterial(color=COLOR, metallic = 0., roughness = 0.5)
+        obj.active_material = matg
+        for mesh in obj.children:
+            for polygon in mesh.data.polygons:
+                polygon.use_smooth = True
     for obj in objects:
         obj.select_set(obj.type == "EMPTY")
     empties = bpy.context.selected_objects

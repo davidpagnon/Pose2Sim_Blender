@@ -26,7 +26,7 @@ import toml
 import sys
 from .common import ShowMessageBox
 
-RAY_WIDTH = 5/1000
+RAY_WIDTH = 0/1000
 COLOR = (0.8, 0.4, 0.1, 0.8)
 
 
@@ -39,6 +39,37 @@ __version__ = "0.0.2"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
+
+
+## CLASSES
+class ModalOperator(bpy.types.Operator):
+    bl_idname = "object.detect_orbit"
+    bl_label = "Detect Orbit (Middle mouse click)"
+
+    def __init__(self):
+        print("Waiting for orbiting motion")
+
+    def __del__(self):
+        print("Orbiting motion done")
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    def modal(self, context, event):
+        if event.type == 'MIDDLEMOUSE':
+            image.empty_image_depth = 'DEFAULT'
+            hide(objects, False)
+            return {'FINISHED'}
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        self.value = event.mouse_x
+        self.execute(context)
+
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+bpy.utils.register_class(ModalOperator)
 
 
 ## FUNCTIONS
@@ -135,27 +166,24 @@ def set_mesh_origin(ob, pos):
     See there: https://blenderartists.org/t/modifying-object-origin-with-python/507305/7
     '''
     
-    pos = Vector(pos)
-    mat = Matrix.Translation(pos - ob.location)
+    pos = mathutils.Vector(pos)
+    mat = mathutils.Matrix.Translation(pos - ob.location)
     ob.location = pos
     ob.data.transform(mat.inverted())
 
 
-def add_bezier(v0 , v1, collection=''):
+def add_bezier(v0 , v1, color=COLOR, ray_width=RAY_WIDTH):
     '''
-    Add line connecting two points in a collection, 
+    Add line connecting two points, 
     with a certain width and color.
     
     See there: https://blender.stackexchange.com/a/110211/174689
     '''
     
-    if collection=='':
-        collection = bpy.data.collections.new('Rays')
-        bpy.context.scene.collection.children.link(collection)
-    if not 'RAY_WIDTH' in locals():
-        RAY_WIDTH = 10/1000
-    if not 'COLOR' in locals():
-        COLOR = (0.8, 0.4, 0.1, 0.8)
+    if not 'RAY_WIDTH' in globals():
+        ray_width = 5/1000
+    if not 'COLOR' in globals():
+        color = (0.8, 0.4, 0.1, 0.8)
         
     # Color
     matg = bpy.data.materials.new("Orange")
@@ -167,7 +195,7 @@ def add_bezier(v0 , v1, collection=''):
     matg.diffuse_color = color
     
     # middle point of the Bezier curve
-    v0, v1 = Vector(v0), Vector(v1)  
+    v0, v1 = mathutils.Vector(v0), mathutils.Vector(v1)  
     o = (v1 + v0) / 2  
     
     # creat nurb with two points
@@ -190,9 +218,8 @@ def add_bezier(v0 , v1, collection=''):
     ob.matrix_world.translation = o
     curve = ob.data
     curve.dimensions = '3D'
-    curve.bevel_depth = RAY_WIDTH
+    curve.bevel_depth = ray_width
     curve.bevel_resolution = 3
-    bpy.context.scene.collection.objects.link(ob)
     
     # Move gizmo from median part of the nurb to its extremity
     set_mesh_origin(ob, v0)
@@ -201,6 +228,16 @@ def add_bezier(v0 , v1, collection=''):
     
     return ob
     
+    
+def hide(objects, state):
+    '''
+    Hide objects if state = True
+    Unhide them if state = False
+    '''
+    
+    for obj in objects:
+        obj.hide_set(state)
+        
     
 def retrieveCal_fromFile(toml_path):
     '''
@@ -397,12 +434,16 @@ def show_images(camera, img_vid_path, single_image=False):
     img = bpy.context.active_object
     img.matrix_world = np.eye(4)
     img.empty_image_depth = 'DEFAULT' # overlaid by skeleton, markers, etc.
-    if img.data.source == 'MOVIE':
-        img.image_user.frame_duration =  img.data.frame_duration
-        img.image_user.frame_start =  0
-    elif img.data.source == 'FILE' and single_image == False:
-        img.data.source = 'SEQUENCE'
-        img.image_user.frame_start =  0
+    if single_image == False:
+        if img.data.source == 'MOVIE':
+            # BUG: if select single image, delete, and then reload as movie, does not update source as movie
+            img.image_user.frame_duration =  img.data.frame_duration
+            img.image_user.frame_start =  0
+        elif img.data.source == 'FILE': 
+            img.data.source = 'SEQUENCE'
+            img.image_user.frame_start =  0
+    else: 
+        img.data.source = 'FILE'
     
     # parent image to camera
     img.parent = camera
@@ -451,7 +492,62 @@ def show_images(camera, img_vid_path, single_image=False):
     print(f'Image or video imported from {img_vid_path}')
 
     
+def film_from_cams( dir_path, 
+                    cams,
+                    all_cameras=False, 
+                    movie_or_sequence='images', 
+                    target_framerate=30, 
+                    first_frame = 0, 
+                    last_frame = 100, 
+                    render_quality=100):
+    '''
+    Film from selected cameras
+    Quick viewport render
+    '''
+    
+    if all_cameras:
+        cams = [ob for ob in list(bpy.context.scene.objects) if ob.type == 'CAMERA']
+    
+    # remove outline
+    area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
+    area.spaces[0].shading.show_object_outline = False
+    
+    # prepare rendering
+    scene = bpy.data.scenes['Scene']
+    scene.render.resolution_percentage = render_quality
+    scene.render.fps = target_framerate
+    scene.frame_start = first_frame
+    scene.frame_end = last_frame
+    scene.frame_step = 1
+    scene.cycles.device = 'GPU'
+    scene.render.engine = 'CYCLES'
+    
+    if movie_or_sequence=='movie':
+        scene.render.fps = target_framerate
+        scene.render.image_settings.file_format = 'FFMPEG'
+        scene.render.image_settings.quality = 90
+        scene.render.ffmpeg.format = 'MKV'
+        scene.render.ffmpeg.constant_rate_factor = 'MEDIUM' # Output quality
+        scene.render.ffmpeg.ffmpeg_preset = 'GOOD' # Encoding speed
+        scene.render.ffmpeg.codec = 'H264' # Video codec
+        scene.render.ffmpeg.audio_codec = 'NONE' # Audio set to none
+    else:
+        scene.render.image_settings.file_format = 'PNG'
+    
+    for cam in cams:
+        bpy.context.view_layer.objects.active = cam
+        see_through_selected_camera()
+        scene.render.filepath = os.path.join(dir_path, cam.name, cam.name+'.')
+        bpy.ops.render.opengl(animation=True)
+        
+    
 def see_through_selected_camera():
+    '''
+    See through the selected camera
+    '''
+    
+    global objects, image
+    
     # Look through camera
     bpy.context.scene.camera = bpy.context.active_object
     area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
@@ -459,37 +555,51 @@ def see_through_selected_camera():
 
     # change image depth
     camera =  bpy.context.active_object
-    image = camera.children[0]
-    image.empty_image_depth = 'BACK'
+    if not len(camera.children) == 0:
+        image = camera.children[0]
+        image.empty_image_depth = 'BACK'
 
     # hide curves
     objects = bpy.ops.object.select_by_type(type='CURVE')
     objects = bpy.context.selected_objects
-    for obj in objects:
-        obj.hide_set(True)
+    hide(objects, True)
         
-    # # HERE I WANT TO DETECT A CHANGE IN THE ROTATION SUCH AS:
-    # rot = area.spaces.active.region_3d.view_rotation
-    # if detect_orbit_change():
-        # for obj in objects:
-            # obj.hide_set(False)
-        # image.empty_image_depth = 'DEFAULT'
+    # # HERE I WANT TO DETECT AN ORBITAL CHANGE TO UNHIDE STUFF AND MAKE IMAGE DEPTH AUTO:
+    ## https://blender.stackexchange.com/questions/311024/detect-orbit-events-via-api
+    ## MsgBus does not work with ViewPort changes
+    # rot = area.spaces.active.region_3d.view_rotation 
+    ## ModalOperator prevents the UI from responding to anything until the user pans
+    # bpy.ops.object.detect_orbit('INVOKE_DEFAULT')
     
-
-
-
-# for all selected points
-    # for all cameras
-
-        # curve_obj = add_bezier(marker.location, camera.location)
-
-        # marker.select_set(True)
-        # curve_obj.select_set(True)
-        # bpy.context.view_layer.objects.active = curve_obj
-        # bpy.ops.object.mode_set(mode='EDIT')
-
-        # curve_obj.data.splines[0].bezier_points[0].select_control_point = True
-
-        # bpy.ops.object.hook_add_selob(use_bone=False)
     
+def reproject_3D_points(collection=''):
+    '''
+    Trace rays from an object to the camera
+    '''
+    
+    objects = bpy.context.selected_objects
+    cameras = [ob for ob in list(bpy.context.scene.objects) if ob.type == 'CAMERA']
+    
+    for ob in objects:
+        bpy.ops.object.select_all(action='DESELECT')
+        
+        collection = bpy.data.collections.new(f'rays{ob.name}')
+        bpy.context.scene.collection.children.link(collection)
+        for cam in cameras:
+            # add Bezier curve
+            curve_obj = add_bezier(ob.location, cam.location)
+            curve_obj.name = f'{collection.name}_{cam.name}'
+            collection.objects.link(curve_obj)
+
+            # hook to object 
+            ob.select_set(True)
+            curve_obj.select_set(True)
+            bpy.context.view_layer.objects.active = curve_obj
+            bpy.ops.object.mode_set(mode='EDIT')
+            curve_obj.data.splines[0].bezier_points[0].select_control_point = True
+            bpy.ops.object.hook_add_selob(use_bone=False)
+        bpy.ops.object.mode_set(mode='OBJECT')
+            
+    bpy.ops.object.select_all(action='DESELECT')
+        
 
