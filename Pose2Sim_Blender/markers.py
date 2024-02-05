@@ -37,7 +37,7 @@ __author__ = "David Pagnon, Jonathan Camargo"
 __copyright__ = "Copyright 2023, BlendOSim & Pose2Sim_Blender"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
-__version__ = "0.0.1"
+__version__ = '0.6.0'
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -119,6 +119,8 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
         times = trc_data_np[:,0]
         fps = int((len(times)-1) / (times[-1] - times[0]))
         conv_fac_frame_rate = int(np.round(fps / target_framerate))
+        if conv_fac_frame_rate == 0:
+            conv_fac_frame_rate = 1
         # bpy.data.scenes['Scene'].render.fps = fps
             
         # create markers

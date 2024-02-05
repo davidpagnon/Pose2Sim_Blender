@@ -3,76 +3,72 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8421820.svg)](https://doi.org/10.5281/zenodo.8421820)
 
 
-# Sim2Blend
+# Pose2Sim Blender
 
 **`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results -- and more.**
 
 [Pose2Sim](https://github.com/perfanalytics/pose2sim) is an open-source pipeline for obtaining research-grade 3D motion analysis from consumer-grade cameras (**such as phones, webcams, GoPros, etc**).
 
 This add-on can be used to visualize:
-- Camera calibration (from a .toml file)
-- Markers (from a .trc or .c3d file)
-- OpenSim data (such as models, motions, and forces)
+- Camera calibration (from a `.toml` file)
+- Markers (from a `.trc` or `.c3d` file)
+- **OpenSim** data (such as `.osim` models, `.mot` motions, and `.mot` forces)
 - And much more...
 
-<img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760">
+<!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
+
+https://github.com/perfanalytics/pose2sim/assets/54667644/5d7c858f-7e46-40c1-928c-571a5679633a
+
 
 > N.B.:\
 [OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
 [Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering. \
-[Pose2Sim_Blender](https://github.com/davidpagnon/Pose2Sim_Blender) was originally meant to be a simple up-to-date fork of [BlendOsim](https://github.com/JonathanCamargo/BlendOsim).
+
+<br>
 
 ## Contents
-1. [Demonstration](#demonstration)
-2. [Quick install](#quick-install)
-3. [Full install](#full-install)
+1. [Installation](#installation)
+    1. [Quick install](#quick-install)
+    2. [Full install](#full-install)
+2. [Demonstration](#demonstration)
+    1. [Camera tools](#camera-tools)
+    2. [OpenSim imports](#opensim-imports)
+    3. [Other tools](#other-tools)
 4. [How to cite and how to contribute](#how-to-cite-and-how-to-contribute)
 
 
-## Demonstration
+<br>
 
-Find example files in the `Examples` folder, or use it with your own OpenSim data.
+## Installation
 
-- **Add Model**: \
-  Import the "bodies" of an `.osim` model. \
-  *If you did the [full install](#full-install) and some Geometry files exist only as .vtp, they will automatically be converted to .stl.*
-- **Add Motion**: \
-  Import a `.mot` or a `.csv` motion file. \
-  *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or if there are many time frames. Creates a .csv file for faster loading next time.* \
-  *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [bodykin_from_mot_osim.py](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/bodykin_from_mot_osim.py) to convert it to .csv.*
-- **Add Markers**: \
-  Import a `.trc` or a `.c3d` marker file. 
-- **Add Forces**: \
-  Import a `.mot` GRF force file.
+### Quick install
+
+> N.B.: Full install is required for importing `.mot` motion files.
+
+- Install [Blender](https://www.blender.org/download/) 
+- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/347b7bc86ded3e6060b7a3bbca0263ed41d659f0/Sim2Blend.zip)
 
 <br>
 
-## Quick install
-
-- Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
-- Download [Sim2Blend.zip](https://github.com/davidpagnon/Sim2Blend/raw/main/Sim2Blend.zip)
-
-<br>
-
-- Open Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.zip
-- Check `Sim2Blend` to enable it
+- Open Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Pose2Sim_Blender.zip
+- Check `Pose2Sim Blender` to enable it
 - Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
 
-![Where to find Sim2Blend add-on](Content/Show_Sim2Blend.png)
+![Where to find Pose2Sim add-on](Content/Show_Pose2Sim_addon.png)
 
 <br>
 
-## Full install
+### Full install
 
-Full install requires admin rights on your computer. It is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Sim2Blend/issues). It is still only available on Windows, but feel free to contribute and adapt it on other platforms!
+Full install requires admin rights on your computer. It is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Pose2Sim_Blender/issues). Only Windows has been tested, but feel free to tell me how it goes on other platforms!
 
-#### Prerequisites
+##### 1. Prerequisites
 
 - Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
 - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- Download [Sim2Blend.zip](https://github.com/davidpagnon/Sim2Blend/raw/main/Sim2Blend.zip)
+- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/347b7bc86ded3e6060b7a3bbca0263ed41d659f0/Sim2Blend.zip)
 
-#### Find your Blender Python version
+##### 2. Find your Blender Python version
 
 Open Blender, press Shift+F4, type the following lines:
 
@@ -81,57 +77,103 @@ import sys
 sys.version
 ```
 
-#### Install Sim2Blend libraries
+##### 3. Install Sim2Blend libraries
 
 Open Miniconda, and copy-paste these lines. Replace with the Python version you just found:
 ``` cmd
-conda create -n Sim2Blend python=3.10.12 -y 
-conda activate Sim2Blend
+conda create -n Pose2Sim_Blender python=3.10.12 -y 
+conda activate Pose2Sim_Blender
 conda install -c opensim-org opensim -y
 pip uninstall numpy
 pip install numpy bpy toml vtk
 ```
 
-#### Install Sim2Blend add-on
+##### 4. Install Pose2Sim_Blender add-on
 
 You will need admin rights for the next steps:
 - Rename `python` in `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python` to `python_old`
-- Copy-paste there your `Sim2Blend` environment folder (to find its location, type `conda env list` in Anaconda prompt). Rename it to `python`
+- Copy-paste there your `Pose2Sim_Blender` environment folder (to find its location, type `conda env list` in Anaconda prompt). Rename it to `python`
 - Open `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python\Lib\opensim\__init__.py` 
   - comment out the line `# from .moco import *`
-  - line 4, add the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.4/bin")`
+  - line 4, add the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.4/bin")` (or 4.5, depending on your version)
 
 
-#### If you need the last OpenSim beta version
+<!-- #### If you need the last OpenSim beta version
 - Replace the conda install line by  
 `conda install https://anaconda.org/opensim-org/opensim/4.5/download/win-64/opensim-4.5-py310np121.tar.bz2 -y`
 - Line 17 (instead of 4), `add os.add_dll_directory(r"C:/OpenSim 4.5/bin")`
-- You may also need to install [OpenSim 4.5 beta](https://simtk.org/frs/?group_id=91#:~:text=OpenSim%20Release%20Betas) first, and to change its path from something like `C:/OpenSim 4.5-2023-12-04-cfbf426` to `C:/OpenSim 4.5`.
+- You may also need to install [OpenSim 4.5 beta](https://simtk.org/frs/?group_id=91#:~:text=OpenSim%20Release%20Betas) first, and to change its path from something like `C:/OpenSim 4.5-2023-12-04-cfbf426` to `C:/OpenSim 4.5`. -->
 
 
-#### Install Sim2Blend add-on in Blender
+##### 5. Install Pose2Sim_Blender add-on in Blender
 
-- Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Sim2Blend.zip
-- Check `Sim2Blend` to enable it
+- Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Pose2Sim_Blender.zip
+- Check `Pose2Sim_Blender` to enable it
 - Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
 
 <br>
+
+
+## Demonstration
+
+Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/347b7bc86ded3e6060b7a3bbca0263ed41d659f0/Sim2Blend.zip) archive.
+
+### Camera tools
+
+- **Import:**\
+  Import a `.toml` calibration file from Pose2Sim.
+- **Export:**\
+  Export updated cameras as a `.toml` calibration file.
+- **Show:**\
+  Import videos, image sequences, or still images in your camera frame of reference. The image plane is automatically scaled when translated.
+- **Film:**\
+  Render view from all or selected cameras, as a movie or an image sequence. Choose your framerate, the first and last frame to be rendered, and the output quality.
+
+### OpenSim imports
+
+- **Import Markers**:\
+  Import a `.trc` or a `.c3d` marker file, e.g., generated by Pose2Sim triangulation. 
+- **Import Model**:\
+  Import the "bodies" of an `.osim` model. \
+  *If you did the [full install](#full-install) and some Geometry files exist only as .vtp, they will automatically be converted to .stl.*
+- **Import Motion**:\
+  Import a `.mot` or a `.csv` motion file.
+  - *If you did the [full install](#full-install), you can import a `.mot` file. Calculating all body segment positions may take a while if the model is complex or if there are many time frames. Creates a .csv file for faster loading next time.*
+  - *If not, you will have to [install the OpenSim API](https://simtk-confluence.stanford.edu:8443/display/OpenSim/Conda+Package) outside of Blender and use [bodykin_from_mot_osim.py](https://github.com/perfanalytics/pose2sim/blob/main/Pose2Sim/Utilities/bodykin_from_mot_osim.py) to convert it to .csv.*
+- **Import Forces**:\
+  Import a `.mot` GRF force file.
+
+### Other tools
+
+- **See through cameras:**\
+  View from selected camera, with markers and OpenSim model overlay.
+- **Rays from 3D point:**\
+  Trace rays from one or several selected 3D points to all cameras, through image planes. *This can help you verify if a triangulated point correctly meets a 2D keypoint on image planes.*
+- **Ray from image point:**\
+  Trace ray from camera to a point selected on the corresponding image plane. *This can help you see if rays intersect correctly.* ***Coming soon!***
+- **Export to Alembic:**\
+  Export to an `.abc` Alembic "baked" file, for fast import into other softwares.
+
+![Demo for other Pose2Sim tools](Content/Pose2Sim_Blender_Demo.png)
+
+<br>
+
 
 
 ## How to cite and how to contribute
 
 ### How to cite
 
-If you use Sim2Blend, please cite [Pagnon and Camargo, 2023].
+If you use Pose2Sim_Blender, please cite [Pagnon, 2023].
 
      @misc{Pagnon2023,
-       author = {Pagnon, David and Camargo, Jonathan},
-       title = {Sim2Blend - OpenSim results in Blender},
+       author = {Pagnon, David},
+       title = {Pose2Sim_Blender - Visualize Pose2Sim data},
        year = {2023},
        doi= {10.5281/zenodo.8421820},
        publisher = {GitHub},
        journal = {GitHub repository},
-       howpublished = {\url{https://github.com/davidpagnon/Sim2Blend}},
+       howpublished = {\url{https://github.com/davidpagnon/Pose2Sim_Blender}},
      }
 
 ### How to contribute
@@ -141,15 +183,31 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 
 *Here is a to-do list. Feel free to complete it:*
 - [x] Import data from standard OpenSim data files (.osim, .mot, .trc, grf.mot)
-- [x] Convert .vtp files to .stl if .stl not found on disk
-- [x] Save segment angles to .csv files for faster loading of motion next time
+- [x] Import c3d files (borrowed and adapted from [io_anim_c3d](https://github.com/MattiasFredriksson/io_anim_c3d) )
+- [x] Save segment position and orientation to .csv files for faster loading of motion next time
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
-- [x] Import c3d files (borrowed and adapted from [io_anim_c3d](https://github.com/MattiasFredriksson/io_anim_c3d) )
-- [ ] Rig model
-- [ ] Add other tool for importing or exporting cameras, and for importing videos or filming (see [Maya-Mocap](https://github.com/davidpagnon/Maya-Mocap/))
+- [x] Convert .vtp files to .stl if .stl not found on disk
+- [ ] Rig from OpenSim model and/or imported markers
 - [ ] Import .sto motion and force files
 - [ ] Import .c3d and .trc files with the same appearance
-- [ ] Tutorial for Mac/Linux
 - [ ] Install OpenSim (for motion .mot files) with a click within the addon (create a venv with the right Python version [cf CEB](https://drive.google.com/file/d/1x3JfKfUXwi-61AqsbDeMVRS_h66Ap-dW/view), install OpenSim and the other dependencies)
-- [ ] Export to universal Collada .dae file
+
+<br>
+
+- [x] Import cameras from .toml calibration file
+- [x] Export cameras to .toml calibration file
+- [x] Import images, image sequences, and videos in the camera view
+- [x] Viewport render to film with selected cameras
+
+<br>
+
+- [x] See through camera and overlay model and markers
+- [x] Reproject rays from selected 3D points to image view
+- [ ] Trace rays from camera to selected image point
+- [x] Export to .abc Alembic files
+
+<br> 
+
+- [ ] Write documentation
+- [ ] Create video tutorial

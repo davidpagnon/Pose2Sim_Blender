@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use Sim2Blend, please cite it as below."
+message: "If you use Pose2Sim_Blender, please cite it as below."
 authors:
 - family-names: "Pagnon"
   given-names: "David"
@@ -7,9 +7,9 @@ authors:
 - family-names: "Camargo"
   given-names: "Jonathan"
   orcid: "https://orcid.org/0000-0001-5219-2110"
-title: "Sim2Blend - OpenSim results in Blender"
+title: "Pose2Sim_Blender - Visualize cameras, videos, and OpenSim results in Blender"
 version: 0.1.0
 doi: '10.5281/zenodo.8421820'
 date-released: 2023-10-09
-url: "https://github.com/davidpagnon/Sim2Blend"
+url: "https://github.com/davidpagnon/Pose2Sim_Blender"
 journal: "GitHub repository"
