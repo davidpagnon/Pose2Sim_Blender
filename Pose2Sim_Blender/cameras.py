@@ -35,7 +35,7 @@ __author__ = "David Pagnon"
 __copyright__ = "Copyright 2023, Pose2Sim_Blender"
 __credits__ = ["David Pagnon"]
 __license__ = "MIT License"
-__version__ = '0.6.0'
+__version__ = "0.0.2"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -485,8 +485,11 @@ def show_images(camera, img_vid_path, single_image=False):
     v_scaley.targets[0].transform_space = 'LOCAL_SPACE'
     d_scaley.driver.expression = '-scaleY * scale_factor'
     
-    # place at Z = 1 m
+    # place at Z = 1.5 m
+    img.location[0] = -camera.data.shift_x
+    img.location[1] = -camera.data.shift_y
     img.location[2] = -1.5
+    
     bpy.ops.object.transform_apply(location=False, scale=True)
     
     print(f'Image or video imported from {img_vid_path}')
