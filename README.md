@@ -17,7 +17,7 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-https://github.com/perfanalytics/pose2sim/assets/54667644/5d7c858f-7e46-40c1-928c-571a5679633a
+https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/693733ec-e240-448c-b610-f372640ea6bd
 
 
 > N.B.:\
@@ -46,7 +46,7 @@ https://github.com/perfanalytics/pose2sim/assets/54667644/5d7c858f-7e46-40c1-928
 > N.B.: Full install is required for importing `.mot` motion files.
 
 - Install [Blender](https://www.blender.org/download/) 
-- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/347b7bc86ded3e6060b7a3bbca0263ed41d659f0/Sim2Blend.zip)
+- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
 <br>
 
@@ -66,7 +66,7 @@ Full install requires admin rights on your computer. It is a little tricky, but 
 
 - Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
 - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/347b7bc86ded3e6060b7a3bbca0263ed41d659f0/Sim2Blend.zip)
+- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
 ##### 2. Find your Blender Python version
 
@@ -116,7 +116,7 @@ You will need admin rights for the next steps:
 
 ## Demonstration
 
-Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/347b7bc86ded3e6060b7a3bbca0263ed41d659f0/Sim2Blend.zip) archive.
+Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip) archive.
 
 ### Camera tools
 
