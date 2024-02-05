@@ -17,8 +17,7 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/693733ec-e240-448c-b610-f372640ea6bd
-
+https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/3edc3d9e-bb3c-4ef2-b7cf-0c5841f3e2e4
 
 > N.B.:\
 [OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
@@ -148,9 +147,9 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
 - **See through cameras:**\
   View from selected camera, with markers and OpenSim model overlay.
 - **Rays from 3D point:**\
-  Trace rays from one or several selected 3D points to all cameras, through image planes. *This can help you verify if a triangulated point correctly meets a 2D keypoint on image planes.*
+  Trace rays from one or several selected 3D points. *This can help you verify if a triangulated point correctly meets 2D keypoints on image planes.*
 - **Ray from image point:**\
-  Trace ray from camera to a point selected on the corresponding image plane. *This can help you see if rays intersect correctly.* ***Coming soon!***
+  ***Coming soon!*** Trace ray from a point selected on an image plane. *This can help you see if rays intersect correctly.* 
 - **Export to Alembic:**\
   Export to an `.abc` Alembic "baked" file, for fast import into other softwares.
 
@@ -188,7 +187,7 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 - [x] Import multiple persons in the same scene
 - [x] Create Example data
 - [x] Convert .vtp files to .stl if .stl not found on disk
-- [ ] Rig from OpenSim model and/or imported markers
+- [ ] **Rig from OpenSim model and/or imported markers**
 - [ ] Import .sto motion and force files
 - [ ] Import .c3d and .trc files with the same appearance
 - [ ] Install OpenSim (for motion .mot files) with a click within the addon (create a venv with the right Python version [cf CEB](https://drive.google.com/file/d/1x3JfKfUXwi-61AqsbDeMVRS_h66Ap-dW/view), install OpenSim and the other dependencies)
@@ -209,5 +208,5 @@ If you want to contribute to Sports2D, please follow [this guide](https://docs.g
 
 <br> 
 
-- [ ] Write documentation
-- [ ] Create video tutorial
+- [x] Write documentation
+- [x] Create video tutorial
