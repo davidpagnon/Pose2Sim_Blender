@@ -63,7 +63,7 @@ Full install requires admin rights on your computer. It is a little tricky, but 
 
 ##### 1. Prerequisites
 
-- Install [Blender](https://www.blender.org/download/) (haven't tried with versions other than 3.6)
+- Install [Blender](https://www.blender.org/download/) (tested on v 3.6 and 4.0.)
 - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 - Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
