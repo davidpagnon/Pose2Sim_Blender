@@ -17,7 +17,9 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/3edc3d9e-bb3c-4ef2-b7cf-0c5841f3e2e4
+
+https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/d28574d4-c906-4f70-a807-6dbfc19254df
+
 
 > N.B.:\
 [OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
