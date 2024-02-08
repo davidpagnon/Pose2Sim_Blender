@@ -18,7 +18,7 @@ This add-on can be used to visualize:
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
 
-https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/d28574d4-c906-4f70-a807-6dbfc19254df
+https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/1087f65f-f836-4ad1-b0f7-eb9793c3abd6
 
 
 > N.B.:\
