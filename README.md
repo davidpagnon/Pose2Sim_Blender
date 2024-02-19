@@ -17,12 +17,11 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-471a-b6f8-8f1ee999a619
-
+![Demo for other Pose2Sim tools](Content/Pose2Sim_Blender_Demo.png)
 
 > N.B.:\
 [OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
-[Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering. \
+[Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering.
 
 <br>
 
@@ -35,6 +34,9 @@ https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-47
     2. [OpenSim imports](#opensim-imports)
     3. [Other tools](#other-tools)
 4. [How to cite and how to contribute](#how-to-cite-and-how-to-contribute)
+
+
+https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-471a-b6f8-8f1ee999a619
 
 
 <br>
@@ -153,8 +155,6 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
   ***Coming soon!*** Trace ray from a point selected on an image plane. *This can help you see if rays intersect correctly.* 
 - **Export to Alembic:**\
   Export to an `.abc` Alembic "baked" file, for fast import into other softwares.
-
-![Demo for other Pose2Sim tools](Content/Pose2Sim_Blender_Demo.png)
 
 <br>
 
