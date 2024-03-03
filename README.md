@@ -1,6 +1,6 @@
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8421820.svg)](https://doi.org/10.5281/zenodo.8421820)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10658948.svg)](https://zenodo.org/doi/10.5281/zenodo.10658947)
 
 
 # Pose2Sim Blender
@@ -17,11 +17,11 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/3edc3d9e-bb3c-4ef2-b7cf-0c5841f3e2e4
+![Demo for other Pose2Sim tools](Content/Pose2Sim_Blender_Demo.png)
 
 > N.B.:\
 [OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
-[Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering. \
+[Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering.
 
 <br>
 
@@ -34,6 +34,9 @@ https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/3edc3d9e-bb3c-4e
     2. [OpenSim imports](#opensim-imports)
     3. [Other tools](#other-tools)
 4. [How to cite and how to contribute](#how-to-cite-and-how-to-contribute)
+
+
+https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-471a-b6f8-8f1ee999a619
 
 
 <br>
@@ -152,8 +155,6 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
   ***Coming soon!*** Trace ray from a point selected on an image plane. *This can help you see if rays intersect correctly.* 
 - **Export to Alembic:**\
   Export to an `.abc` Alembic "baked" file, for fast import into other softwares.
-
-![Demo for other Pose2Sim tools](Content/Pose2Sim_Blender_Demo.png)
 
 <br>
 
