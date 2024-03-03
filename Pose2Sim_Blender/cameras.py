@@ -347,13 +347,12 @@ def setup_cams(calib_params, collection=''):
 
     S, D, K, R, T, P = calib_params
     for i, c in enumerate(S.keys()):
-        bpy.ops.object.camera_add()
-        camera = bpy.context.active_object
-        collection.objects.link(camera)
-        bpy.context.collection.objects.unlink(camera)
+        camera = bpy.data.cameras.new(c)
+        camera_obj = bpy.data.objects.new(c, camera)
+        collection.objects.link(camera_obj)
 
         # name
-        camera.name = c
+        camera_obj.name = c
         
         # image dimensions
         w, h = [int(i) for i in S[c]]
@@ -363,23 +362,23 @@ def setup_cams(calib_params, collection=''):
         fov_x = 2 * np.arctan2(w, 2 * fx)
         fov_y = 2 * np.arctan2(h, 2 * fy)
         
-        camera.data.type = 'PERSP'
-        camera.data.lens_unit = 'FOV'
-        camera.data.angle = np.max([fov_x, fov_y])
+        camera.type = 'PERSP'
+        camera.lens_unit = 'FOV'
+        camera.angle = np.max([fov_x, fov_y])
         
         # rotation and translation
         r, t = world_to_camera_persp(R[c], T[c])
         homog_matrix = np.block([[r,t.reshape(3,1)], 
                                 [np.zeros(3), 1 ]])
-        camera.matrix_world = mathutils.Matrix(homog_matrix)
-        set_loc_rotation(camera, np.radians([180,0,0]))
+        camera_obj.matrix_world = mathutils.Matrix(homog_matrix)
+        set_loc_rotation(camera_obj, np.radians([180,0,0]))
         
         # principal point # see https://blender.stackexchange.com/a/58236/174689
         principal_point =  K[c][0,2],  K[c][1,2]
         max_wh = np.max([w,h])
         
-        camera.data.shift_x = 1/max_wh*(principal_point[0] - w/2)
-        camera.data.shift_y = 1/max_wh*(principal_point[1] - h/2)
+        camera.shift_x = 1/max_wh*(principal_point[0] - w/2)
+        camera.shift_y = 1/max_wh*(principal_point[1] - h/2)
 
         # render settings
         render_settings = bpy.context.scene.render
