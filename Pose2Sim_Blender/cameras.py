@@ -393,7 +393,6 @@ def import_cameras(toml_path):
     '''
 
     if os.path.isfile(toml_path):
-        outfile = os.path.splitext(toml_path)[0]+".toml"
         calib_params = retrieveCal_fromFile(toml_path)
         setup_cams(calib_params)
         

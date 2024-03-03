@@ -226,7 +226,7 @@ class filmWithCameras(bpy.types.Operator): #,bpy_extras.io_utils.ExportHelper):
 
 class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_markers'
-    bl_label = 'Import Markers'
+    bl_label = 'Add Markers'
     bl_description = "Import a `.trc` or a `.c3d` marker file"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -243,15 +243,26 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         min = 1
     )
     
+    files: CollectionProperty(
+        type=bpy.types.OperatorFileListElement,
+        options={'HIDDEN', 'SKIP_SAVE'},
+    )
+    
+    directory: StringProperty(
+    subtype='DIR_PATH',
+    )
+    
     def execute(self, context):
-        trc_path=bpy.path.abspath(self.filepath)
-        markers.import_trc(trc_path, direction='zup', target_framerate=self.target_framerate)
+        for file in self.files:
+            trc_path=os.path.join(self.directory, file.name)
+            markers.import_trc(trc_path, direction='zup', target_framerate=self.target_framerate)
         return {'FINISHED'}
+
 
 
 class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
-    bl_label = 'Import Model'
+    bl_label = 'Model'
     bl_description ="Import the 'bodies' of an `.osim` model"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -270,7 +281,7 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_motion'
-    bl_label = 'Import Motion'
+    bl_label = 'Motion'
     bl_description = "Import a `.mot` or a `.csv` motion file"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -296,7 +307,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
-    bl_label = 'Import Forces'
+    bl_label = 'Forces'
     bl_description = "Import a `.mot` force file"
     bl_options = {'REGISTER', 'UNDO'}
 
