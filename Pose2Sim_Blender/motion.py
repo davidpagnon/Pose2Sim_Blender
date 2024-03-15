@@ -129,9 +129,10 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
             # set model struct in each time state
             for c, coord in enumerate(coordinateNames): ## PROBLEME QUAND HEADERS DE MOTION_DATA_NP ET COORDINATENAMES SONT PAS DANS LE MEME ORDRE
                 try:
-                    model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c])
+                    model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c], enforceContraints=False)
                 except:
                     pass
+            model.assemble(state)
             
             # use state of model to get body coordinates in ground
             loc_rot_frame = []
