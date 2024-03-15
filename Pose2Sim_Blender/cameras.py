@@ -35,7 +35,7 @@ __author__ = "David Pagnon"
 __copyright__ = "Copyright 2023, Pose2Sim_Blender"
 __credits__ = ["David Pagnon"]
 __license__ = "MIT License"
-__version__ = '0.6.0'
+__version__ = "0.7.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -244,11 +244,12 @@ def retrieveCal_fromFile(toml_path):
     Retrieve calibration parameters from toml file.
     Output a dialog window to choose calibration file.
     '''
-    S, D, K, R, T, P = {}, {}, {}, {}, {}, {}
+    N, S, D, K, R, T, P = {}, {}, {}, {}, {}, {}, {}
     Kh, H = [], []
     cal = toml.load(toml_path)
     cal_keys = [i for i in cal.keys() if 'metadata' not in i] # exclude metadata key
     for i, cam in enumerate(cal_keys):
+        N[cam] = cal[cam]['name']
         S[cam] = np.array(cal[cam]['size'])
         D[cam] = np.array(cal[cam]['distortions'])
         
@@ -261,7 +262,7 @@ def retrieveCal_fromFile(toml_path):
         
         P[cam] = Kh.dot(H)
         
-    return S, D, K, R, T, P
+    return N, S, D, K, R, T, P
 
 
 def retrieveCal_fromScene(cameras):
@@ -345,14 +346,17 @@ def setup_cams(calib_params, collection=''):
         collection = bpy.data.collections.new(collection)
         bpy.context.scene.collection.children.link(collection)
 
-    S, D, K, R, T, P = calib_params
+    N, S, D, K, R, T, P = calib_params
     for i, c in enumerate(S.keys()):
         camera = bpy.data.cameras.new(c)
         camera_obj = bpy.data.objects.new(c, camera)
+        # bpy.ops.object.camera_add()
+        # camera = bpy.context.active_object
         collection.objects.link(camera_obj)
+        # bpy.context.collection.objects.unlink(camera_obj)
 
         # name
-        camera_obj.name = c
+        camera_obj.name = N[c]
         
         # image dimensions
         w, h = [int(i) for i in S[c]]
@@ -392,6 +396,7 @@ def import_cameras(toml_path):
     '''
 
     if os.path.isfile(toml_path):
+        outfile = os.path.splitext(toml_path)[0]+".toml"
         calib_params = retrieveCal_fromFile(toml_path)
         setup_cams(calib_params)
         
@@ -484,7 +489,7 @@ def show_images(camera, img_vid_path, single_image=False):
     d_scaley.driver.expression = '-scaleY * scale_factor'
     
     # place at Z = 1.5 m
-    img.location[0] = -camera.data.shift_x
+    img.location[0] = -camera.data.shift_x # NOT 100% SURE OF THIS
     img.location[1] = -camera.data.shift_y
     img.location[2] = -1.5
     

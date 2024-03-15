@@ -34,7 +34,7 @@
 ## INIT
 import bpy
 import bpy_extras.io_utils
-from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty
+from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty, CollectionProperty
 from Pose2Sim_Blender.Pose2Sim_Blender import model, motion, markers, forces, cameras
 from Pose2Sim_Blender.Pose2Sim_Blender.common import ShowMessageBox
 import os
@@ -48,7 +48,7 @@ __author__ = "David Pagnon, Jonathan Camargo"
 __copyright__ = "Copyright 2023, BlendOSim & Pose2Sim_Blender"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
-__version__ = '0.6.0'
+__version__ = "0.7.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -74,7 +74,7 @@ class importCal(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_description = "Import cameras from a `.toml` Pose2Sim camera calibration file"
     bl_options = {'REGISTER', 'UNDO'}
     
-    filter_glob : bpy.props.StringProperty(
+    filter_glob : StringProperty(
         name='Pose2Sim calibration file',
         default="*.toml",
         options={'HIDDEN'},
@@ -94,7 +94,7 @@ class exportCal(bpy.types.Operator,bpy_extras.io_utils.ExportHelper):
     
     filename_ext = '.toml'
     
-    filter_glob : bpy.props.StringProperty(
+    filter_glob : StringProperty(
         name='Pose2Sim calibration file',
         default="*.toml",
         options={'HIDDEN'},
@@ -230,7 +230,7 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_description = "Import a `.trc` or a `.c3d` marker file"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filter_glob : bpy.props.StringProperty(
+    filter_glob : StringProperty(
         name='Markers file',
         default="*.trc;*.c3d",
         options={'HIDDEN'},
@@ -259,14 +259,13 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         return {'FINISHED'}
 
 
-
 class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
-    bl_label = 'Model'
+    bl_label = 'Add Model'
     bl_description ="Import the 'bodies' of an `.osim` model"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filter_glob : bpy.props.StringProperty(
+    filter_glob : StringProperty(
         name='Model file',
         default="*.osim",
         options={'HIDDEN'},
@@ -281,11 +280,11 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_motion'
-    bl_label = 'Motion'
+    bl_label = 'Add Motion'
     bl_description = "Import a `.mot` or a `.csv` motion file"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filter_glob : bpy.props.StringProperty(
+    filter_glob : StringProperty(
         name='Motion file',
         default="*.mot;*.csv",
         options={'HIDDEN'},
@@ -307,11 +306,11 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
-    bl_label = 'Forces'
+    bl_label = 'Add Forces'
     bl_description = "Import a `.mot` force file"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filter_glob : bpy.props.StringProperty(
+    filter_glob : StringProperty(
         name='Force file',
         default="*.mot",
         options={'HIDDEN'},
@@ -414,10 +413,10 @@ class panel1(bpy.types.Panel):
         
         layout.label(text='')
         layout.label(text='Import OpenSim data') 
-        layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Add markers") 
-        layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Import model")
-        layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Import motion")
-        layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Import forces") 
+        layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Add Markers") 
+        layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Add Model")
+        layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Add Motion")
+        layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Add Forces") 
         
         layout.label(text='')
         layout.label(text='Other tools') 
