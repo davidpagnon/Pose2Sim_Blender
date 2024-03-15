@@ -94,7 +94,7 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
     '''
 
     if collection=='':
-        collection = bpy.data.collections.new('osimModel_'+os.path.basename())
+        collection = bpy.data.collections.new(os.path.basename(osim_path))
         bpy.context.scene.collection.children.link(collection)
     if isinstance(collection,str):
         collection = bpy.data.collections.new(collection)

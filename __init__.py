@@ -226,7 +226,7 @@ class filmWithCameras(bpy.types.Operator): #,bpy_extras.io_utils.ExportHelper):
 
 class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_markers'
-    bl_label = 'Add Markers'
+    bl_label = 'Markers'
     bl_description = "Import a `.trc` or a `.c3d` marker file"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -261,7 +261,7 @@ class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
-    bl_label = 'Add Model'
+    bl_label = 'Model'
     bl_description ="Import the 'bodies' of an `.osim` model"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -280,7 +280,7 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_motion'
-    bl_label = 'Add Motion'
+    bl_label = 'Motion'
     bl_description = "Import a `.mot` or a `.csv` motion file"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -306,7 +306,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
 
 class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
-    bl_label = 'Add Forces'
+    bl_label = 'Forces'
     bl_description = "Import a `.mot` force file"
     bl_options = {'REGISTER', 'UNDO'}
 
