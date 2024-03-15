@@ -73,12 +73,10 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
     '''
 
     # Retrieve previously loaded model
-    try:
-        collection=bpy.data.collections['osimModel']
-    except:
-        ShowMessageBox("First import an OpenSim .osim model", "No OpenSim model found")
-        raise('First import an OpenSim .osim model.')
-    collection = [c for c in bpy.data.collections if c.name.startswith('osimModel')][-1]
+    collection = bpy.context.collection
+    if collection == None or collection == bpy.data.scenes['Scene'].collection:
+        ShowMessageBox("First select a model in the outliner", "No OpenSim model found")
+        raise('First select a model in the outliner.')
     
     # If chosen file is .mot (joint angles)
     if os.path.splitext(mot_path)[1] == '.mot':

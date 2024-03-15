@@ -7,9 +7,9 @@
 
 **`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results -- and more.**
 
-> N.B.:\
-- Faster .mot import
-- Fixed CollectionProperty import error
+> N.B.:
+> - Faster .mot import
+> - Fixed various issues
 
 [Pose2Sim](https://github.com/perfanalytics/pose2sim) is an open-source pipeline for obtaining research-grade 3D motion analysis from consumer-grade cameras (**such as phones, webcams, GoPros, etc**).
 

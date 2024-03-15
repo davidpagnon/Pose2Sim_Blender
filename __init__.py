@@ -413,10 +413,10 @@ class panel1(bpy.types.Panel):
         
         layout.label(text='')
         layout.label(text='Import OpenSim data') 
-        layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Add Markers") 
-        layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Add Model")
-        layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Add Motion")
-        layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Add Forces") 
+        layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Markers") 
+        layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Model")
+        layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Motion")
+        layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Forces") 
         
         layout.label(text='')
         layout.label(text='Other tools') 
