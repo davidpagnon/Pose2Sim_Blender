@@ -28,6 +28,7 @@ from .common import ShowMessageBox
 
 RAY_WIDTH = 0/1000
 COLOR = (0.8, 0.4, 0.1, 0.8)
+IMAGE_QUALITY = 90
 
 
 ## AUTHORSHIP INFORMATION
@@ -237,7 +238,7 @@ def hide(objects, state):
     
     for obj in objects:
         obj.hide_set(state)
-        
+    
     
 def retrieveCal_fromFile(toml_path):
     '''
@@ -531,21 +532,29 @@ def film_from_cams( dir_path,
     if movie_or_sequence=='movie':
         scene.render.fps = target_framerate
         scene.render.image_settings.file_format = 'FFMPEG'
-        scene.render.image_settings.quality = 90
-        scene.render.ffmpeg.format = 'MKV'
+        scene.render.image_settings.quality = IMAGE_QUALITY
+        scene.render.ffmpeg.format = 'MPEG4'
         scene.render.ffmpeg.constant_rate_factor = 'MEDIUM' # Output quality
         scene.render.ffmpeg.ffmpeg_preset = 'GOOD' # Encoding speed
         scene.render.ffmpeg.codec = 'H264' # Video codec
         scene.render.ffmpeg.audio_codec = 'NONE' # Audio set to none
+        extension = 'mp4'
     else:
         scene.render.image_settings.file_format = 'PNG'
+        scene.render.image_settings.quality = IMAGE_QUALITY
+        extension = 'png'
     
     for cam in cams:
         bpy.context.view_layer.objects.active = cam
         see_through_selected_camera()
-        scene.render.filepath = os.path.join(dir_path, cam.name, cam.name+'.')
-        bpy.ops.render.opengl(animation=True)
-        
+        scene.render.filepath = os.path.join(dir_path, cam.name, cam.name+'.'+extension)
+        try:
+            print('Render with OpenGL')
+            bpy.ops.render.opengl(animation=True)
+        except:
+            print('WARNING: Render with Blender renderer')
+            bpy.ops.render.render(animation=True, use_viewport=True)
+            
     
 def see_through_selected_camera():
     '''
