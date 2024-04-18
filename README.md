@@ -91,7 +91,7 @@ conda create -n Pose2Sim_Blender python=3.10.12 -y
 conda activate Pose2Sim_Blender
 conda install -c opensim-org opensim -y
 pip uninstall numpy
-pip install numpy bpy toml vtk
+pip install numpy pandas bpy toml vtk
 ```
 
 ##### 4. Install Pose2Sim_Blender add-on
