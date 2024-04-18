@@ -68,6 +68,8 @@ https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-47
 
 Full installation requires admin rights on your computer. It is a little tricky, but the following steps should do it smoothly. If you encounter any issues, please [submit an issue](https://github.com/davidpagnon/Pose2Sim_Blender/issues). Only Windows has been tested, but feel free to tell me how it goes on other platforms!
 
+It is only needed for importing `.mot`motion files.
+
 ##### 1. Prerequisites
 
   - Install [Blender](https://www.blender.org/download/) (tested on v 3.6 and 4.0.)
