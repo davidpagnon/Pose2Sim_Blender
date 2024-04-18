@@ -87,21 +87,21 @@ sys.version
 
 Open Miniconda, and copy-paste these lines. Replace with the Python version you just found:
 ``` cmd
-conda create -n Pose2Sim_Blender python=3.10.12 -y 
+conda create -n Pose2Sim_Blender python=3.10.13 -y 
 conda activate Pose2Sim_Blender
 conda install -c opensim-org opensim -y
 pip uninstall numpy
-pip install numpy pandas bpy toml vtk
+pip install numpy bpy toml vtk
 ```
 
 ##### 4. Install Pose2Sim_Blender add-on
 
 You will need admin rights for the next steps:
-- Rename `python` in `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python` to `python_old`
+- Rename `python` in `C:\Program Files\Blender Foundation\Blender 4.0\4.0\python` to `python_old`
 - Copy-paste there your `Pose2Sim_Blender` environment folder (to find its location, type `conda env list` in Anaconda prompt). Rename it to `python`
-- Open `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python\Lib\opensim\__init__.py` 
+- Open `C:\Program Files\Blender Foundation\Blender 4.0\4.0\python\Lib\opensim\__init__.py` 
   - comment out the line `# from .moco import *`
-  - line 4, add the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.4/bin")` (or 4.5, depending on your version)
+  - line 4, insert the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.5/bin")` (replace 4.5 with the version you installed)
 
 
 <!-- #### If you need the last OpenSim beta version
@@ -110,6 +110,13 @@ You will need admin rights for the next steps:
 - Line 17 (instead of 4), `add os.add_dll_directory(r"C:/OpenSim 4.5/bin")`
 - You may also need to install [OpenSim 4.5 beta](https://simtk.org/frs/?group_id=91#:~:text=OpenSim%20Release%20Betas) first, and to change its path from something like `C:/OpenSim 4.5-2023-12-04-cfbf426` to `C:/OpenSim 4.5`. -->
 
+<!-- If you want to install an additional package from Blender
+- Copy the bin directory from python_old to python
+- https://blenderartists.org/t/can-i-install-pandas-or-other-modules-into-blenders-python/1375122
+    import sys, subprocess, os
+    python_exe = os.path.join(sys.prefix, 'bin', 'python.exe') # remove '.exe' on Linux
+    subprocess.call([python_exe, "-m", "pip", "install", "pandas"])
+-->
 
 ##### 5. Install Pose2Sim_Blender add-on in Blender
 
