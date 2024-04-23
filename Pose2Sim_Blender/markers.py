@@ -124,7 +124,7 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
         # bpy.data.scenes['Scene'].render.fps = fps
             
         # create markers
-        marker_collection = bpy.data.collections.new('markers')
+        marker_collection = bpy.data.collections.new(os.path.basename(trc_path))
         bpy.context.scene.collection.children.link(marker_collection)
         for markerName in markerNames:
             matg = createMaterial(color=COLOR, metallic = 0.5, roughness = 0.5)

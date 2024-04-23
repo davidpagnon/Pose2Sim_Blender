@@ -58,7 +58,7 @@ __status__ = "Development"
 bl_info = {
     "name": "Pose2Sim Blender",
     "author": "David Pagnon, Jonathan Camargo",
-    "version": (0, 0, 1),
+    "version": (0, 7, 0),
     "blender": (3, 6, 0),
     "location": "VIEW_3D > UI > Sidebar (press N)",
     "category": "Import-Export",
