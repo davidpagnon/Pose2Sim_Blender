@@ -117,7 +117,7 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
         bpy.context.scene.render.fps = target_framerate
         
         times = trc_data_np[:,0]
-        fps = int((len(times)-1) / (times[-1] - times[0]))
+        fps = round((len(times)-1) / (times[-1] - times[0]))
         conv_fac_frame_rate = int(np.round(fps / target_framerate))
         if conv_fac_frame_rate == 0:
             conv_fac_frame_rate = 1

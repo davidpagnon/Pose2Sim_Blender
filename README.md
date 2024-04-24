@@ -66,42 +66,59 @@ https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-47
 
 ### Full install
 
-Full install requires admin rights on your computer. It is a little tricky, but the following steps should do it smoothly. If you encounter any issue, please [submit an issue](https://github.com/davidpagnon/Pose2Sim_Blender/issues). Only Windows has been tested, but feel free to tell me how it goes on other platforms!
+Full installation requires admin rights on your computer. It is a little tricky, but the following steps should do it smoothly. If you encounter any issues, please [submit an issue](https://github.com/davidpagnon/Pose2Sim_Blender/issues). Only Windows has been tested, but feel free to tell me how it goes on other platforms!
+
+It is only needed for importing `.mot`motion files.
 
 ##### 1. Prerequisites
 
-- Install [Blender](https://www.blender.org/download/) (tested on v 3.6 and 4.0.)
-- Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
+  - Install [Blender](https://www.blender.org/download/) (tested on v 3.6 and 4.0.)
+  - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+  - Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
 ##### 2. Find your Blender Python version
 
-Open Blender, press Shift+F4, type the following lines:
+&nbsp;&nbsp;Open Blender, press Shift+F4, type the following lines:
+  
+  ```python
+  import sys
+  sys.version
+  ```
+  
+##### 3. Install Pose2Sim_Blender libraries
+  
+  - Open Miniconda, and copy-paste these lines.\
+  *Replace with the Python version you just found*:
+  ```cmd
+  conda create -n Pose2Sim_Blender python=3.10.13 -y 
+  conda activate Pose2Sim_Blender
+  conda install -c opensim-org opensim -y
+  pip uninstall numpy
+  pip install numpy bpy toml vtk
+  ```
+  - Now write down the location of your newly created environment (typically `C:\Users\<USERNAME>\miniconda3\envs\Pose2Sim_Blender`):
+  ```cmd
+  conda env list
+  ```
+  - OpenSim installation needs to be fixed. Open *<LOCATION_OF_POSE2SIM_BLENDER_ENV>\Lib\opensim\__init__.py* with any text editor:
+    - comment out the line `# from .moco import *`
+    - line 4, insert the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.5/bin")`.\
+      *Replace 4.5 with the version you installed*
 
-``` python
-import sys
-sys.version
-```
+##### 4. Link your conda environment to Blender Python
 
-##### 3. Install Sim2Blend libraries
+  &nbsp;&nbsp;Open CMD as an administrator.\
+  &nbsp;&nbsp;*Replace with your Blender version and with the location of your Pose2Sim_Blender environment*:
+  ```cmd
+  cd "C:\Program Files\Blender Foundation\Blender 4.0\4.0"
+  mv python python_old
+  mklink /j python <LOCATION_OF_POSE2SIM_BLENDER_ENV>
+  mv /j python\DLLs python\DLLs_old
+  mklink /j python\DLLs python_old\DLLs
+  mklink /j python\bin python_old\bin
+  ```
+  &nbsp;&nbsp;**Now, any package you install in your conda environment will immediately be available in Blender.**
 
-Open Miniconda, and copy-paste these lines. Replace with the Python version you just found:
-``` cmd
-conda create -n Pose2Sim_Blender python=3.10.12 -y 
-conda activate Pose2Sim_Blender
-conda install -c opensim-org opensim -y
-pip uninstall numpy
-pip install numpy bpy toml vtk
-```
-
-##### 4. Install Pose2Sim_Blender add-on
-
-You will need admin rights for the next steps:
-- Rename `python` in `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python` to `python_old`
-- Copy-paste there your `Pose2Sim_Blender` environment folder (to find its location, type `conda env list` in Anaconda prompt). Rename it to `python`
-- Open `C:\Program Files\Blender Foundation\Blender 3.6\3.6\python\Lib\opensim\__init__.py` 
-  - comment out the line `# from .moco import *`
-  - line 4, add the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.4/bin")` (or 4.5, depending on your version)
 
 
 <!-- #### If you need the last OpenSim beta version
@@ -110,12 +127,19 @@ You will need admin rights for the next steps:
 - Line 17 (instead of 4), `add os.add_dll_directory(r"C:/OpenSim 4.5/bin")`
 - You may also need to install [OpenSim 4.5 beta](https://simtk.org/frs/?group_id=91#:~:text=OpenSim%20Release%20Betas) first, and to change its path from something like `C:/OpenSim 4.5-2023-12-04-cfbf426` to `C:/OpenSim 4.5`. -->
 
+<!-- If you want to install an additional package from Blender
+- Copy the bin directory from python_old to python
+- https://blenderartists.org/t/can-i-install-pandas-or-other-modules-into-blenders-python/1375122
+    import sys, subprocess, os
+    python_exe = os.path.join(sys.prefix, 'bin', 'python.exe') # remove '.exe' on Linux
+    subprocess.call([python_exe, "-m", "pip", "install", "pandas"])
+-->
 
 ##### 5. Install Pose2Sim_Blender add-on in Blender
-
-- Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Pose2Sim_Blender.zip
-- Check `Pose2Sim_Blender` to enable it
-- Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
+  
+  - Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Pose2Sim_Blender.zip
+  - Check `Pose2Sim_Blender` to enable it
+  - Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
 
 <br>
 
