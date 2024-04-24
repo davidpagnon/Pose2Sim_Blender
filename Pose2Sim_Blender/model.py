@@ -151,7 +151,7 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
                     bpy.ops.import_mesh.stl(filepath=fullFile_stl)
                     break
                 elif os.path.exists(fullFile_ply):
-                    bpy.ops.import_mesh.ply(filepath=fullFile_ply)
+                    bpy.ops.wm.ply_import(filepath=fullFile_ply)
                     break
                 elif os.path.exists(fullFile_vtp):
                     try:
