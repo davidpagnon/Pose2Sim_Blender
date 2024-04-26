@@ -141,7 +141,8 @@ def import_forces(grf_path, direction='zup', target_framerate=30):
 
     # create arrows
     x_unit_arrow=Vector([1,0,0])
-    H_zup = np.array([[0,0,1,0], [1,0,0,0], [0,1,0,0], [0,0,0,1]])
+    # H_zup = np.array([[0,0,1,0], [1,0,0,0], [0,1,0,0], [0,0,0,1]])
+    H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
     for n in range(0, len(times), conv_fac_frame_rate):
         for i, f in enumerate(grfNames):
             T = grf_data_np[n, 1+3+9*i : 1+3+9*i+3]

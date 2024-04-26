@@ -137,8 +137,11 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
             for n in range(0, len(times), conv_fac_frame_rate):
                 # y-up to z-up
                 if direction=='zup':
-                    loc_x = trc_data_np[n,3*i+3]
-                    loc_y = trc_data_np[n,3*i+1]
+                    # loc_x = trc_data_np[n,3*i+3]
+                    # loc_y = trc_data_np[n,3*i+1]
+                    # loc_z = trc_data_np[n,3*i+2]
+                    loc_x = trc_data_np[n,3*i+1]
+                    loc_y = -trc_data_np[n,3*i+3]
                     loc_z = trc_data_np[n,3*i+2]
                 else:
                     loc_x = trc_data_np[n,3*i+1]
@@ -147,11 +150,14 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
                 obj=marker_collection.objects[m]
                 obj.location=loc_x,loc_y,loc_z
                 obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
+        [ob.select_set(True) for ob in marker_collection.objects]
     
     elif trc_path.endswith('.c3d'):
         bpy.ops.preferences.addon_enable(module='io_anim_c3d')
         from io_anim_c3d import c3d_importer
         operator = bpy.types.Operator
-        c3d_importer.load(operator, bpy.context, filepath = trc_path)
+        c3d_importer.load(operator, bpy.context, \
+                          filepath = trc_path, \
+                          use_manual_orientation=True, axis_forward='Y', axis_up='Z')
         
     print(f'Marker data imported from {trc_path}')

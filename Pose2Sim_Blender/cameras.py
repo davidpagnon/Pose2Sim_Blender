@@ -373,10 +373,12 @@ def setup_cams(calib_params, collection=''):
         
         # rotation and translation
         r, t = world_to_camera_persp(R[c], T[c])
+        t = np.array([t[1], -t[0], t[2]])
         homog_matrix = np.block([[r,t.reshape(3,1)], 
                                 [np.zeros(3), 1 ]])
         camera_obj.matrix_world = mathutils.Matrix(homog_matrix)
         set_loc_rotation(camera_obj, np.radians([180,0,0]))
+        camera_obj.rotation_euler += np.radians([0, 0, -90])
         
         # principal point # see https://blender.stackexchange.com/a/58236/174689
         principal_point =  K[c][0,2],  K[c][1,2]
@@ -442,10 +444,10 @@ def show_images(camera, img_vid_path, single_image=False):
         if img.data.source == 'MOVIE':
             # BUG: if select single image, delete, and then reload as movie, does not update source as movie
             img.image_user.frame_duration =  img.data.frame_duration
-            img.image_user.frame_start =  0
+            img.image_user.frame_start =  1
         elif img.data.source == 'FILE': 
             img.data.source = 'SEQUENCE'
-            img.image_user.frame_start =  0
+            img.image_user.frame_start =  1
     else: 
         img.data.source = 'FILE'
     

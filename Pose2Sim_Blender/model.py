@@ -191,6 +191,8 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
     empties = bpy.context.selected_objects
     [empt.hide_set(True) for empt in empties]
     
+    bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[collection.name]
+    
     print(f'OpenSim model imported from {osim_path}')
             
 
