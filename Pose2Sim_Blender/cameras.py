@@ -245,25 +245,56 @@ def retrieveCal_fromFile(toml_path):
     Retrieve calibration parameters from toml file.
     Output a dialog window to choose calibration file.
     '''
-    N, S, D, K, R, T, P = {}, {}, {}, {}, {}, {}, {}
-    Kh, H = [], []
+    N, S, D, K, R, T, P, moving = {}, {}, {}, {}, {}, {}, {}, {}
+    Kh, H = {}, {}
     cal = toml.load(toml_path)
     cal_keys = [i for i in cal.keys() if 'metadata' not in i] # exclude metadata key
-    for i, cam in enumerate(cal_keys):
+    for cam in cal_keys:
+        try:
+            moving[cam] = cal[cam]['moving']
+        except:
+            moving[cam] = False
+
         N[cam] = cal[cam]['name']
         S[cam] = np.array(cal[cam]['size'])
         D[cam] = np.array(cal[cam]['distortions'])
-        
         K[cam] = np.array(cal[cam]['matrix'])
-        Kh = np.block([K[cam], np.zeros(3).reshape(3,1)])
-        
-        R[cam] = rod_to_mat(np.array(cal[cam]['rotation']))
         T[cam] = np.array(cal[cam]['translation'])
-        H = np.block([[R[cam],T[cam].reshape(3,1)], [np.zeros(3), 1 ]])
         
-        P[cam] = Kh.dot(H)
+        R[cam], P[cam], Kh[cam], H[cam] = [], [], [], []
         
-    return N, S, D, K, R, T, P
+        if moving[cam]:
+            if 'intr' in moving[cam]:
+                for i in range(len(K[cam])):
+                    Kh[cam].append(np.block([K[cam][i], np.zeros(3).reshape(3,1)]))
+            else:
+                Kh[cam] = np.block([K[cam], np.zeros(3).reshape(3,1)])
+        
+            if 'extr' in moving[cam]:
+                for i in range(len(T[cam])):
+                    R[cam].append(rod_to_mat(np.array(cal[cam]['rotation'][i])))
+                    H[cam].append(np.block([[R[cam][i],T[cam][i].reshape(3,1)], [np.zeros(3), 1 ]]))
+            else:
+                R[cam] = rod_to_mat(np.array(cal[cam]['rotation']))
+                H[cam] = np.block([[R[cam],T[cam].reshape(3,1)], [np.zeros(3), 1 ]])
+                    
+            if 'extr' in moving[cam] and 'intr' in moving[cam]:
+                for i in range(len(T[cam])):
+                    P[cam].append(Kh[cam][i] @ H[cam][i])
+            elif 'extr' in moving[cam] and 'intr' not in moving[cam]:
+                for i in range(len(T[cam])):
+                    P[cam].append(Kh[cam] @ H[cam][i])
+            elif 'intr' in moving[cam] and 'extr' not in moving[cam]:
+                for i in range(len(K[cam])):
+                    P[cam].append(Kh[cam][i] @ H[cam])
+            
+        else:
+            R[cam] = rod_to_mat(np.array(cal[cam]['rotation']))
+            H[cam] = np.block([[R[cam],T[cam].reshape(3,1)], [np.zeros(3), 1 ]])
+            Kh[cam] = np.block([K[cam], np.zeros(3).reshape(3,1)])
+            P[cam] = Kh[cam] @ H[cam]
+        
+    return N, S, D, K, R, T, P, moving
 
 
 def retrieveCal_fromScene(cameras):
@@ -304,7 +335,14 @@ def retrieveCal_fromScene(cameras):
         rot = mathutils.Euler(np.radians([180,0,0]), 'ZYX')
         r = camera.rotation_euler.to_matrix() @ rot.to_matrix()
         t = camera.location
-        r_loc, t_loc = world_to_camera_persp(np.array(list(r)), t)
+        
+        # rotate 90
+        rot_90 = np.array(mathutils.Euler([0,0,np.radians(90)]).to_matrix())
+        t_new = rot_90 @ t
+        r_new = rot_90 @ r
+        
+        r_loc, t_loc = world_to_camera_persp(np.array(r_new), t_new)
+        
         r_rod = mat_to_rod(r_loc)
         
         R += [list(r_rod)]
@@ -347,7 +385,7 @@ def setup_cams(calib_params, collection=''):
         collection = bpy.data.collections.new(collection)
         bpy.context.scene.collection.children.link(collection)
 
-    N, S, D, K, R, T, P = calib_params
+    N, S, D, K, R, T, P, moving = calib_params
     for i, c in enumerate(S.keys()):
         camera = bpy.data.cameras.new(c)
         camera_obj = bpy.data.objects.new(c, camera)
@@ -363,27 +401,55 @@ def setup_cams(calib_params, collection=''):
         w, h = [int(i) for i in S[c]]
         
         # field of view
-        fx, fy = K[c][0,0], K[c][1,1]
-        fov_x = 2 * np.arctan2(w, 2 * fx)
-        fov_y = 2 * np.arctan2(h, 2 * fy)
-        
-        camera.type = 'PERSP'
-        camera.lens_unit = 'FOV'
-        camera.angle = np.max([fov_x, fov_y])
-        
+        if moving[c] and 'intr' in moving[c]:
+            for n in range(0,len(K[c])):
+                fx, fy = K[c][n][0,0], K[c][n][1,1]
+                fov_x = 2 * np.arctan2(w, 2 * fx)
+                fov_y = 2 * np.arctan2(h, 2 * fy)
+                
+                camera.type = 'PERSP'
+                camera.lens_unit = 'FOV'
+                camera.angle = np.max([fov_x, fov_y])
+            
+                camera.keyframe_insert('lens', frame=n+1)
+        else: 
+            fx, fy = K[c][0,0], K[c][1,1]
+            fov_x = 2 * np.arctan2(w, 2 * fx)
+            fov_y = 2 * np.arctan2(h, 2 * fy)
+            
+            camera.type = 'PERSP'
+            camera.lens_unit = 'FOV'
+            camera.angle = np.max([fov_x, fov_y])
+            
         # rotation and translation
-        r, t = world_to_camera_persp(R[c], T[c])
-        t = np.array([t[1], -t[0], t[2]])
-        homog_matrix = np.block([[r,t.reshape(3,1)], 
-                                [np.zeros(3), 1 ]])
-        camera_obj.matrix_world = mathutils.Matrix(homog_matrix)
-        set_loc_rotation(camera_obj, np.radians([180,0,0]))
-        camera_obj.rotation_euler += np.radians([0, 0, -90])
+        if moving[c] and 'extr' in moving[c]:
+            for n in range(0,len(R[c])):
+                r, t = world_to_camera_persp(R[c][n], T[c][n])
+                t = np.array([t[1], -t[0], t[2]])
+                homog_matrix = np.block([[r,t.reshape(3,1)], 
+                                        [np.zeros(3), 1 ]])
+                camera_obj.matrix_world = mathutils.Matrix(homog_matrix)
+                set_loc_rotation(camera_obj, np.radians([180,0,0]))
+                camera_obj.rotation_euler += np.radians([0, 0, -90])
+                
+                camera_obj.keyframe_insert('location', frame=n+1)
+                camera_obj.keyframe_insert('rotation_euler', frame=n+1)
+        else:
+            r, t = world_to_camera_persp(R[c], T[c])
+            t = np.array([t[1], -t[0], t[2]])
+            homog_matrix = np.block([[r,t.reshape(3,1)], 
+                                    [np.zeros(3), 1 ]])
+            camera_obj.matrix_world = mathutils.Matrix(homog_matrix)
+            set_loc_rotation(camera_obj, np.radians([180,0,0]))
+            camera_obj.rotation_euler += np.radians([0, 0, -90])
         
         # principal point # see https://blender.stackexchange.com/a/58236/174689
-        principal_point =  K[c][0,2],  K[c][1,2]
+        if moving[c] and 'intr' in moving[c]:
+            principal_point =  K[c][0][0,2],  K[c][0][1,2]
+        else:
+            principal_point =  K[c][0,2],  K[c][1,2]
         max_wh = np.max([w,h])
-        
+            
         camera.shift_x = 1/max_wh*(principal_point[0] - w/2)
         camera.shift_y = 1/max_wh*(principal_point[1] - h/2)
 
