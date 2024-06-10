@@ -1,15 +1,33 @@
 cff-version: 1.2.0
-message: "If you use Pose2Sim_Blender, please cite it as below."
+message: "If you use Pose2Sim, please cite it as below."
 authors:
 - family-names: "Pagnon"
   given-names: "David"
   orcid: "https://orcid.org/0000-0002-6891-8331"
-- family-names: "Camargo"
-  given-names: "Jonathan"
-  orcid: "https://orcid.org/0000-0001-5219-2110"
-title: "Pose2Sim_Blender - Visualize cameras, videos, and OpenSim results in Blender"
-version: 0.1.0
-doi: '10.5281/zenodo.8421820'
-date-released: 2023-10-09
-url: "https://github.com/davidpagnon/Pose2Sim_Blender"
-journal: "GitHub repository"
+title: "Pose2Sim: An open-source Python package for multiview markerless kinematics"
+version: 0.8.0
+doi: '10.21105/joss.04362'
+date-released: 2022-05-05
+url: "https://github.com/perfanalytics/pose2sim"
+journal: "Journal of Open Source Software"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Pagnon"
+    given-names: "David"
+    orcid: "https://orcid.org/0000-0002-6891-8331"
+  - family-names: "Domalain"
+    given-names: "Mathieu"
+    orcid: "https://orcid.org/0000-0002-4518-8479"
+  - family-names: "Reveret"
+    given-names: "Lionel"
+    orcid: "https://orcid.org/0000-0002-0810-5187"
+  doi: "10.21105/joss.04362"
+  journal: "Journal of Open Source Software"
+  month: 9
+  start: 4362 # First page number
+  end: 4369 # Last page number
+  title: "Pose2Sim: An open-source Python package for multiview markerless kinematics"
+  issue: 77
+  volume: 7
+  year: 2022
