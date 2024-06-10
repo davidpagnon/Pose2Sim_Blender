@@ -194,16 +194,15 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
 
 ### How to cite
 
-If you use Pose2Sim_Blender, please cite [Pagnon, 2023].
+If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/10.21105/joss.04362).
 
-     @misc{Pagnon2023,
-       author = {Pagnon, David},
-       title = {Pose2Sim_Blender - Visualize Pose2Sim data},
-       year = {2023},
-       doi= {10.5281/zenodo.8421820},
-       publisher = {GitHub},
-       journal = {GitHub repository},
-       howpublished = {\url{https://github.com/davidpagnon/Pose2Sim_Blender}},
+     @Article{Pagnon_2022_JOSS, 
+      AUTHOR = {Pagnon, David and Domalain, Mathieu and Reveret, Lionel}, 
+      TITLE = {Pose2Sim: An open-source Python package for multiview markerless kinematics}, 
+      JOURNAL = {Journal of Open Source Software}, 
+      YEAR = {2022},
+      DOI = {10.21105/joss.04362}, 
+      URL = {https://joss.theoj.org/papers/10.21105/joss.04362}
      }
 
 ### How to contribute
