@@ -618,7 +618,7 @@ def show_images(camera, img_vid_path, single_image=False):
     
     # place at Z = 1.5 m
     img.location[0] = -camera.data.shift_x # NOT 100% SURE OF THIS
-    img.location[1] = -camera.data.shift_y
+    img.location[1] = camera.data.shift_y
     img.location[2] = -1.5
     
     bpy.ops.object.transform_apply(location=False, scale=True)
