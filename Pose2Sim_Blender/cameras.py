@@ -74,11 +74,24 @@ bpy.utils.register_class(ModalOperator)
 
 
 ## FUNCTIONS
+def has_keyframe(ob, attr):
+    '''
+    Check if an object is animated or not
+    https://blender.stackexchange.com/questions/4994/check-if-a-property-is-animated-or-has-a-driver
+    '''
+    
+    anim = ob.animation_data
+    if anim is not None and anim.action is not None:
+        for fcu in anim.action.fcurves:
+            if fcu.data_path == attr:
+                return len(fcu.keyframe_points) > 0
+    return False
+    
+    
 def rod_to_mat(rodrigues_vec):
     '''
     Transform Rodrigues vector to rotation matrix without cv2
-    https://stackoverflow.com/questions/62345076/how-to-convert-a-rodrigues-vector-to-a-rotation-matrix-without-opencv
--using-pyth
+    https://stackoverflow.com/questions/62345076/how-to-convert-a-rodrigues-vector-to-a-rotation-matrix-without-opencv-using-pyth
     '''
     
     rodrigues_vec = rodrigues_vec.flatten()
@@ -313,37 +326,83 @@ def retrieveCal_fromScene(cameras):
     D = [distortions] * len(cameras)
     
     N, K, R, T, P = [], [], [], [], []
-    for camera in cameras:
+    for camera_obj in cameras:
         # camera name
-        name = camera.name
+        name = camera_obj.name
+        camera = bpy.data.cameras[camera_obj.name]
         N += [name]
-        
-        # focal distance (px)
-        fov = camera.data.angle
-        f_1 = w / ( 2 * np.tan(fov/2) )
-        f_2 = h / ( 2 * np.tan(fov/2) )
-        f = np.max([f_1, f_2])
         
         # principal point
         max_wh = np.max([w,h])
-        cx = max_wh * camera.data.shift_x + w/2
-        cy = max_wh * camera.data.shift_y + h/2
+        cx = max_wh * camera.shift_x + w/2
+        cy = max_wh * camera.shift_y + h/2
         
-        K += [[[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]]]
+        # focal distance (px)
+        if not has_keyframe(camera, "lens"):
+            fov = camera.angle
+            f_1 = w / ( 2 * np.tan(fov/2) )
+            f_2 = h / ( 2 * np.tan(fov/2) )
+            f = np.max([f_1, f_2])
+            
+            K += [[[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]]]
+            
+        else:
+            K_cam = []
+            for fc in camera.animation_data.action.fcurves:
+                if 'lens' in fc.data_path:
+                    for key in fc.keyframe_points:                      # each frame
+                        lens = key.co[1]
+                        f = lens * w / camera.sensor_width
+                        K_cam.append( [[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]] )
+            K += [K_cam]
         
         # rotation, translation
-        rot = mathutils.Euler(np.radians([180,0,0]), 'ZYX')
-        r = camera.rotation_euler.to_matrix() @ rot.to_matrix()
-        t = camera.location
-        
-        # rotate 90
+        rot_180 = mathutils.Euler(np.radians([180,0,0]), 'ZYX').to_matrix()
         rot_90 = np.array(mathutils.Euler([0,0,np.radians(90)]).to_matrix())
-        t_new = rot_90 @ t
-        r_new = rot_90 @ r
+        if not has_keyframe(camera_obj, "location") and not has_keyframe(camera_obj, "rotation_euler"):
+            # flip x
+            r = camera_obj.rotation_euler.to_matrix() @ rot_180
+            t = camera_obj.location
+            # rotate 90
+            t_new = rot_90 @ t
+            r_new = rot_90 @ r
+            
+            r_loc, t_loc = world_to_camera_persp(np.array(r_new), t_new)
+            
+            r_rod = mat_to_rod(r_loc)
         
-        r_loc, t_loc = world_to_camera_persp(np.array(r_new), t_new)
-        
-        r_rod = mat_to_rod(r_loc)
+        else:
+            t_loc, r_rod = [], []
+            t_idx, r_idx, extr_len = 0, 0, 0
+            rotation = [[], [], []]
+            translation = [[], [], []]
+            for fc in camera_obj.animation_data.action.fcurves:  # each loc and rot
+                extr_len = len(fc.keyframe_points) if len(fc.keyframe_points) > extr_len else extr_len
+                if 'rotation' in fc.data_path:
+                    for key in fc.keyframe_points:                      # each frame
+                        rotation[r_idx].append(key.co[1])
+                    r_idx += 1
+                    
+                if 'location' in fc.data_path:
+                    for key in fc.keyframe_points:                      # each frame
+                        translation[t_idx].append(key.co[1])
+                    t_idx += 1
+            
+            rotation = np.array(rotation).T
+            translation = np.array(translation).T
+                    
+            for i in range(extr_len):
+                # flip x
+                r = mathutils.Euler(rotation[i]).to_matrix() @ rot_180
+                t = translation[i]
+                # rotate 90
+                t_new = rot_90 @ t
+                r_new = rot_90 @ r
+                
+                r_loc_i, t_loc_i = world_to_camera_persp(np.array(r_new), t_new)
+                
+                t_loc.append(list(t_loc_i))
+                r_rod.append(list(mat_to_rod(r_loc_i)))
         
         R += [list(r_rod)]
         T += [list(t_loc)]
@@ -559,7 +618,7 @@ def show_images(camera, img_vid_path, single_image=False):
     
     # place at Z = 1.5 m
     img.location[0] = -camera.data.shift_x # NOT 100% SURE OF THIS
-    img.location[1] = -camera.data.shift_y
+    img.location[1] = camera.data.shift_y
     img.location[2] = -1.5
     
     bpy.ops.object.transform_apply(location=False, scale=True)
