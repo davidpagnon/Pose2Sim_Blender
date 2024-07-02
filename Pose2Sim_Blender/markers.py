@@ -57,7 +57,7 @@ def load_trc(trc_path):
     '''
 
     # read data
-    trc_data_np = np.genfromtxt(trc_path, skip_header=5, delimiter = '\t')[:,1:] 
+    trc_data_np = np.genfromtxt(trc_path, skip_header=5, delimiter = '\t')
     
     # read marker names
     with open(trc_path) as f:
@@ -116,7 +116,8 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
         # set framerate
         bpy.context.scene.render.fps = target_framerate
         
-        times = trc_data_np[:,0]
+        times = trc_data_np[:,1]
+        first_frame = int(trc_data_np[0,0])
         fps = round((len(times)-1) / (times[-1] - times[0]))
         conv_fac_frame_rate = int(np.round(fps / target_framerate))
         if conv_fac_frame_rate == 0:
@@ -137,19 +138,19 @@ def import_trc(trc_path, direction='zup', target_framerate=30):
             for n in range(0, len(times), conv_fac_frame_rate):
                 # y-up to z-up
                 if direction=='zup':
-                    # loc_x = trc_data_np[n,3*i+3]
-                    # loc_y = trc_data_np[n,3*i+1]
-                    # loc_z = trc_data_np[n,3*i+2]
-                    loc_x = trc_data_np[n,3*i+1]
-                    loc_y = -trc_data_np[n,3*i+3]
-                    loc_z = trc_data_np[n,3*i+2]
+                    # loc_x = trc_data_np[n,3*i+4]
+                    # loc_y = trc_data_np[n,3*i+2]
+                    # loc_z = trc_data_np[n,3*i+3]
+                    loc_x = trc_data_np[n,3*i+2]
+                    loc_y = -trc_data_np[n,3*i+4]
+                    loc_z = trc_data_np[n,3*i+3]
                 else:
-                    loc_x = trc_data_np[n,3*i+1]
-                    loc_y = trc_data_np[n,3*i+3]
-                    loc_z = trc_data_np[n,3*i+2]
+                    loc_x = trc_data_np[n,3*i+2]
+                    loc_y = trc_data_np[n,3*i+4]
+                    loc_z = trc_data_np[n,3*i+3]
                 obj=marker_collection.objects[m]
                 obj.location=loc_x,loc_y,loc_z
-                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
+                obj.keyframe_insert('location',frame=first_frame+int(n/conv_fac_frame_rate))
         [ob.select_set(True) for ob in marker_collection.objects]
     
     elif trc_path.endswith('.c3d'):
