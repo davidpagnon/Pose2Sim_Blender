@@ -261,14 +261,14 @@ def retrieveCal_fromFile(toml_path):
     N, S, D, K, R, T, P, moving = {}, {}, {}, {}, {}, {}, {}, {}
     Kh, H = {}, {}
     cal = toml.load(toml_path)
-    cal_keys = [i for i in cal.keys() if 'metadata' not in i] # exclude metadata key
+    cal_keys = [c for c in cal.keys() if c not in ['metadata', 'capture_volume', 'charuco', 'checkerboard'] and isinstance(cal[c],dict)]
     for cam in cal_keys:
         try:
             moving[cam] = cal[cam]['moving']
         except:
             moving[cam] = False
 
-        N[cam] = cal[cam]['name']
+        N[cam] = cal[cam].get('name') if cal[cam].get('name') else cam
         S[cam] = np.array(cal[cam]['size'])
         D[cam] = np.array(cal[cam]['distortions'])
         K[cam] = np.array(cal[cam]['matrix'])
