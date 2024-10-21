@@ -148,7 +148,8 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
                 fullFile_vtp = os.path.join(dir, filename_vtp)
                 # print(f'{fullFile_ply} exists: {os.path.exists(fullFile_ply)}')
                 if os.path.exists(fullFile_stl):
-                    bpy.ops.import_mesh.stl(filepath=fullFile_stl)
+                    bpy.ops.wm.stl_import(filepath=fullFile_stl)
+                    # bpy.ops.import_mesh.stl(filepath=fullFile_stl)
                     break
                 elif os.path.exists(fullFile_ply):
                     bpy.ops.wm.ply_import(filepath=fullFile_ply)
@@ -162,7 +163,7 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
                     break
             else:
                 print(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
-                raise Exception(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
+                # raise Exception(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
             
             # scale meshes and parent to object
             selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
