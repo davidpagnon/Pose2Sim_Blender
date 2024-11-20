@@ -132,7 +132,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
                     model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c], enforceContraints=False)
                 except:
                     pass
-            model.assemble(state)
+            # model.assemble(state)
+            model.realizePosition(state) # much faster (IK already done, no need to compute it again)
             
             # use state of model to get body coordinates in ground
             loc_rot_frame = []
