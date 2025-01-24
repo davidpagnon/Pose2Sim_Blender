@@ -100,7 +100,7 @@ Full installation requires admin rights on your computer. It is a little tricky,
   ```cmd
   conda env list
   ```
-  - OpenSim installation needs to be fixed. Open *<LOCATION_OF_POSE2SIM_BLENDER_ENV>\Lib\opensim\__init__.py* with any text editor:
+  - OpenSim installation needs to be fixed. Open *<LOCATION_OF_POSE2SIM_BLENDER_ENV>\Lib\opensim\\_\_init\_\_.py* with any text editor:
     - comment out the line `# from .moco import *`
     - line 4, insert the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.5/bin")`.\
       *Replace 4.5 with the version you installed*
