@@ -572,6 +572,7 @@ def show_images(camera, img_vid_path, single_image=False):
             img.image_user.frame_start =  1
         elif img.data.source == 'FILE': 
             img.data.source = 'SEQUENCE'
+            img.image_user.frame_duration = len(os.listdir(os.path.join(img_vid_path, '..')))
             img.image_user.frame_start =  1
     else: 
         img.data.source = 'FILE'
