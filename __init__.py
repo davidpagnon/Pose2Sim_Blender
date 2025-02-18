@@ -35,12 +35,24 @@
 import bpy
 import bpy_extras.io_utils
 from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty, CollectionProperty
-from Pose2Sim_Blender.Pose2Sim_Blender import model, motion, markers, forces, cameras
-from Pose2Sim_Blender.Pose2Sim_Blender.common import ShowMessageBox
+from .Pose2Sim_Blender import model, motion, markers, forces, cameras
+from .Pose2Sim_Blender.common import ShowMessageBox
 import os
+import subprocess
+import sys
+
+def install_package(package):
+    python_exe = sys.executable
+    try:
+        __import__(package)
+    except ImportError:
+        subprocess.check_call([python_exe, "-m", "pip", "install", "--upgrade", "pip"])
+        subprocess.check_call([python_exe, "-m", "pip", "install", package])
 
 rootpath=os.path.dirname(os.path.abspath(__file__))
 stlFolder=os.path.join(rootpath,'Pose2Sim_Blender','Geometry')
+
+install_package("anytree")
 
 
 ## AUTHORSHIP INFORMATION
@@ -112,7 +124,7 @@ class exportCal(bpy.types.Operator,bpy_extras.io_utils.ExportHelper):
         return {'FINISHED'}
 
 
-class showImages(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+class showImages(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.show_img'
     bl_label = 'Show Images/Video'
     bl_description = "Select a camera, then import images or a video"
@@ -138,7 +150,7 @@ class showImages(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
             return {'FINISHED'}
 
 
-class filmWithCameras(bpy.types.Operator): #,bpy_extras.io_utils.ExportHelper):
+class filmWithCameras(bpy.types.Operator, bpy_extras.io_utils.ImportHelper): #,bpy_extras.io_utils.ExportHelper):
     bl_idname = 'mesh.film_from_cam'
     bl_label = 'Film from cameras'
     bl_description = "Render videos from selected cameras in chosen directory"
@@ -224,39 +236,65 @@ class filmWithCameras(bpy.types.Operator): #,bpy_extras.io_utils.ExportHelper):
         return {'FINISHED'}
 
 
-class addMarkers(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_markers'
     bl_label = 'Markers'
     bl_description = "Import a `.trc` or a `.c3d` marker file"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filter_glob : StringProperty(
-        name='Markers file',
+    filter_glob: StringProperty(
+        name="Markers file",
         default="*.trc;*.c3d",
         options={'HIDDEN'},
-        subtype="FILE_PATH")
-    
+        subtype="FILE_PATH"
+    )
+
     target_framerate: IntProperty(
         name="Target framerate [fps]",
         description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
         default=30,
-        min = 1
+        min=1
     )
-    
+
+    armature_type: EnumProperty(
+        name="Armature",
+        description="Create an armature to animate a rigged skeleton or character.",
+        items=[
+            ('none', "None", "Do not create an armature"),
+            ('halpe_26', "Body with feet", "BodyWithFeet (Halpe_26) skeleton"),
+            ('coco_133_wrist', "Body with feet and hands", "WholeBody (Coco_133) skeleton, without face and fingers"),
+            ('coco_133', "Body with feet, fingers, face", "WholeBody (Coco_133_wrist) skeleton, without face and fingers"),
+            ('coco_17', "Body", "Body (Coco_17) skeleton"),
+            ('hand', "Hand", "Hand (Hand_21) skeleton"),
+            ('face', "Face", "Face (face_106) skeleton"),
+            ('animal', "Animal", "Animal (Animal2d_17) skeleton"),
+        ],
+        default='none'
+    )
+
+    # File picker properties
     files: CollectionProperty(
         type=bpy.types.OperatorFileListElement,
         options={'HIDDEN', 'SKIP_SAVE'},
     )
     
-    directory: StringProperty(
-    subtype='DIR_PATH',
-    )
-    
+    directory: StringProperty(subtype='DIR_PATH')
+
     def execute(self, context):
         for file in self.files:
-            trc_path=os.path.join(self.directory, file.name)
-            markers.import_trc(trc_path, direction='zup', target_framerate=self.target_framerate)
+            trc_path = os.path.join(self.directory, file.name)
+            markers.import_trc(trc_path, direction='zup', target_framerate=self.target_framerate, armature_type=self.armature_type)
         return {'FINISHED'}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "target_framerate")
+        layout.prop(self, "armature_type")
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
 
 
 class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):

@@ -123,9 +123,9 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
         # H_zup = np.array([[0,0,1,0], [1,0,0,0], [0,1,0,0], [0,0,0,1]])
         H_zup = np.array([[1,0,0,0], [0,0,-1,0], [0,1,0,0], [0,0,0,1]])
         
-        print('Time frame:')
+        # print('Time frame:')
         for n in range(0, len(times), conv_fac_frame_rate):
-            print(times[n], 's')
+            # print(times[n], 's')
             # set model struct in each time state
             for c, coord in enumerate(coordinateNames): ## PROBLEME QUAND HEADERS DE MOTION_DATA_NP ET COORDINATENAMES SONT PAS DANS LE MEME ORDRE
                 try:
