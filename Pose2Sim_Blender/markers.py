@@ -161,14 +161,14 @@ def create_armature_trc(armature_tree, armature_name):
             # tail (child)
             try:
                 child_name = node.name
-                tail_marker = [o for o in marker_collection.objects if o.name.strip()==child_name][0]
+                tail_marker = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == child_name][0]
             except:
                 print(f'Could not find {child_name} in the TRC file.')
                 continue
             # head (parent)
             try:
                 parent_name = node.parent.name
-                head_marker = [o for o in marker_collection.objects if o.name.strip()==parent_name][0]
+                head_marker = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == parent_name][0]
             except:
                 print(f'Could not find {parent_name} in the TRC file.')
                 continue
@@ -177,24 +177,37 @@ def create_armature_trc(armature_tree, armature_name):
             bone.parent = bones[node.parent.name]
             
 
-    # Create IK rig (pose mode)
+    # # Constrain bones to sphere animation (pose mode)
+    # IK from child to parent
     bpy.ops.object.mode_set(mode='POSE')
+    for node in PreOrderIter(armature_tree):
+        bone_name = node.name
+        bone = armature_object.pose.bones.get(bone_name)
+        if bone and node.parent:
+            head_marker = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == node.name][0]
+            armature_object.data.bones.active = armature_object.data.bones.get(bone_name)
+            ik_constraint = bone.constraints.new(type='IK')
+            ik_constraint.target = head_marker
+            ik_constraint.chain_count = 1
+    
+    # Copy location of root bones
     first_children = find_first_children_with_id(armature_tree)
     for node in PreOrderIter(armature_tree):
         bone_name = node.name
         bone = armature_object.pose.bones.get(bone_name)
         if bone and node.parent:
-            # Constrain bone to sphere animation
-            head_marker = [o for o in marker_collection.objects if o.name.strip()==node.name][0]
-            armature_object.data.bones.active = armature_object.data.bones.get(bone_name)
-            # IK from child to parent
-            ik_constraint = bone.constraints.new(type='IK')
-            ik_constraint.target = head_marker
-            ik_constraint.chain_count = 1
-            # Copy location of root bone
-            if node.parent.name in first_children:
+             if node.parent.name in first_children or node.name in first_children:
                 copy_loc_constraint = bone.constraints.new(type='COPY_LOCATION')
-                copy_loc_constraint.target = [o for o in marker_collection.objects if o.name.strip()==node.parent.name][0]
+                copy_loc_constraint.target = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == node.parent.name][0]
+    # Delete the child "copy location" constraint when the parent already has one (dirty fix to make it work for Body and Body with feet)
+    for node in PreOrderIter(armature_tree):
+        bone_name = node.name
+        bone = armature_object.pose.bones.get(bone_name)
+        if node.parent and bone and bone.parent:
+            if any(c.type=='COPY_LOCATION' for c in bone.constraints) and any(c.type=='COPY_LOCATION' for c in bone.parent.constraints):
+                for c in bone.constraints:
+                        if c.type == 'COPY_LOCATION':
+                            bone.constraints.remove(c)   
         
     # Exit edit mode
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -322,12 +335,12 @@ def import_trc(trc_path, direction='zup', target_framerate=30, armature_type=Non
         bpy.context.scene.collection.children.link(marker_collection)
         for markerName in markerNames:
             matg = createMaterial(color=COLOR, metallic = 0.5, roughness = 0.5)
-            addMarker(marker_collection,text=markerName, material=matg)
+            addMarker(marker_collection,text=markerName.strip(), material=matg)
 
         # animate markers
         for i, m in enumerate(markerNames):
             coll_marker_names = [ob.name for ob in marker_collection.objects]
-            m = [coll_m for coll_m in coll_marker_names if m == coll_m][0]
+            m = [coll_m.strip() for coll_m in coll_marker_names if m.strip() == coll_m.strip().split('.')[0]][0]
             for n in range(0, len(times), conv_fac_frame_rate):
                 # y-up to z-up
                 if direction=='zup':

@@ -265,9 +265,9 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
             ('coco_133_wrist', "Body with feet and hands", "WholeBody (Coco_133) skeleton, without face and fingers"),
             ('coco_133', "Body with feet, fingers, face", "WholeBody (Coco_133_wrist) skeleton, without face and fingers"),
             ('coco_17', "Body", "Body (Coco_17) skeleton"),
-            ('hand', "Hand", "Hand (Hand_21) skeleton"),
-            ('face', "Face", "Face (face_106) skeleton"),
-            ('animal', "Animal", "Animal (Animal2d_17) skeleton"),
+            ('hand_21', "Hand", "Hand (Hand_21) skeleton"),
+            ('face_106', "Face", "Face (face_106) skeleton"),
+            ('animal2d_17', "Animal", "Animal (Animal2d_17) skeleton"),
         ],
         default='none'
     )
