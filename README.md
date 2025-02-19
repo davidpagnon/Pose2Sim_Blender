@@ -5,7 +5,7 @@
 
 # Pose2Sim Blender
 
-**`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results -- and more.**
+**`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results, and rigging your character with markerless kinematics.**
 
 > ***New:***
 > - .trc import: **Automatic Blender IK for character animation**
