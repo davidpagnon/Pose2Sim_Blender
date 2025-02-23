@@ -116,7 +116,7 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
     for i,body in enumerate(bodies): 
         # add object to collection
         bodyName=body.getAttribute('name')
-        
+
         try:
             physicalOffset_translation = body.getElementsByTagName('components')[0].getElementsByTagName('PhysicalOffsetFrame')[0].getElementsByTagName('translation')[0].firstChild.nodeValue
             physicalOffset_translation = [float(x) for x in physicalOffset_translation.split()]
@@ -165,16 +165,22 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
                 print(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
                 # raise Exception(f'File {filename_stl} or {filename_ply} or {filename_vtp} not found on system')
             
-            # scale meshes and parent to object
+            # Scale meshes
             selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
             mesh_obj=selected_objects[0]
             mesh_obj.scale=scaleFactor
-            try:
-                mesh_obj.location = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('translation')[0].firstChild.nodeValue.split()]
-                # mesh_obj.location = physicalOffset_translation
-                mesh_obj.rotation_euler = [float(t) for t in mesh.parentNode.parentNode.getElementsByTagName('orientation')[0].firstChild.nodeValue.split()]
-            except:
-                pass
+            
+            # Translation and rotation of PhysicalOffsetFrame if exists
+            translation_nodes = [node for node in mesh.parentNode.parentNode.childNodes if node.nodeName == "translation"]
+            if translation_nodes:
+                translation_text = translation_nodes[0].firstChild.nodeValue
+                mesh_obj.location = [float(t) for t in translation_text.split()]
+            rotation_nodes = [node for node in mesh.parentNode.parentNode.childNodes if node.nodeName == "orientation"]
+            if rotation_nodes:
+                rotation_text = rotation_nodes[0].firstChild.nodeValue
+                mesh_obj.rotation_euler = [float(t) for t in rotation_text.split()]
+        
+            # Parent meshes to object in collection
             mesh_obj.parent=obj[i]
             mesh_obj.users_collection[0].objects.unlink(mesh_obj)
             collection.objects.link(mesh_obj)
