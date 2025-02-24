@@ -561,7 +561,10 @@ def show_images(camera, img_vid_path, single_image=False):
     bpy.data.scenes['Scene'].transform_orientation_slots[1].type = 'LOCAL'
     
     # load images or video
-    bpy.ops.object.load_reference_image(filepath=img_vid_path)
+    try: # Blender >= 4.2
+        bpy.ops.object.empty_image_add(filepath=img_vid_path)
+    except: # Blender 3.6 to 4.2
+        bpy.ops.object.load_reference_image(filepath=img_vid_path)
     img = bpy.context.active_object
     img.matrix_world = np.eye(4)
     img.empty_image_depth = 'DEFAULT' # overlaid by skeleton, markers, etc.

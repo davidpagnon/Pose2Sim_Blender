@@ -75,7 +75,7 @@ Full installation requires admin rights on your computer. It is a little tricky,
 
 ##### 1. Prerequisites
 
-  - Install [Blender](https://www.blender.org/download/) (tested on v 3.6 and 4.0.)
+  - Install [Blender](https://www.blender.org/download/) (tested on v 3.6, 4.0., and 4.2)
   - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
   - Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
@@ -93,11 +93,11 @@ Full installation requires admin rights on your computer. It is a little tricky,
   - Open Miniconda, and copy-paste these lines.\
   *Replace with the Python version you just found*:
   ```cmd
-  conda create -n Pose2Sim_Blender python=3.10.13 -y 
+  conda create -n Pose2Sim_Blender python=3.11.9 -y # python=3.10.13 with Blender 3.6 and 4.0
   conda activate Pose2Sim_Blender
   conda install -c opensim-org opensim -y
   pip uninstall numpy
-  pip install numpy bpy toml vtk
+  pip install numpy bpy toml vtk anytree
   ```
   - Now write down the location of your newly created environment (typically `C:\Users\<USERNAME>\miniconda3\envs\Pose2Sim_Blender`):
   ```cmd
@@ -113,10 +113,10 @@ Full installation requires admin rights on your computer. It is a little tricky,
   &nbsp;&nbsp;Open CMD as an administrator.\
   &nbsp;&nbsp;*Replace with your Blender version and with the location of your Pose2Sim_Blender environment*:
   ```cmd
-  cd "C:\Program Files\Blender Foundation\Blender 4.0\4.0"
+  cd "C:\Program Files\Blender Foundation\Blender 4.2\4.2"
   mv python python_old
   mklink /j python <LOCATION_OF_POSE2SIM_BLENDER_ENV>
-  mv /j python\DLLs python\DLLs_old
+  mv python\DLLs python\DLLs_old
   mklink /j python\DLLs python_old\DLLs
   mklink /j python\bin python_old\bin
   ```
@@ -140,7 +140,7 @@ Full installation requires admin rights on your computer. It is a little tricky,
 
 ##### 5. Install Pose2Sim_Blender add-on in Blender
   
-  - Blender -> Edit -> Preferences -> Add-ons -> Install -> Choose Pose2Sim_Blender.zip
+  - Blender -> Edit -> Preferences -> Add-ons -> `little arrow on the upper right corner` -> Install from Disk -> Find your Pose2Sim_Blender.zip file
   - Check `Pose2Sim_Blender` to enable it
   - Press `n` or Click on the tiny arrow on the upper-right corner of the 3D viewport to open the tool
 
