@@ -23,6 +23,7 @@
 ## INIT
 import os
 import numpy as np
+import re
 import bpy
 import bmesh
 from .common import ShowMessageBox, createMaterial
@@ -161,14 +162,14 @@ def create_armature_trc(armature_tree, armature_name):
             # tail (child)
             try:
                 child_name = node.name
-                tail_marker = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == child_name][0]
+                tail_marker = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == child_name][0]
             except:
                 print(f'Could not find {child_name} in the TRC file.')
                 continue
             # head (parent)
             try:
                 parent_name = node.parent.name
-                head_marker = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == parent_name][0]
+                head_marker = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == parent_name][0]
             except:
                 print(f'Could not find {parent_name} in the TRC file.')
                 continue
@@ -184,7 +185,7 @@ def create_armature_trc(armature_tree, armature_name):
         bone_name = node.name
         bone = armature_object.pose.bones.get(bone_name)
         if bone and node.parent:
-            head_marker = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == node.name][0]
+            head_marker = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == node.name][0]
             armature_object.data.bones.active = armature_object.data.bones.get(bone_name)
             ik_constraint = bone.constraints.new(type='IK')
             ik_constraint.target = head_marker
@@ -198,7 +199,7 @@ def create_armature_trc(armature_tree, armature_name):
         if bone and node.parent:
              if node.parent.name in first_children or node.name in first_children:
                 copy_loc_constraint = bone.constraints.new(type='COPY_LOCATION')
-                copy_loc_constraint.target = [o for o in marker_collection.objects if o.name.strip().split('.')[0] == node.parent.name][0]
+                copy_loc_constraint.target = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == node.parent.name][0]
     # Delete the child "copy location" constraint when the parent already has one (dirty fix to make it work for Body and Body with feet)
     for node in PreOrderIter(armature_tree):
         bone_name = node.name
@@ -338,9 +339,9 @@ def import_trc(trc_path, direction='zup', target_framerate=30, armature_type=Non
             addMarker(marker_collection,text=markerName.strip(), material=matg)
 
         # animate markers
+        coll_marker_names = [ob.name for ob in marker_collection.objects]
         for i, m in enumerate(markerNames):
-            coll_marker_names = [ob.name for ob in marker_collection.objects]
-            m = [coll_m.strip() for coll_m in coll_marker_names if m.strip() == coll_m.strip().split('.')[0]][0]
+            m = [coll_m.strip() for coll_m in coll_marker_names if m.strip() == re.sub(r'\.\d+$', '', coll_m.strip())][0]
             for n in range(0, len(times), conv_fac_frame_rate):
                 # y-up to z-up
                 if direction=='zup':
@@ -383,7 +384,7 @@ def import_trc(trc_path, direction='zup', target_framerate=30, armature_type=Non
         action = armature_object.animation_data.action
         for fcurve in action.fcurves:
             for keyframe in fcurve.keyframe_points:
-                keyframe.co.x -= 1
+                keyframe.co.x += 0
 
         # create armature
         # Rigged armature not supported for c3d files. Feel free to contribute!
