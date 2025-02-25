@@ -92,18 +92,23 @@ Full installation requires admin rights on your computer. It is a little tricky,
   
   - Open Miniconda, and copy-paste these lines.\
   *Replace with the Python version you just found*:
-  ```cmd
-  conda create -n Pose2Sim_Blender python=3.11.9 -y # python=3.10.13 with Blender 3.6 and 4.0
-  conda activate Pose2Sim_Blender
-  conda install -c opensim-org opensim -y
-  pip uninstall numpy
-  pip install numpy bpy toml vtk anytree
-  ```
-  - Now write down the location of your newly created environment (typically `C:\Users\<USERNAME>\miniconda3\envs\Pose2Sim_Blender`):
-  ```cmd
-  conda env list
-  ```
-  - OpenSim installation needs to be fixed. Open *<LOCATION_OF_POSE2SIM_BLENDER_ENV>\Lib\opensim\\_\_init\_\_.py* with any text editor:
+    ```cmd
+    conda create -n Pose2Sim_Blender python=3.11.9 -y # python=3.10.13 with Blender 3.6 and 4.0
+    conda activate Pose2Sim_Blender
+    conda install -c opensim-org opensim -y
+    pip uninstall numpy
+    conda list | grep opensim
+    ```
+    The Numpy version is likely too recent for OpenSim. The version you should install is provided in the last printed line. For example, with `py311np123` you need to run:
+    ```
+    pip uninstall numpy
+    pip install numpy==1.23
+    ```
+  - OpenSim installation needs to be fixed. Run the following command and write down the location of your Pose2Sim_Blender environment (typically `C:\Users\<USERNAME>\miniconda3\envs\Pose2Sim_Blender`):
+    ```cmd
+    conda env list
+    ```
+    Open *<LOCATION_OF_POSE2SIM_BLENDER_ENV>\Lib\opensim\\_\_init\_\_.py* with any text editor:
     - comment out the line `# from .moco import *`
     - line 4, insert the path to your OpenSim bin folder: `os.add_dll_directory(r"C:/OpenSim 4.5/bin")`.\
       *Replace 4.5 with the version you installed*
