@@ -102,7 +102,8 @@ Full installation requires admin rights on your computer. It is a little tricky,
     The Numpy version is likely too recent for OpenSim. The version you should install is provided in the last printed line. For example, with `py311np123` you need to run:
     ```
     pip uninstall numpy
-    pip install numpy==1.23
+    pip install numpy==1.23 
+    pip install bpy toml vtk anytree
     ```
   - OpenSim installation needs to be fixed. Run the following command and write down the location of your Pose2Sim_Blender environment (typically `C:\Users\<USERNAME>\miniconda3\envs\Pose2Sim_Blender`):
     ```cmd
