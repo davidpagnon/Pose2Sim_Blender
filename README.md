@@ -93,15 +93,14 @@ Full installation requires admin rights on your computer. It is a little tricky,
   - Open Miniconda, and copy-paste these lines.\
   *Replace with the Python version you just found*:
     ```cmd
-    conda create -n Pose2Sim_Blender python=3.11.9 -y # python=3.10.13 with Blender 3.6 and 4.0
+    conda create -n Pose2Sim_Blender python=3.11.7 -y # python=3.10.13 with Blender 3.6 and 4.0
     conda activate Pose2Sim_Blender
     conda install -c opensim-org opensim -y
-    pip uninstall numpy
     conda list | grep opensim
     ```
     The Numpy version is likely too recent for OpenSim. The version you should install is provided in the last printed line. For example, with `py311np123` you need to run:
     ```
-    pip uninstall numpy
+    pip uninstall numpy -y
     pip install numpy==1.23 
     pip install bpy toml vtk anytree
     ```
@@ -116,7 +115,7 @@ Full installation requires admin rights on your computer. It is a little tricky,
 
 ##### 4. Link your conda environment to Blender Python
 
-  &nbsp;&nbsp;Open CMD as an administrator.\
+  &nbsp;&nbsp;Open CMD (not Anaconda!) as an administrator.\
   &nbsp;&nbsp;*Replace with your Blender version and with the location of your Pose2Sim_Blender environment*:
   ```cmd
   cd "C:\Program Files\Blender Foundation\Blender 4.2\4.2"
