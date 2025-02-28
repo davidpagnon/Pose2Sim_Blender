@@ -50,7 +50,7 @@ __status__ = "Development"
 
 
 ## FUNCTIONS
-def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30):
+def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='auto'):
     '''
     Computes the coordinates of each opensim bodies in the ground plane
     from a .mot motion file (joint angles) and a .osim model file,
@@ -91,11 +91,15 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
         motion_data = osim.TimeSeriesTable(mot_path)
 
         # set framerate
-        bpy.context.scene.render.fps = target_framerate
-        
         times = motion_data.getIndependentColumn()
         fps = int((len(times)-1) / (times[-1] - times[0]))
-        conv_fac_frame_rate = int(np.round(fps / target_framerate))
+        if target_framerate == 'auto':
+            target_framerate = fps
+        target_framerate = int(target_framerate)
+        bpy.context.scene.render.fps = target_framerate
+        conv_fac_frame_rate = fps // target_framerate
+        if conv_fac_frame_rate == 0:
+            conv_fac_frame_rate = 1
         # bpy.data.scenes['Scene'].render.fps = fps
 
         # model: get model coordinates and bodies
@@ -169,8 +173,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=30
                 b_iterated = [o.name for o in collection.objects if o.name.startswith(b.getName())][0]
                 obj=collection.objects[b_iterated]
                 obj.matrix_world = H.T
-                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
-                obj.keyframe_insert('rotation_euler',frame=int(n/conv_fac_frame_rate)+1)
+                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate))
+                obj.keyframe_insert('rotation_euler',frame=int(n/conv_fac_frame_rate))
             
             if export_to_csv:
                 loc_rot_frame_all.append(loc_rot_frame)

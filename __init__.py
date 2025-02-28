@@ -249,11 +249,10 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         subtype="FILE_PATH"
     )
 
-    target_framerate: IntProperty(
+    target_framerate: StringProperty(
         name="Target framerate [fps]",
         description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
-        default=30,
-        min=1
+        default='auto',
     )
 
     armature_type: EnumProperty(
@@ -328,11 +327,10 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         options={'HIDDEN'},
         subtype="FILE_PATH")
     
-    target_framerate: IntProperty(
+    target_framerate: StringProperty(
         name="Target framerate [fps]",
         description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
-        default=30,
-        min = 1
+        default='auto',
     )
     
     def execute(self, context):

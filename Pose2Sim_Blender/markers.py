@@ -301,7 +301,7 @@ def create_armature_c3d(armature_tree):
     bpy.ops.object.mode_set(mode='OBJECT')
 
  
-def import_trc(trc_path, direction='zup', target_framerate=30, armature_type=None):
+def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type=None):
     '''
     Import a .trc marker file into Blender.
     OpenSim API is not required.
@@ -321,12 +321,14 @@ def import_trc(trc_path, direction='zup', target_framerate=30, armature_type=Non
         trc_data_np, markerNames = load_trc(trc_path)
 
         # set framerate
-        bpy.context.scene.render.fps = target_framerate
-        
         times = trc_data_np[:,1]
-        first_frame = int(trc_data_np[0,0])
-        fps = round((len(times)-1) / (times[-1] - times[0]))
-        conv_fac_frame_rate = int(np.round(fps / target_framerate))
+        first_frame = 0 # int(trc_data_np[0,0])
+        fps = int((len(times)-1) / (times[-1] - times[0]))
+        if target_framerate == 'auto':
+            target_framerate = fps
+        target_framerate = int(target_framerate)
+        bpy.context.scene.render.fps = target_framerate
+        conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:
             conv_fac_frame_rate = 1
         # bpy.data.scenes['Scene'].render.fps = fps
