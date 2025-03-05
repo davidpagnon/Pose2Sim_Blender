@@ -197,12 +197,16 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
         bodyNames = [b[1:-2] for b in bodyNames]
 
         # set framerate
-        bpy.context.scene.render.fps = target_framerate
-        
         times = loc_rot_frame_all_np[:,0]
         fps = int((len(times)-1) / (times[-1] - times[0]))
-        conv_fac_frame_rate = int(np.round(fps / target_framerate))
-
+        if target_framerate == 'auto':
+            target_framerate = fps
+        target_framerate = int(target_framerate)
+        bpy.context.scene.render.fps = target_framerate
+        conv_fac_frame_rate = fps // target_framerate
+        if conv_fac_frame_rate == 0:
+            conv_fac_frame_rate = 1
+        
         # animate model
         for n in range(0, len(times), conv_fac_frame_rate):
             for i, b in enumerate(bodyNames):
