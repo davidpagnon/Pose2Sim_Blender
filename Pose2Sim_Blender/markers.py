@@ -322,7 +322,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
 
         # set framerate
         times = trc_data_np[:,1]
-        first_frame = 0 # int(trc_data_np[0,0])
+        first_frame = int(trc_data_np[0,0])
         fps = int((len(times)-1) / (times[-1] - times[0]))
         if target_framerate == 'auto':
             target_framerate = fps
