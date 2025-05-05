@@ -98,7 +98,7 @@ def addForce(force_collection, forceName='', text="FORCE", color=COLOR):
     force_collection.objects.link(arrow)
     for obj in bpy.data.objects:
         obj.select_set(False)
-    bpy.ops.import_mesh.stl(filepath=arrowFile)
+    bpy.ops.wm.stl_import(filepath=arrowFile)
     selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
     obj=selected_objects[0]
     obj.scale=(1,.5,.5)
@@ -129,8 +129,9 @@ def import_forces(grf_path, direction='zup', target_framerate=30):
     bpy.context.scene.render.fps = target_framerate
     
     times = grf_data_np[:,0]
-    fps = int((len(times)-1) / (times[-1] - times[0]))
-    conv_fac_frame_rate = int(np.round(fps / target_framerate))
+    fps = round((len(times)-1) / (times[-1] - times[0]))
+    first_frame = round(times[0]*fps)
+    conv_fac_frame_rate = round(fps / target_framerate)
     # bpy.data.scenes['Scene'].render.fps = fps
         
     # create forces
@@ -155,9 +156,9 @@ def import_forces(grf_path, direction='zup', target_framerate=30):
             obj = force_collection.objects[f]
             obj.matrix_world = H.T
             obj.scale = scale_arrow
-            obj.keyframe_insert('location', frame=int(n/conv_fac_frame_rate)+1)
-            obj.keyframe_insert('rotation_euler', frame=int(n/conv_fac_frame_rate)+1)
-            obj.keyframe_insert('scale', frame=int(n/conv_fac_frame_rate)+1)
+            obj.keyframe_insert('location', frame=first_frame+round(n/conv_fac_frame_rate)+1)
+            obj.keyframe_insert('rotation_euler', frame=first_frame+round(n/conv_fac_frame_rate)+1)
+            obj.keyframe_insert('scale', frame=first_frame+round(n/conv_fac_frame_rate)+1)
 
     # hide axes
     bpy.ops.object.select_by_type(extend=False, type='EMPTY')

@@ -92,10 +92,11 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
 
         # set framerate
         times = motion_data.getIndependentColumn()
-        fps = int((len(times)-1) / (times[-1] - times[0]))
+        fps = round((len(times)-1) / (times[-1] - times[0]))
+        first_frame = round(times[0]*fps)
         if target_framerate == 'auto':
             target_framerate = fps
-        target_framerate = int(target_framerate)
+        target_framerate = round(target_framerate)
         bpy.context.scene.render.fps = target_framerate
         conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:
@@ -173,8 +174,8 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
                 b_iterated = [o.name for o in collection.objects if o.name.startswith(b.getName())][0]
                 obj=collection.objects[b_iterated]
                 obj.matrix_world = H.T
-                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate))
-                obj.keyframe_insert('rotation_euler',frame=int(n/conv_fac_frame_rate))
+                obj.keyframe_insert('location',frame=first_frame+round(n/conv_fac_frame_rate))
+                obj.keyframe_insert('rotation_euler',frame=first_frame+round(n/conv_fac_frame_rate))
             
             if export_to_csv:
                 loc_rot_frame_all.append(loc_rot_frame)
@@ -198,10 +199,11 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
 
         # set framerate
         times = loc_rot_frame_all_np[:,0]
-        fps = int((len(times)-1) / (times[-1] - times[0]))
+        fps = round((len(times)-1) / (times[-1] - times[0]))
+        first_frame = round(times[0]*fps)
         if target_framerate == 'auto':
             target_framerate = fps
-        target_framerate = int(target_framerate)
+        target_framerate = round(target_framerate)
         bpy.context.scene.render.fps = target_framerate
         conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:
@@ -221,7 +223,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
                 obj=collection.objects[b_nameiterated]
                 obj.location=loc_x,loc_y,loc_z
                 obj.rotation_euler=rot_x,rot_y,rot_z
-                obj.keyframe_insert('location',frame=int(n/conv_fac_frame_rate)+1)
-                obj.keyframe_insert('rotation_euler',frame=int(n/conv_fac_frame_rate)+1)
+                obj.keyframe_insert('location',frame=first_frame+round(n/conv_fac_frame_rate)+1)
+                obj.keyframe_insert('rotation_euler',frame=first_frame+round(n/conv_fac_frame_rate)+1)
 
     print(f'OpenSim motion imported from {mot_path}')

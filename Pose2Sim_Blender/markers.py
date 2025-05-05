@@ -150,7 +150,7 @@ def create_armature_trc(armature_tree, armature_name):
     marker_collection = bpy.data.collections[armature_name+'.trc']
     first_marker = marker_collection.objects[0]
     frame_start, frame_end = first_marker.animation_data.action.frame_range
-    bpy.context.scene.frame_set(int((frame_start + frame_end) / 2))    
+    bpy.context.scene.frame_set(round((frame_start + frame_end) / 2))    
 
     # Create bones (Edit mode)
     bpy.ops.object.mode_set(mode='EDIT')
@@ -243,7 +243,7 @@ def create_armature_c3d(armature_tree):
     # Set the current frame to the middle of the animation
     frame_range = armature_object.animation_data.action.frame_range
     frame_start, frame_end = frame_range
-    bpy.context.scene.frame_set(int((frame_start + frame_end) / 2))
+    bpy.context.scene.frame_set(round((frame_start + frame_end) / 2))
 
     # THIS LOOKS OKAY IN POSE MODE (ONE SINGLE FRAME, WITH NO CONNECTION BETWEEN JOINTS)
     # bone.use_connect = True LEADS TO NO CREATION OF BONE OTHER THAN ROOT (DELETED BECAUSE HEAD == TAIL?)
@@ -322,11 +322,11 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
 
         # set framerate
         times = trc_data_np[:,1]
-        first_frame = int(trc_data_np[0,0])
-        fps = int((len(times)-1) / (times[-1] - times[0]))
+        first_frame = round(trc_data_np[0,0])
+        fps = round((len(times)-1) / (times[-1] - times[0]))
         if target_framerate == 'auto':
             target_framerate = fps
-        target_framerate = int(target_framerate)
+        target_framerate = round(target_framerate)
         bpy.context.scene.render.fps = target_framerate
         conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:
@@ -359,7 +359,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
                     loc_z = trc_data_np[n,3*i+3]                    
                 obj=marker_collection.objects[m]
                 obj.location=loc_x,loc_y,loc_z
-                obj.keyframe_insert('location',frame=first_frame+int(n/conv_fac_frame_rate))
+                obj.keyframe_insert('location',frame=first_frame+round(n/conv_fac_frame_rate))
         [ob.select_set(True) for ob in marker_collection.objects]
                 
         # create armature
