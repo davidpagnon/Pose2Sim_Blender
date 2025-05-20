@@ -326,7 +326,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
         fps = round((len(times)-1) / (times[-1] - times[0]))
         if target_framerate == 'auto':
             target_framerate = fps
-        target_framerate = round(target_framerate)
+        target_framerate = round(int(target_framerate))
         bpy.context.scene.render.fps = target_framerate
         conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:

@@ -96,7 +96,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
         first_frame = round(times[0]*fps)
         if target_framerate == 'auto':
             target_framerate = fps
-        target_framerate = round(target_framerate)
+        target_framerate = round(int(target_framerate))
         bpy.context.scene.render.fps = target_framerate
         conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:
@@ -203,7 +203,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
         first_frame = round(times[0]*fps)
         if target_framerate == 'auto':
             target_framerate = fps
-        target_framerate = round(target_framerate)
+        target_framerate = round(int(target_framerate))
         bpy.context.scene.render.fps = target_framerate
         conv_fac_frame_rate = fps // target_framerate
         if conv_fac_frame_rate == 0:
