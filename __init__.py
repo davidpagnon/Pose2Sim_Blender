@@ -295,7 +295,6 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         return {'RUNNING_MODAL'}
 
 
-
 class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
     bl_label = 'Model'
@@ -365,6 +364,47 @@ class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         return {'FINISHED'}
 
 
+class frameRange(bpy.types.PropertyGroup):
+    frame_before: bpy.props.IntProperty(
+        name="Frame Before",
+        max = 0,
+        default = -20
+    )
+    frame_after: bpy.props.IntProperty(
+        name="Frame After",
+        min = 0,
+        default = 50
+    )
+    
+
+class trackPoints(bpy.types.Operator):
+    bl_idname = 'mesh.track_points'
+    bl_label = 'See 3D point motion path'
+    bl_description = "Select one or several objects, then click button to see their motion path"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        props = context.scene.before_after_frames
+        
+        # Get selected objects
+        selected_objects = context.selected_objects
+        if not selected_objects:
+            self.report({'ERROR'}, "No objects selected")
+            return {'CANCELLED'}
+        
+        for obj in selected_objects:
+            obj.animation_visualization.motion_path.frame_before = - props.frame_before
+            obj.animation_visualization.motion_path.frame_after = props.frame_after
+            bpy.ops.object.paths_calculate(display_type='CURRENT_FRAME')
+            obj.motion_path.line_thickness = 2
+            obj.motion_path.use_custom_color = True
+            obj.animation_visualization.motion_path.show_frame_numbers = False
+            obj.animation_visualization.motion_path.show_keyframe_highlight = False
+            obj.animation_visualization.motion_path.show_keyframe_numbers = False
+            obj.animation_visualization.motion_path.show_keyframe_highlight = False
+        return {'FINISHED'}
+
+
 class seeThroughCam(bpy.types.Operator):
     bl_idname = 'mesh.see_through_cam'
     bl_label = 'See through selected camera'
@@ -423,12 +463,11 @@ class alembicExport(bpy.types.Operator):#,bpy_extras.io_utils.ExportHelper):
     
     def execute(self, context):
         bpy.ops.wm.alembic_export('INVOKE_DEFAULT')
-        ShowMessageBox("Coming soon!", "Almost there...")
         return {'FINISHED'}
 
 
 class panel1(bpy.types.Panel):
-    bl_idname = "A1_panel.panel1_PT_Pose2Sim_Blenderlel"
+    bl_idname = "PANEL1_PT_Pose2Sim_Blender"
     bl_label = "Pose2Sim"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -451,11 +490,23 @@ class panel1(bpy.types.Panel):
         layout.label(text='Import OpenSim data') 
         layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Markers") 
         layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Model")
-        layout.operator("mesh.add_osim_motion",icon='CURVE_PATH', text="Motion")
+        layout.operator("mesh.add_osim_motion",icon='IPO_BACK', text="Motion")
         layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Forces") 
         
         layout.label(text='')
-        layout.label(text='Other tools') 
+        layout.label(text='Other tools')
+
+        layout.operator("mesh.track_points",icon='TRACKING', text='3D point motion path')
+        # props = layout.operator("mesh.track_points", text="See 3D Point Motion Path")
+        props = context.scene.before_after_frames
+        row = layout.row(align=True)
+        row.alignment = 'RIGHT'
+        row.label(text="Current frame")
+        row.prop(props, "frame_before", text="")
+        row.label(text="to")
+        row.prop(props, "frame_after", text="")
+        layout.label(text='')
+        
         layout.operator("mesh.see_through_cam",icon='IMAGE_RGB_ALPHA', text='See through camera') 
         layout.operator("mesh.rays_from_3dpoint",icon='PARTICLE_DATA', text='Rays from 3D point') 
         layout.operator("mesh.ray_from_imgpoint",icon='CURVE_PATH', text='Ray from image point')
@@ -479,6 +530,10 @@ def register():
     bpy.utils.register_class(addMotion)
     bpy.utils.register_class(addForces)
     
+    bpy.utils.register_class(frameRange)
+    bpy.types.Scene.before_after_frames = bpy.props.PointerProperty(type=frameRange)
+    bpy.utils.register_class(trackPoints)
+    
     bpy.utils.register_class(seeThroughCam)
     bpy.utils.register_class(raysFrom3Dpoint)
     bpy.utils.register_class(rayFromImagePoint)
@@ -500,9 +555,13 @@ def unregister():
     
     bpy.utils.unregister_class(addMarkers)
     bpy.utils.unregister_class(addModel)
-    bpy.utils.unregister_class(addMotion)            
+    bpy.utils.unregister_class(addMotion)
     bpy.utils.unregister_class(addForces)
     
+    bpy.utils.unregister_class(frameRange)
+    bpy.utils.unregister_class(trackPoints)
+    del bpy.types.Scene.before_after_frames
+
     bpy.utils.unregister_class(seeThroughCam)
     bpy.utils.unregister_class(raysFrom3Dpoint)
     bpy.utils.unregister_class(rayFromImagePoint)

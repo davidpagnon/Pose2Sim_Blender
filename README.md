@@ -186,6 +186,8 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
 
 ### Other tools
 
+- **3D point motion path:**\
+  Visualize the motion path of one or several selected 3D points.
 - **See through cameras:**\
   View from selected camera, with markers and OpenSim model overlay.
 - **Rays from 3D point:**\
