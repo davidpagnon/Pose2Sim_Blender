@@ -157,7 +157,7 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
                 elif os.path.exists(fullFile_vtp):
                     try:
                         vtp2stl(fullFile_vtp)
-                        bpy.ops.import_mesh.stl(filepath=fullFile_stl)
+                        bpy.ops.wm.stl_import(filepath=fullFile_stl)
                     except:
                         print('VTK not installed on Blender. Try Pose2Sim_Blender Full install instead')
                     break
