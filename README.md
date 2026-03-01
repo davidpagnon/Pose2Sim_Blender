@@ -75,7 +75,7 @@ Full installation requires admin rights on your computer. It is a little tricky,
 
 ##### 1. Prerequisites
 
-  - Install [Blender](https://www.blender.org/download/) (tested on v 3.6, 4.0., and 4.2)
+  - Install [Blender](https://www.blender.org/download/) (tested on v 3.6, 4.0, 4.2, and 5.0)
   - Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
   - Download [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
@@ -118,7 +118,7 @@ Full installation requires admin rights on your computer. It is a little tricky,
   &nbsp;&nbsp;Open CMD (not Anaconda!) as an administrator.\
   &nbsp;&nbsp;*Replace with your Blender version and with the location of your Pose2Sim_Blender environment*:
   ```cmd
-  cd "C:\Program Files\Blender Foundation\Blender 4.2\4.2"
+  cd "C:\Program Files\Blender Foundation\Blender 5.0\5.0"
   mv python python_old
   mklink /j python <LOCATION_OF_POSE2SIM_BLENDER_ENV>
   mv python\DLLs python\DLLs_old
