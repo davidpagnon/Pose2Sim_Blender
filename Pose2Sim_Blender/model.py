@@ -75,7 +75,7 @@ def vtp2stl(vtp_path):
         print(f'{vtp_path} file converted')
 
 
-def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLOR):
+def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', collection='', color = COLOR):
     '''osim_path
     Reads an .osim model file, lists bodies and corresponding meshes
     Searches the meshes (stl, ply, vtp) on the computer, 
@@ -102,7 +102,15 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
     if modelRoot=='':
         modelRoot=os.path.dirname(osim_path)
     
-    geometry_directories = [os.path.join(modelRoot,'Geometry'), stlRoot, 'C:\\OpenSim 4.5\\Geometry']
+    geometry_directories = [
+        path for path in [
+            custom_geom_path,
+            os.environ.get('OPENSIM_GEOMETRY_PATH'),
+            os.path.join(modelRoot, 'Geometry'),
+            stlRoot,
+            'C:\\OpenSim 4.5\\Geometry',
+        ] if path
+    ]
     try:
         import opensim as osim
         geometry_directories.append(os.path.join('C:\\', f'OpenSim {osim.__version__[:3]}', 'Geometry'))
@@ -202,4 +210,3 @@ def import_model(osim_path, modelRoot='',stlRoot='.',collection='', color = COLO
     
     print(f'OpenSim model imported from {osim_path}')
             
-

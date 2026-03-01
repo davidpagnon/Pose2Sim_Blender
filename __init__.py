@@ -307,10 +307,16 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         options={'HIDDEN'},
         subtype="FILE_PATH")
       
+    custom_geom_path: StringProperty(
+        name="Custom geometry path",
+        description="Custom geometry path. Optional, only required if your bone geometries are not at the root of your model nor in the Pose2Sim_Blender or OpenSim installation directories",
+        default='',
+    )
+    
     def execute(self, context):
         global osim_path
         osim_path= bpy.path.abspath(self.filepath)
-        model.import_model(osim_path,stlRoot=stlFolder)
+        model.import_model(osim_path, custom_geom_path=self.custom_geom_path, stlRoot=stlFolder)
         return {'FINISHED'}
     
 

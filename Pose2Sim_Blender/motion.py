@@ -78,6 +78,16 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
         ShowMessageBox("First select a model in the outliner", "No OpenSim model found")
         raise('First select a model in the outliner.')
     
+    # Get armature from collection
+    armature_obj = None
+    for obj in collection.objects:
+        if obj.type == 'ARMATURE':
+            armature_obj = obj
+            break
+    if not armature_obj:
+        ShowMessageBox("No armature found in selected collection", "Armature not found")
+        raise Exception('No armature found in selected collection')
+
     # If chosen file is .mot (joint angles)
     if os.path.splitext(mot_path)[1] == '.mot':
         # read model and motion files
