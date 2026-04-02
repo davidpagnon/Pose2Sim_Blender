@@ -129,6 +129,7 @@ def import_forces(grf_path, direction='zup', target_framerate=30):
 
     # set framerate
     times = grf_data_np[:,0]
+    times -= np.array(times[0])
     fps = round((len(times)-1) / (times[-1] - times[0]))
     first_frame = round(times[0]*fps)
     if target_framerate == 'auto':
