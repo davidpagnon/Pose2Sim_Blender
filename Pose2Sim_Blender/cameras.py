@@ -602,10 +602,11 @@ def show_images(camera, img_vid_path, single_image=False):
     # add scale factor and camera shifts to namespace
     img_size_orig = img.empty_display_size
     scale_factor = img_size_m /img_size_orig
-    bpy.app.driver_namespace['scale_factor'] = scale_factor
     
-    bpy.app.driver_namespace['shift_x'] = camera.data.shift_x
-    bpy.app.driver_namespace['shift_y'] = camera.data.shift_y
+    cam_key = camera.name.replace(' ', '_').replace('.', '_')
+    bpy.app.driver_namespace[f'scale_factor_{cam_key}'] = scale_factor
+    bpy.app.driver_namespace[f'shift_x_{cam_key}'] = camera.data.shift_x
+    bpy.app.driver_namespace[f'shift_y_{cam_key}'] = camera.data.shift_y
     
     # create driver for scaleX as a function of translationZ
     d_scalex = img.driver_add('scale', 0) 
@@ -615,7 +616,7 @@ def show_images(camera, img_vid_path, single_image=False):
     v_scalex.type = 'TRANSFORMS'
     v_scalex.targets[0].transform_type = 'LOC_Z'
     v_scalex.targets[0].transform_space = 'LOCAL_SPACE'
-    d_scalex.driver.expression = '-scaleX * scale_factor'
+    d_scalex.driver.expression = f'-scaleX * scale_factor_{cam_key}'
     
     # create driver for scaleY as a function of translationZ
     d_scaley = img.driver_add('scale', 1) 
@@ -625,7 +626,7 @@ def show_images(camera, img_vid_path, single_image=False):
     v_scaley.type = 'TRANSFORMS'
     v_scaley.targets[0].transform_type = 'LOC_Z'
     v_scaley.targets[0].transform_space = 'LOCAL_SPACE'
-    d_scaley.driver.expression = '-scaleY * scale_factor'
+    d_scaley.driver.expression = f'-scaleY * scale_factor_{cam_key}'
     
     # create driver for locX as a function of translationZ
     d_locx = img.driver_add('location', 0) 
@@ -635,7 +636,7 @@ def show_images(camera, img_vid_path, single_image=False):
     v_locx.type = 'TRANSFORMS'
     v_locx.targets[0].transform_type = 'LOC_Z'
     v_locx.targets[0].transform_space = 'LOCAL_SPACE'
-    d_locx.driver.expression = 'shift_x * locX' # no minus signe because camera flip along X
+    d_locx.driver.expression = f'shift_x_{cam_key} * locX'
     
     # create driver for locY as a function of translationZ
     d_locy = img.driver_add('location', 1) 
@@ -645,7 +646,7 @@ def show_images(camera, img_vid_path, single_image=False):
     v_locy.type = 'TRANSFORMS'
     v_locy.targets[0].transform_type = 'LOC_Z'
     v_locy.targets[0].transform_space = 'LOCAL_SPACE'
-    d_locy.driver.expression = '-shift_y * locY'
+    d_locy.driver.expression = f'-shift_y_{cam_key} * locY'
     
     # place at Z = 1.0 m
     # img.location[0] = -camera.data.shift_x # because camera has been flipped 180° along x
