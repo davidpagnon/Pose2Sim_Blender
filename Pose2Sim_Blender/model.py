@@ -204,7 +204,8 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
     for obj in objects:
         obj.select_set(obj.type == "EMPTY")
     empties = bpy.context.selected_objects
-    [empt.hide_set(True) for empt in empties]
+    for empt in empties:
+        empt.empty_display_size = 0
     
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[collection.name]
     

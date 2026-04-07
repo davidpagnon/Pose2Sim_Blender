@@ -135,6 +135,13 @@ class showImages(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         description="If unchecked, image sequences ot videos will be imported.",
         default=False,
     )
+
+    frame_offset: IntProperty(
+        name="Frame offset",
+        description="Number of frames to offset the video (open trc or mot file to find it out)",
+        default=0,
+        min = 0
+    )
     
     def execute(self, context):
         camera = bpy.context.active_object
@@ -146,7 +153,10 @@ class showImages(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
             raise TypeError("Please first select a camera")
         else:
             img_vid_path=bpy.path.abspath(self.filepath)
-            cameras.show_images(camera, img_vid_path, single_image = self.single_image)
+            cameras.show_images(camera, 
+                                img_vid_path, 
+                                single_image = self.single_image,
+                                frame_offset = self.frame_offset)
             return {'FINISHED'}
 
 

@@ -102,7 +102,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
 
         # set framerate
         times = motion_data.getIndependentColumn()
-        times -= np.array(times[0])
+        # times -= np.array(times[0])
         fps = round((len(times)-1) / (times[-1] - times[0]))
         first_frame = round(times[0]*fps)
         if target_framerate == 'auto':
