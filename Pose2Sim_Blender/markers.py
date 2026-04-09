@@ -322,7 +322,8 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
 
         # set framerate
         times = trc_data_np[:,1]
-        first_frame = round(trc_data_np[0,0])
+        fps = round((len(times)-1) / (times[-1] - times[0]))
+        first_frame = round(times[0]*fps)
         fps = round((len(times)-1) / (times[-1] - times[0]))
         if target_framerate == 'auto':
             target_framerate = fps
@@ -371,6 +372,8 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
     
     # C3D file
     elif trc_path.endswith('.c3d'):
+        from bpy_extras import anim_utils
+
         bpy.ops.preferences.addon_enable(module='io_anim_c3d')
         from io_anim_c3d import c3d_importer
         operator = bpy.types.Operator
@@ -384,7 +387,9 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
                 armature_object = obj
                 break
         action = armature_object.animation_data.action
-        for fcurve in action.fcurves:
+        slot = armature_object.animation_data.action_slot
+        channelbag = anim_utils.action_get_channelbag_for_slot(action, slot)
+        for fcurve in channelbag.fcurves:
             for keyframe in fcurve.keyframe_points:
                 keyframe.co.x += 0
 

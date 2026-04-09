@@ -601,9 +601,9 @@ def show_images(camera, img_vid_path, single_image=False, frame_offset=0):
     
     # add scale factor and camera shifts to namespace
     img_size_orig = img.empty_display_size
-    scale_factor = img_size_m /img_size_orig
+    scale_factor = img_size_m / img_size_orig
     
-    cam_key = camera.name.replace(' ', '_').replace('.', '_')
+    cam_key = camera.name.replace(' ', '_').replace('.', '_').replace('-', '_')
     bpy.app.driver_namespace[f'scale_factor_{cam_key}'] = scale_factor
     bpy.app.driver_namespace[f'shift_x_{cam_key}'] = camera.data.shift_x
     bpy.app.driver_namespace[f'shift_y_{cam_key}'] = camera.data.shift_y
@@ -636,7 +636,7 @@ def show_images(camera, img_vid_path, single_image=False, frame_offset=0):
     v_locx.type = 'TRANSFORMS'
     v_locx.targets[0].transform_type = 'LOC_Z'
     v_locx.targets[0].transform_space = 'LOCAL_SPACE'
-    d_locx.driver.expression = f'shift_x_{cam_key} * locX'
+    d_locx.driver.expression = f'shift_x_{cam_key} * locX' # no minus signe because camera flip along X
     
     # create driver for locY as a function of translationZ
     d_locy = img.driver_add('location', 1) 
@@ -658,8 +658,6 @@ def show_images(camera, img_vid_path, single_image=False, frame_offset=0):
     # # apply shift
     # image.empty_image_offset[0] = -.5 + img.location[0]
     # image.empty_image_offset[1] = -.5 + img.location[1]
-    
-    bpy.ops.object.transform_apply(location=False, scale=True)
     
     # Make camera the active object instead of the image
     bpy.context.view_layer.objects.active = camera
