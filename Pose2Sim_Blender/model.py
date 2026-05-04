@@ -41,7 +41,7 @@ __author__ = "David Pagnon, Jonathan Camargo"
 __copyright__ = "Copyright 2023, BlendOSim & Pose2Sim_Blender"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -210,4 +210,3 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[collection.name]
     
     print(f'OpenSim model imported from {osim_path}')
-            

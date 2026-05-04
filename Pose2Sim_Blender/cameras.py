@@ -36,7 +36,7 @@ __author__ = "David Pagnon"
 __copyright__ = "Copyright 2023, Pose2Sim_Blender"
 __credits__ = ["David Pagnon"]
 __license__ = "MIT License"
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -652,7 +652,10 @@ def show_images(camera, img_vid_path, single_image=False, frame_offset=0):
     # img.location[0] = -camera.data.shift_x # because camera has been flipped 180° along x
     # img.location[1] = camera.data.shift_y
     img.location[2] = -1.0
-    
+    bpy.context.view_layer.objects.active = img
+    img.select_set(True)
+    bpy.ops.transform.translate(value=(0, 0, 0))
+
     # Should create driver for locx and locy
     
     # # apply shift
@@ -696,27 +699,26 @@ def film_from_cams( dir_path,
     scene.render.engine = 'CYCLES'
     
     if movie_or_sequence=='movie':
+        scene.render.image_settings.media_type = 'VIDEO'
         scene.render.fps = target_framerate
-        scene.render.image_settings.file_format = 'FFMPEG'
-        scene.render.image_settings.quality = IMAGE_QUALITY
         scene.render.ffmpeg.format = 'MPEG4'
-        scene.render.ffmpeg.constant_rate_factor = 'MEDIUM' # Output quality
+        scene.render.ffmpeg.constant_rate_factor = 'PERC_LOSSLESS' if IMAGE_QUALITY>90 else 'HIGH' if IMAGE_QUALITY>80 else 'MEDIUM' if IMAGE_QUALITY > 40 else 'LOW' if IMAGE_QUALITY > 20 else 'VERYLOW' # Output quality
         scene.render.ffmpeg.ffmpeg_preset = 'GOOD' # Encoding speed
-        scene.render.ffmpeg.codec = 'H264' # Video codec
-        scene.render.ffmpeg.audio_codec = 'NONE' # Audio set to none
-        extension = 'mp4'
+        scene.render.ffmpeg.codec = 'H264'
+        scene.render.ffmpeg.audio_codec = 'NONE'
     else:
+        scene.render.image_settings.media_type = 'IMAGE'
         scene.render.image_settings.file_format = 'PNG'
         scene.render.image_settings.quality = IMAGE_QUALITY
-        extension = 'png'
     
     for cam in cams:
         bpy.context.view_layer.objects.active = cam
         see_through_selected_camera()
-        scene.render.filepath = os.path.join(dir_path, cam.name, cam.name+'.'+extension)
+        scene.render.filepath = os.path.join(dir_path, cam.name, cam.name+'_')
         try:
             print('Render with OpenGL')
             bpy.ops.render.opengl(animation=True)
+            # bpy.data.scenes['Scene'].render.image_settings.media_type
         except:
             print('WARNING: Render with Blender renderer')
             bpy.ops.render.render(animation=True, use_viewport=True)
@@ -782,5 +784,3 @@ def reproject_3D_points(collection=''):
         bpy.ops.object.mode_set(mode='OBJECT')
             
     bpy.ops.object.select_all(action='DESELECT')
-        
-

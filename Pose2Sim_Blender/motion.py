@@ -43,7 +43,7 @@ __author__ = "David Pagnon, Jonathan Camargo"
 __copyright__ = "Copyright 2023, BlendOSim & Pose2Sim_Blender"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -135,7 +135,7 @@ def apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate='a
             # set model struct in each time state
             for c, coord in enumerate(coordinateNames): ## PROBLEME QUAND HEADERS DE MOTION_DATA_NP ET COORDINATENAMES SONT PAS DANS LE MEME ORDRE
                 try:
-                    model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c], enforceContraints=False)
+                    model.getCoordinateSet().get(coord).setValue(state, motion_data_np[n,c], enforceConstraints=False)
                 except:
                     pass
             # model.assemble(state)

@@ -41,7 +41,7 @@ __author__ = "David Pagnon, Jonathan Camargo"
 __copyright__ = "Copyright 2023, BlendOSim & Pose2Sim_Blender"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -216,7 +216,7 @@ def create_armature_trc(armature_tree, armature_name):
 
 def create_armature_c3d(armature_tree):
     '''
-    /!\ DOES NOT WORK!
+    /!\\ DOES NOT WORK!
     Left if for future reference in case me or anyone else find time to fix it.
     
     Edit the armature from c3d_importer (bones created without a hierarchy)

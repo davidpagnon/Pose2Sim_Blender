@@ -32,27 +32,49 @@
 
 
 ## INIT
+import sys
+import site
+import os
+import importlib
+import subprocess
+
+user_site = site.getusersitepackages()
+if user_site not in sys.path:
+    sys.path.append(user_site)
+
+# Install dependencies
+def install_package(package):
+    python_exe = sys.executable
+    try:
+        __import__(package)
+        print(f'{package} is already installed')
+    except ImportError:
+        print(f'Attempting to install {package}')
+        # subprocess.check_call([python_exe, "-m", "pip", "install", "--upgrade", "pip"]) # upgrade for each package?
+        subprocess.check_call([python_exe, "-m", "pip", "install", "--user", package])
+        importlib.invalidate_caches()
+        __import__(package)
+        print(f'{package} successfully installed')
+
+packages_to_install = ['six', 'toml', 'anytree', 'opensim'] 
+for package in packages_to_install:
+    install_package(package)
+
 import bpy
 import bpy_extras.io_utils
 from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty, CollectionProperty
 from .Pose2Sim_Blender import model, motion, markers, forces, cameras
 from .Pose2Sim_Blender.common import ShowMessageBox
-import os
-import subprocess
-import sys
 
-def install_package(package):
-    python_exe = sys.executable
-    try:
-        __import__(package)
-    except ImportError:
-        subprocess.check_call([python_exe, "-m", "pip", "install", "--upgrade", "pip"])
-        subprocess.check_call([python_exe, "-m", "pip", "install", package])
 
+# Register io_anim_c3d
+addon_dir = os.path.dirname(os.path.abspath(__file__))
+if addon_dir not in sys.path:
+    sys.path.append(addon_dir)
+
+# Define paths
 rootpath=os.path.dirname(os.path.abspath(__file__))
 stlFolder=os.path.join(rootpath,'Pose2Sim_Blender','Geometry')
-
-install_package("anytree")
 
 
 ## AUTHORSHIP INFORMATION
@@ -60,7 +82,7 @@ __author__ = "David Pagnon, Jonathan Camargo"
 __copyright__ = "Copyright 2023, BlendOSim & Pose2Sim_Blender"
 __credits__ = ["David Pagnon", "Jonathan Camargo"]
 __license__ = "MIT License"
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __maintainer__ = "David Pagnon"
 __email__ = "contact@david-pagnon.com"
 __status__ = "Development"
@@ -70,13 +92,14 @@ __status__ = "Development"
 bl_info = {
     "name": "Pose2Sim Blender",
     "author": "David Pagnon, Jonathan Camargo",
-    "version": (0, 0, 1),
-    "blender": (3, 6, 0),
+    "version": (0, 8, 0),
+    "blender": (5, 1, 0),
     "location": "VIEW_3D > UI > Sidebar (press N)",
     "category": "Import-Export",
     "description": "visualize OpenSim and Pose2Sim data in Blender",
     "doc_url": "https://github.com/davidpagnon/Pose2Sim_Blender",
-    "tracker_url": "https://github.com/davidpagnon/Pose2Sim_Blender/issues"
+    "tracker_url": "https://github.com/davidpagnon/Pose2Sim_Blender/issues",
+    "dependencies": ["io_anim_c3d"]
 }
 
 
@@ -528,10 +551,6 @@ class panel1(bpy.types.Panel):
         layout.operator("mesh.export",icon='EXPORT', text='Export to Alembic')
 
 
-# def enable_external_addon(dummy):
-#     bpy.ops.wm.addon_enable(module='io_anim_c3d')
-
-
 def register():
     print('Addon Registered')
     
@@ -589,5 +608,3 @@ def unregister():
 # to test the add-on without having to install it.
 if __name__ == "__main__":
     register()
-    
-    
