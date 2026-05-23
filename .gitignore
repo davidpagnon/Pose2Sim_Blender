@@ -3,3 +3,7 @@
 *.egg-info/
 dist/
 logs.txt
+*.log
+*.csv
+
+Content/website/index.html

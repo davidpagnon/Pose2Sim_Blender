@@ -769,6 +769,11 @@ def reproject_3D_points(collection=''):
         collection = bpy.data.collections.new(f'rays{ob.name}')
         bpy.context.scene.collection.children.link(collection)
         for cam in cameras:
+            # For the skeleton
+            ob_loc = ob.location
+            if ob_loc == mathutils.Vector((0,0,0)):
+                ob_loc = ob.parent.location
+            
             # add Bezier curve
             curve_obj = add_bezier(ob.location, cam.location)
             curve_obj.name = f'{collection.name}_{cam.name}'

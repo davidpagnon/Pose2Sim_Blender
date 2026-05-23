@@ -25,7 +25,7 @@ This add-on can be used to visualize:
 
 <br>
 
-## Contents
+# Contents
 1. [Installation](#installation)
 2. [Demonstration](#demonstration)
     1. [Camera tools](#camera-tools)
@@ -39,7 +39,7 @@ https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-47
 
 <br>
 
-## Installation
+# Installation
 
 > For Blender < 4.4, see the old and tricky installation procedure [here](https://github.com/davidpagnon/Pose2Sim_Blender/tree/099dce48c7734bbfc0d6f7d1cb4699d4ca1e0623#installation). I'd strongly suggest updating your Blender version instead.
 
@@ -64,11 +64,11 @@ https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-47
 <br>
 
 
-## Demonstration
+# Demonstration
 
 Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip) archive.
 
-### Camera tools
+## Camera tools
 
 - **Import:**\
   Import a `.toml` calibration file from Pose2Sim.
@@ -82,7 +82,7 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
   Render view from all or selected cameras, as a movie or an image sequence.\
   Choose your framerate, the first and last frame to be rendered, and the output quality.
 
-### OpenSim imports
+## OpenSim imports
 
 ***N.B.:** Make sure you entered the right `Target framerate` (upper right corner).*
 - **Import Markers**:\
@@ -97,7 +97,7 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
 - **Import Forces**:\
   Import a `.mot` GRF force file.
 
-### Other tools
+## Other tools
 
 - **3D point motion path:**\
   Visualize the motion path of one or several selected 3D points.
@@ -114,9 +114,9 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
 
 
 
-## How to cite and how to contribute
+# How to cite and how to contribute
 
-### How to cite
+## How to cite
 
 If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/10.21105/joss.04362).
 
@@ -129,7 +129,7 @@ If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/
       URL = {https://joss.theoj.org/papers/10.21105/joss.04362}
      }
 
-### How to contribute
+## How to contribute
 
 I would happily welcome any proposal for new features, code improvement, and more!\
 If you want to contribute to Pose2Sim_Blender, please follow [this guide](https://docs.github.com/en/get-started/quickstart/contributing-to-projects) on how to fork, modify and push code, and submit a pull request. I would appreciate it if you provided as much useful information as possible about how you modified the code, and a rationale for why you're making this pull request. Please also specify on which operating system, as well as which Python, Blender, OpenSim versions you have tested the code.
