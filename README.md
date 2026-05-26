@@ -8,6 +8,11 @@
 
 # Pose2Sim Blender
 
+
+
+https://github.com/user-attachments/assets/3fc10178-c1f6-4067-adc1-1d67c447160f
+
+
 <img src="Content/Pose2Sim_Blender_Demo.png" width="760">
 
 **`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results, and rigging your character with markerless kinematics.**
