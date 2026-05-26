@@ -52,10 +52,10 @@ It can be used to visualize:
 
 # Installation
 
-https://github.com/user-attachments/assets/e976935f-e427-4040-83d5-b9bc9fcf7602
-
 > [!NOTE]
 > For Blender < 4.4, see the old and tricky installation procedure [here](https://github.com/davidpagnon/Pose2Sim_Blender/tree/099dce48c7734bbfc0d6f7d1cb4699d4ca1e0623#installation). I'd strongly suggest updating your Blender version instead.
+
+https://github.com/user-attachments/assets/e976935f-e427-4040-83d5-b9bc9fcf7602
 
 <br>
 
@@ -169,25 +169,19 @@ If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/
 - [x] Convert .vtp files to .stl if .stl not found on disk
 - [x] **Rig from trc markers**
 - [x] Install OpenSim (for motion .mot files) with a click within the addon (create a venv with the right Python version [cf CEB](https://drive.google.com/file/d/1x3JfKfUXwi-61AqsbDeMVRS_h66Ap-dW/view), install OpenSim and the other dependencies)
-- [ ] **Rig from OpenSim model and/or .c3d files**
-- [ ] Import .sto motion and force files
-
-<br>
-
 - [x] Import cameras from .toml calibration file
 - [x] Export cameras to .toml calibration file
 - [x] Import images, image sequences, and videos in the camera view
-- [x] Viewport render to film with selected cameras
-
-<br>
-
 - [x] See through camera and overlay model and markers
 - [x] Reproject rays from selected 3D points to image view
 - [x] Export to .abc Alembic files
-- [ ] Switch from Alembic to GLB export
-- [ ] Trace rays from camera to selected image point
-
-<br> 
-
+- [x] Viewport render to film with selected cameras
 - [x] Write documentation
 - [x] Create video tutorial
+
+<br>
+
+- [ ] **Rig from OpenSim model and/or .c3d files**
+- [ ] Switch from Alembic to GLB export
+- [ ] Trace rays from camera to selected image point
+- [ ] Import .sto motion and force files
