@@ -22,7 +22,7 @@ SCRIPT_DIR  = Path(__file__).resolve().parent
 REPO_ROOT   = SCRIPT_DIR.parent.parent
 README_PATH = REPO_ROOT / "README.md"
 OUTPUT_PATH = SCRIPT_DIR / "index.html"
-GITHUB_RAW  = "https://raw.githubusercontent.com/perfanalytics/pose2sim/main/"
+GITHUB_RAW  = "https://raw.githubusercontent.com/davidpagnon/Pose2Sim_Blender/main/"
 
 try:
     import pymdownx  # noqa: F401
@@ -339,10 +339,10 @@ HTML_TEMPLATE = """\
                 <a href="https://perfanalytics.github.io/pose2sim/#pose2sim" 
                    class="docs-switch" title="Pose2Sim documentation">Pose2Sim</a>
                 <span class="docs-switch-sep">|</span>
-                <a href="https://davidpagnon.github.io/Sports2D/"
+                <a href=https://davidpagnon.github.io/Sports2D/#sports2d"
                    class="docs-switch" title="Sports2D documentation">Sports2D</a>
                 <span class="docs-switch-sep">|</span>
-                <a href="https://davidpagnon.github.io/Pose2Sim_Blender/"
+                <a href="https://davidpagnon.github.io/Pose2Sim_Blender/#pose2sim-blender/"
                    class="docs-switch active" title="Pose2Sim Blender add-on documentation">Blender add-on</a>
             </div>
             <div class="theme-toggle">

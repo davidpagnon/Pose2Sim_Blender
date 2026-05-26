@@ -1,7 +1,10 @@
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10658948.svg)](https://zenodo.org/doi/10.5281/zenodo.10658947)
+\
 [![Discord](https://img.shields.io/discord/1183750225471492206?logo=Discord&label=Discord%20community)](https://discord.com/invite/4mXUdSFjmt)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/davidpagnon/Pose2Sim_Blender)
+
 
 # Pose2Sim Blender
 
@@ -16,7 +19,7 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-![Demo for other Pose2Sim tools](Content/Pose2Sim_Blender_Demo.png)
+<img src="Content/Pose2Sim_Blender_Demo.png" width="760">
 
 > N.B.:\
 > [Pose2Sim](https://github.com/perfanalytics/pose2sim) is an open-source pipeline for obtaining research-grade 3D motion analysis from consumer-grade cameras (**such as phones, webcams, GoPros, etc**). Its main application fields are sports science, biomechanics, and animation. \
