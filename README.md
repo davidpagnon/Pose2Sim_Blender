@@ -52,7 +52,7 @@ It can be used to visualize:
 
 # Installation
 
-https://github.com/davidpagnon/Pose2Sim_Blender/assets/54667644/a2cfb75d-a2d4-471a-b6f8-8f1ee999a619
+https://github.com/user-attachments/assets/e976935f-e427-4040-83d5-b9bc9fcf7602
 
 > [!NOTE]
 > For Blender < 4.4, see the old and tricky installation procedure [here](https://github.com/davidpagnon/Pose2Sim_Blender/tree/099dce48c7734bbfc0d6f7d1cb4699d4ca1e0623#installation). I'd strongly suggest updating your Blender version instead.
