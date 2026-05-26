@@ -8,9 +8,12 @@
 
 # Pose2Sim Blender
 
+<img src="Content/Pose2Sim_Blender_Demo.png" width="760">
+
 **`Pose2Sim_Blender` is a Blender add-on for visualizing [Pose2Sim](https://github.com/perfanalytics/pose2sim) results, and rigging your character with markerless kinematics.**
 
-This add-on can be used to visualize:
+It can be used to visualize:
+
 - Camera positions, orientations, field of view, etc. (using a `.toml` calibration file)
 - Videos, image sequences, or still images in the camera frame of reference
 - Markers trajectories (from `.trc` or `.c3d` files)
@@ -19,12 +22,12 @@ This add-on can be used to visualize:
 
 <!-- <img src='Content/Demo_Sim2Blend.gif' title='Pose2Sim_Blender demonstration. An OpenSim model imported in Blender, along with its motion, markers, and force results. Cameras and associated videos are also visualized.'  width="760"> -->
 
-<img src="Content/Pose2Sim_Blender_Demo.png" width="760">
 
-> N.B.:\
-> [Pose2Sim](https://github.com/perfanalytics/pose2sim) is an open-source pipeline for obtaining research-grade 3D motion analysis from consumer-grade cameras (**such as phones, webcams, GoPros, etc**). Its main application fields are sports science, biomechanics, and animation. \
-[OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).\
-[Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering.
+> [!NOTE]
+>
+> - [Pose2Sim](https://github.com/perfanalytics/pose2sim) is an open-source pipeline for obtaining research-grade 3D motion analysis from consumer-grade cameras (**such as phones, webcams, GoPros, etc**). Its main application fields are sports science, biomechanics, and animation. 
+> - [OpenSim](https://simtk.org/projects/opensim) is an open-source software for research in biomechanics, widely used in motion capture (MoCap).
+> - [Blender](https://www.blender.org) is an open-source software used for 3D modeling, animation, and rendering.
 
 <br>
 
@@ -119,7 +122,7 @@ Find example files in the `Examples` folder of your [Pose2Sim_Blender.zip](https
 
 # How to cite and how to contribute
 
-## How to cite
+### How to cite
 
 If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/10.21105/joss.04362).
 
@@ -132,12 +135,15 @@ If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/
       URL = {https://joss.theoj.org/papers/10.21105/joss.04362}
      }
 
-## How to contribute
+### How to contribute
 
-I would happily welcome any proposal for new features, code improvement, and more!\
-If you want to contribute to Pose2Sim_Blender, please follow [this guide](https://docs.github.com/en/get-started/quickstart/contributing-to-projects) on how to fork, modify and push code, and submit a pull request. I would appreciate it if you provided as much useful information as possible about how you modified the code, and a rationale for why you're making this pull request. Please also specify on which operating system, as well as which Python, Blender, OpenSim versions you have tested the code.
+> [!TIP]
+> If you want to contribute to Sports2D or Pose2Sim, please see [this issue](https://github.com/perfanalytics/pose2sim/issues/40) or join the Discord community! [![Discord](https://img.shields.io/discord/1183750225471492206?logo=Discord&label=Discord%20community)](https://discord.com/invite/4mXUdSFjmt)
+
+<br>
 
 *Here is a to-do list. Feel free to complete it:*
+
 - [x] Import data from standard OpenSim data files (.osim, .mot, .trc, grf.mot)
 - [x] Import c3d files (borrowed and adapted from [io_anim_c3d](https://github.com/MattiasFredriksson/io_anim_c3d) )
 - [x] Save segment position and orientation to .csv files for faster loading of motion next time
