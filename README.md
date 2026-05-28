@@ -1,3 +1,16 @@
+# Visit the website!
+
+Please visit the website! (after leaving a **⭐star⭐**! 😇)
+
+[https://davidpagnon.github.io/Pose2Sim_Blender](https://davidpagnon.github.io/Pose2Sim_Blender)
+
+
+<br>
+
+---
+
+<br>
+
 [![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10658948.svg)](https://zenodo.org/doi/10.5281/zenodo.10658947)
