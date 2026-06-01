@@ -20,7 +20,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ### Your Add-on version
+        #### Your Add-on version
         Make sure you installed [the latest add-on version](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)
 
   - type: textarea
