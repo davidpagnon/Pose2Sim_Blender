@@ -1,0 +1,31 @@
+name: A problem?
+description: Your configuration and problem
+labels: ["help wanted"]
+body:
+  - type: dropdown
+    id: os
+    attributes:
+      label: Your OS
+      options:
+        - Windows
+        - Linux
+        - Mac
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Your Blender version
+      placeholder: e.g., Blender 5.1
+
+  - type: markdown
+    id: library-version
+    attributes:
+      label: Your Pose2Sim_Blender add-on version
+      description: 'Make sure you installed [the latest add-on version](https://github.com/davidpagnon/Pose2Sim_Blender/raw/main/Pose2Sim_Blender.zip)'
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Your problem
+      description: Please describe your problem
+      placeholder: Describe your issue here...
