@@ -22,12 +22,12 @@
     - Film from cameras
     
     Other tools:
-    - View from selected camera
+    - Display motion path
+    - See through selected camera
     - Trace line from 3D point to camera
-    - Trace line from image point to camera
-    
-    Scene:
-    - Export scene to Alembic
+    - Trace line from image point to camera (coming soon!)
+    - Change collection color
+    - Export scene to GLB
 '''
 
 
@@ -64,7 +64,7 @@ import bpy
 import bpy_extras.io_utils
 from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty, CollectionProperty
 from .Pose2Sim_Blender import model, motion, markers, forces, cameras
-from .Pose2Sim_Blender.common import ShowMessageBox
+from .Pose2Sim_Blender.common import ShowMessageBox, createMaterial
 
 
 # Register io_anim_c3d
@@ -103,7 +103,7 @@ bl_info = {
 }
 
 
-class importCal(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+class importCal(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_cam_cal'
     bl_label = 'Import calibration'
     bl_description = "Import cameras from a `.toml` Pose2Sim camera calibration file"
@@ -121,7 +121,7 @@ class importCal(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         return {'FINISHED'}
 
 
-class exportCal(bpy.types.Operator,bpy_extras.io_utils.ExportHelper):
+class exportCal(bpy.types.Operator, bpy_extras.io_utils.ExportHelper):
     bl_idname = 'mesh.save_cam_cal'
     bl_label = 'Export calibration'
     bl_description = "Export your cameras as a `.toml` Pose2Sim camera calibration file"
@@ -328,7 +328,7 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         return {'RUNNING_MODAL'}
 
 
-class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+class addModel(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_model'
     bl_label = 'Model'
     bl_description ="Import the 'bodies' of an `.osim` model"
@@ -353,7 +353,7 @@ class addModel(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         return {'FINISHED'}
     
 
-class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+class addMotion(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_motion'
     bl_label = 'Motion'
     bl_description = "Import a `.mot` or a `.csv` motion file"
@@ -378,7 +378,7 @@ class addMotion(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         return {'FINISHED'}
     
 
-class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
+class addForces(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
     bl_label = 'Forces'
     bl_description = "Import a `.mot` force file"
@@ -400,6 +400,87 @@ class addForces(bpy.types.Operator,bpy_extras.io_utils.ImportHelper):
         grf_path=bpy.path.abspath(self.filepath)
         forces.import_forces(grf_path, direction='zup', target_framerate=self.target_framerate)
         return {'FINISHED'}
+
+
+class changeColor(bpy.types.Operator):
+    bl_idname = 'mesh.change_color'
+    bl_label = 'Change the color of the selected collection or object'
+    bl_description = "Select a collection or object, then click button to change its color"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    new_color: bpy.props.FloatVectorProperty(
+        name="Color",
+        subtype='COLOR',
+        size=4,
+        default=(0.8, 0.8, 0.8, 1.0),
+        min=0.0, max=1.0,
+        description="Pick a color"
+    )
+    metallic: bpy.props.FloatProperty(name="Metallic", default=0.5, min=0.0, max=1.0)
+    roughness: bpy.props.FloatProperty(name="Roughness", default=0.5, min=0.0, max=1.0)
+
+    # Color picker
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        target_objects = self.get_target_objects(context)
+
+        if not target_objects:
+            self.report({'WARNING'}, "Please select a collection or an object")
+            return {'CANCELLED'}
+
+        mesh_objects = [obj for obj in target_objects if obj.type == 'MESH']
+        if not mesh_objects:
+            self.report({'WARNING'}, "No mesh objects found in the selection")
+            return {'CANCELLED'}
+
+        new_mat = createMaterial(
+            color=tuple(self.new_color),
+            metallic=self.metallic,
+            roughness=self.roughness
+        )
+        for obj in mesh_objects:
+            if obj.data.materials:
+                # Overwrite every material slot on the object
+                for i in range(len(obj.data.materials)):
+                    obj.data.materials[i] = new_mat
+            else:
+                obj.data.materials.append(new_mat)
+
+        self.report({'INFO'}, f"Updated color on {len(mesh_objects)} mesh object(s)")
+        return {'FINISHED'}
+
+    def get_target_objects(self, context):
+        '''
+        Returns flat list of objects to affect
+        '''
+        objects = []
+        if context.selected_objects:
+            for obj in context.selected_objects:
+                objects.append(obj)
+                objects.extend(self.get_children_recursive(obj))
+            return list(set(objects))
+
+        active_collection = context.collection
+        if active_collection:
+            return self.get_collection_objects_recursive(active_collection)
+
+        return []
+
+    def get_children_recursive(self, obj):
+        result = []
+        for child in obj.children:
+            result.append(child)
+            result.extend(self.get_children_recursive(child))
+        return result
+
+    def get_collection_objects_recursive(self, collection):
+        result = list(collection.objects)
+        for child_col in collection.children:
+            result.extend(self.get_collection_objects_recursive(child_col))
+        return result
+
 
 
 class frameRange(bpy.types.PropertyGroup):
@@ -492,15 +573,15 @@ class rayFromImagePoint(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class alembicExport(bpy.types.Operator):#,bpy_extras.io_utils.ExportHelper):
+class glbExport(bpy.types.Operator):#,bpy_extras.io_utils.ExportHelper):
     bl_idname = 'mesh.export'
-    bl_label = 'Export all data to Alembic (.abc) format'
-    bl_description = "Alembic format can be read by most other 3D animation softwares"
+    bl_label = 'Export all data to glTF binary (.glb) format'
+    bl_description = "glTF format is the JPEG of 3D: It is compact and readable by most 3D animation softwares"
     bl_options = {'REGISTER', 'UNDO'}
     
     
     def execute(self, context):
-        bpy.ops.wm.alembic_export('INVOKE_DEFAULT')
+        bpy.ops.export_scene.gltf('INVOKE_DEFAULT')
         return {'FINISHED'}
 
 
@@ -545,10 +626,11 @@ class panel1(bpy.types.Panel):
         row.prop(props, "frame_after", text="")
         layout.label(text='')
         
-        layout.operator("mesh.see_through_cam",icon='IMAGE_RGB_ALPHA', text='See through camera') 
-        layout.operator("mesh.rays_from_3dpoint",icon='PARTICLE_DATA', text='Rays from 3D point') 
-        layout.operator("mesh.ray_from_imgpoint",icon='CURVE_PATH', text='Ray from image point')
-        layout.operator("mesh.export",icon='EXPORT', text='Export to Alembic')
+        layout.operator("mesh.see_through_cam", icon='IMAGE_RGB_ALPHA', text='See through camera') 
+        layout.operator("mesh.change_color", icon='BRUSHES_ALL', text='Change color')
+        layout.operator("mesh.rays_from_3dpoint", icon='PARTICLE_DATA', text='Rays from 3D point') 
+        layout.operator("mesh.ray_from_imgpoint", icon='CURVE_PATH', text='Ray from image point')
+        layout.operator("mesh.export", icon='EXPORT', text='Export to GLB')
 
 
 def register():
@@ -569,9 +651,10 @@ def register():
     bpy.utils.register_class(trackPoints)
     
     bpy.utils.register_class(seeThroughCam)
+    bpy.utils.register_class(changeColor)
     bpy.utils.register_class(raysFrom3Dpoint)
     bpy.utils.register_class(rayFromImagePoint)
-    bpy.utils.register_class(alembicExport)
+    bpy.utils.register_class(glbExport)
     
     bpy.utils.register_class(panel1)
     
@@ -597,9 +680,10 @@ def unregister():
     del bpy.types.Scene.before_after_frames
 
     bpy.utils.unregister_class(seeThroughCam)
+    bpy.utils.unregister_class(changeColor)
     bpy.utils.unregister_class(raysFrom3Dpoint)
     bpy.utils.unregister_class(rayFromImagePoint)
-    bpy.utils.unregister_class(alembicExport)
+    bpy.utils.unregister_class(glbExport)
     
     bpy.utils.unregister_class(panel1)
 

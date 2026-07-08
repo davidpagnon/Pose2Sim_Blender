@@ -135,16 +135,18 @@ https://github.com/user-attachments/assets/e976935f-e427-4040-83d5-b9bc9fcf7602
 
 ### Other tools
 
+- **Change color:**\
+  Change the color of a selected object or collection.
 - **3D point motion path:**\
   Visualize the motion path of one or several selected 3D points.
-- **See through cameras:**\
-  View from selected camera, with markers and OpenSim model overlay.
+- **See through camera:**\
+  View from selected camera, with overlaid markers and OpenSim skeletons.
 - **Rays from 3D point:**\
   Trace rays from one or several selected 3D points. *This can help you verify if a triangulated point correctly meets 2D keypoints on image planes.*
 - **Ray from image point:**\
   ***Coming soon!*** Trace ray from a point selected on an image plane. *This can help you see if rays intersect correctly.* 
-- **Export to Alembic:**\
-  Export to an `.abc` Alembic "baked" file, for fast import into other softwares.
+- **Export to GLB:**\
+  Export to an `.glb` GLB "baked" file, for fast import into other softwares.
 
 <br>
 
@@ -191,10 +193,11 @@ If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/
 - [x] Viewport render to film with selected cameras
 - [x] Write documentation
 - [x] Create video tutorial
+- [x] Switch from Alembic to GLB export
+- [x] Change color of object or collection
 
 <br>
 
 - [ ] **Rig from OpenSim model and/or .c3d files**
-- [ ] Switch from Alembic to GLB export
 - [ ] Trace rays from camera to selected image point
 - [ ] Import .sto motion and force files
