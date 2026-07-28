@@ -56,7 +56,7 @@ def install_package(package):
         __import__(package)
         print(f'{package} successfully installed')
 
-packages_to_install = ['six', 'toml', 'anytree', 'opensim'] 
+packages_to_install = ['six', 'toml', 'anytree', 'opensim', 'bvhsdk'] 
 for package in packages_to_install:
     install_package(package)
 
@@ -296,6 +296,7 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
             ('halpe_26', "Body with feet", "BodyWithFeet (Halpe_26) skeleton"),
             ('coco_133_wrist', "Body with feet and hands", "WholeBody (Coco_133) skeleton, without face and fingers"),
             ('coco_133', "Body with feet, fingers, face", "WholeBody (Coco_133_wrist) skeleton, without face and fingers"),
+            ('halpe_26_lower', "Lower body", "Lower body (Halpe_26 without upper body) skeleton"),
             ('coco_17', "Body", "Body (Coco_17) skeleton"),
             ('hand_21', "Hand", "Hand (Hand_21) skeleton"),
             ('face_106', "Face", "Face (face_106) skeleton"),
@@ -322,6 +323,8 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         layout = self.layout
         layout.prop(self, "target_framerate")
         layout.prop(self, "armature_type")
+        layout.separator()
+        layout.label(text="Hold Shift to select multiple files", icon="INFO")
 
     def invoke(self, context, event):
         context.window_manager.fileselect_add(self)

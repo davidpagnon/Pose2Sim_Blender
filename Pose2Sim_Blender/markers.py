@@ -139,7 +139,7 @@ def create_armature_trc(armature_tree, armature_name):
     bpy.ops.object.select_all(action='DESELECT')
 
     # Create armature object
-    armature_data = bpy.data.armatures.new(armature_name)
+    armature_data = bpy.data.armatures.new(armature_name+'_trc')
     armature_object = bpy.data.objects.new(armature_name, armature_data)
     bpy.context.collection.objects.link(armature_object)
     bpy.context.view_layer.objects.active = armature_object
@@ -177,6 +177,7 @@ def create_armature_trc(armature_tree, armature_name):
             bone.head = head_marker.location
             bone.parent = bones[node.parent.name]
             
+            bone.align_roll((0, 0, 1))
 
     # # Constrain bones to sphere animation (pose mode)
     # IK from child to parent
@@ -197,7 +198,7 @@ def create_armature_trc(armature_tree, armature_name):
         bone_name = node.name
         bone = armature_object.pose.bones.get(bone_name)
         if bone and node.parent:
-             if node.parent.name in first_children or node.name in first_children:
+            if node.parent.name in first_children or node.name in first_children:
                 copy_loc_constraint = bone.constraints.new(type='COPY_LOCATION')
                 copy_loc_constraint.target = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == node.parent.name][0]
     # Delete the child "copy location" constraint when the parent already has one (dirty fix to make it work for Body and Body with feet)
@@ -207,11 +208,12 @@ def create_armature_trc(armature_tree, armature_name):
         if node.parent and bone and bone.parent:
             if any(c.type=='COPY_LOCATION' for c in bone.constraints) and any(c.type=='COPY_LOCATION' for c in bone.parent.constraints):
                 for c in bone.constraints:
-                        if c.type == 'COPY_LOCATION':
-                            bone.constraints.remove(c)   
-        
+                    if c.type == 'COPY_LOCATION':
+                        bone.constraints.remove(c)
     # Exit edit mode
     bpy.ops.object.mode_set(mode='OBJECT')
+
+    return armature_object, int(frame_start), int(frame_end)
 
 
 def create_armature_c3d(armature_tree):
@@ -297,10 +299,13 @@ def create_armature_c3d(armature_tree):
                 # # bone.use_connect = True
                 # bone.head = parent_bone_world_loc
                 # bone.tail = bone_world_loc
+                # bone.align_roll((0, 0, 1))
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
- 
+    return armature_object, int(frame_start), int(frame_end)
+
+
 def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type=None):
     '''
     Import a .trc marker file into Blender.
@@ -367,7 +372,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
         armature_name = os.path.splitext(os.path.basename(trc_path))[0]
         if armature_type.upper() != 'NONE':
             armature_tree = eval(armature_type.upper())
-            create_armature_trc(armature_tree, armature_name)
+            armature_object, frame_start, frame_end = create_armature_trc(armature_tree, armature_name)
         
     
     # C3D file
@@ -395,11 +400,29 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
 
         # create armature
         # Rigged armature not supported for c3d files. Feel free to contribute!
-        armature_name = os.path.splitext(os.path.basename(trc_path))[0]
+        armature_name = os.path.splitext(os.path.basename(trc_path))[0] + '_c3d'
         if armature_type.upper() != 'NONE':
             ShowMessageBox("Rigged armature not supported for c3d files. Feel free to contribute!", "Not supported")
             
             # armature_tree = eval(armature_type.upper())
-            # create_armature_c3d(armature_tree)
-        
+            # armature_object, frame_start, frame_end = create_armature_c3d(armature_tree)
+
+    # Save armature as bvh
+    if armature_type.upper() != 'NONE' and '.c3d' not in trc_path:
+        bpy.context.view_layer.objects.active = armature_object
+        bpy.ops.object.select_all(action='DESELECT')
+        armature_object.select_set(True)
+
+        # Rotate the armature, save it, rotate it back
+        bpy.ops.transform.rotate(value=np.radians(-90), orient_axis='X', orient_type='GLOBAL')
+        filepath = os.path.join(os.path.dirname(trc_path), armature_name + '_trc.bvh')
+        bpy.ops.export_anim.bvh(
+            filepath=filepath,
+            frame_start=frame_start,
+            frame_end=frame_end,
+            root_transform_only=False, global_scale=1, rotate_mode='XYZ'
+        )
+        bpy.ops.transform.rotate(value=np.radians(90), orient_axis='X', orient_type='GLOBAL')
+        print(f'Armature exported as {filepath}')
+
     print(f'Marker data imported from {trc_path}')
