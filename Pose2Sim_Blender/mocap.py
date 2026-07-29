@@ -11,6 +11,7 @@
     Searches the meshes on the computer, converts them to .stl if only defined as .vtp
     Adds meshes and their parent bodies to the scene and scale them.
 
+
     OpenSim API is not required.
     
     INPUTS: 
@@ -25,15 +26,26 @@
 
 ## INIT
 import bpy
-from xml.dom import minidom
 import os
+import numpy as np
+import opensim as osim
+from mathutils import Matrix
+from xml.dom import minidom
 from Pose2Sim_Blender.Pose2Sim_Blender.common import createMaterial
 try:
     import vtk
 except ImportError:
     pass
 
+
+## CONSTANTS
 COLOR = (0.8, 0.8, 0.8, 1)
+H_ZUP = np.array([
+    [1, 0,  0, 0],
+    [0, 0, -1, 0],
+    [0, 1,  0, 0],
+    [0, 0,  0, 1],
+])
 
 
 ## AUTHORSHIP INFORMATION
@@ -75,8 +87,8 @@ def vtp2stl(vtp_path):
         print(f'{vtp_path} file converted')
 
 
-def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', collection='', color = COLOR):
-    '''osim_path
+def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', collection='', color=COLOR):
+    '''
     Reads an .osim model file, lists bodies and corresponding meshes
     Searches the meshes (stl, ply, vtp) on the computer, 
     converts them to .stl if only defined as .vtp
@@ -109,13 +121,9 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
             os.path.join(modelRoot, 'Geometry'),
             stlRoot,
             'C:\\OpenSim 4.5\\Geometry',
+            os.path.join('C:\\', f'OpenSim {osim.__version__[:3]}', 'Geometry')
         ] if path
     ]
-    try:
-        import opensim as osim
-        geometry_directories.append(os.path.join('C:\\', f'OpenSim {osim.__version__[:3]}', 'Geometry'))
-    except ImportError:
-        pass
     
     xmldoc = minidom.parse(osim_path)
     bodySet = xmldoc.getElementsByTagName('BodySet')[0]
@@ -210,3 +218,80 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[collection.name]
     
     print(f'OpenSim model imported from {osim_path}')
+
+
+def get_body_rest_matrices(osim_path, direction='zup'):
+    '''
+    OpenSim rest-pose transform per body in Blender coordinates.
+    '''
+
+    model = osim.Model(osim_path)
+    state = model.initSystem()
+    model.realizePosition(state)
+    body_set = model.getBodySet()
+    matrices = {}
+    for i in range(body_set.getSize()):
+        b = body_set.get(i)
+        H_swig = b.getTransformInGround(state)
+        T = H_swig.T().to_numpy()
+        R_swig = H_swig.R()
+        R = np.array([[R_swig.get(r, c) for c in range(3)] for r in range(3)])
+        H = np.block([[R, T.reshape(3, 1)], [np.zeros(3), 1]])
+        if direction == 'zup':
+            H = H_ZUP @ H
+        matrices[b.getName()] = Matrix(H.tolist())
+    return matrices
+
+
+def apply_bvh_to_model(bvh_path, osim_path, custom_geom_path='', stlRoot='', collection='', color=COLOR):
+    '''
+    Apply a BVH motion to an OpenSim model in Blender.
+    '''
+
+    # Import the BVH motion into Blender
+    bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
+    bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='-Z', axis_up='Y', global_scale=1.0, frame_start=0, use_cyclic=False, update_scene_fps=True, update_scene_duration=True, use_fps_scale=True)
+    armature_obj = bpy.context.object  # importer leaves the new armature active
+    armature_obj.display_type = 'WIRE'
+    armature_obj.data.display_type = 'OCTAHEDRAL'
+
+    # Import the OpenSim model into Blender (OpenSim not required)
+    import_model(osim_path, custom_geom_path=custom_geom_path, stlRoot=stlRoot)
+    collection = bpy.data.collections[os.path.basename(osim_path)]
+    bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[collection.name]
+
+    # Parent osim bones to armature in rest pose
+    rest_frame = int(armature_obj.animation_data.action.frame_range[0])
+    bpy.context.scene.frame_set(rest_frame)
+    bpy.context.view_layer.update()
+    rest_matrices = get_body_rest_matrices(osim_path, direction='zup')
+    missing = []
+    for body_name, desired_matrix in rest_matrices.items():
+        matching_objects = [obj for obj in collection.objects if obj.name.startswith(body_name)]
+        if not matching_objects:
+            missing.append(body_name)
+            continue
+        obj = matching_objects[0]
+        
+        if 'patella' in obj.name:
+            obj.hide_set(True) # patella's constraints are not taken into account
+        if obj.parent is not None:
+            continue  # skip if already has a parent
+
+        pbone = armature_obj.pose.bones.get(body_name)
+        if pbone is None:
+            missing.append(body_name)
+            continue
+
+        obj.parent = armature_obj
+        obj.parent_type = 'BONE'
+        obj.parent_bone = pbone.name
+        obj.matrix_parent_inverse = Matrix.Identity(4)
+        bpy.context.view_layer.update()   # make sure the new parent is evaluated first
+        obj.matrix_world = desired_matrix        # Blender back-solves the local offset, tail-quirk included
+
+    if missing:
+        print(f"No bone/body match for: {missing}")
+
+    bpy.context.view_layer.objects.active = armature_obj
+    armature_obj.select_set(True)

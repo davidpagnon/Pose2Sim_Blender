@@ -10,10 +10,9 @@
     A Blender addon to visualize Pose2Sim data in Blender.
 
     OpenSim:
-    - addModel: import an .osim model file
-    - addMotion: import a .mot (OpenSim API required) or .csv motion file
     - addMarkers: import a .trc marker file
-    - addGRF: import a .mot ground reaction force file
+    - addMocap: import .bvh mocap files, or an .osim model and a .bvh, .mot, or .sto file
+    - addForces: import a .mot ground reaction force file
     
     Cameras:
     - Import cameras from calibration
@@ -24,6 +23,7 @@
     Other tools:
     - Display motion path
     - See through selected camera
+    - Change the color of the selected collection or object
     - Trace line from 3D point to camera
     - Trace line from image point to camera (coming soon!)
     - Change collection color
@@ -63,7 +63,8 @@ for package in packages_to_install:
 import bpy
 import bpy_extras.io_utils
 from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty, CollectionProperty
-from .Pose2Sim_Blender import model, motion, markers, forces, cameras
+from .Pose2Sim_Blender import markers, mocap, forces, cameras
+from .Pose2Sim_Blender.osim_to_bvh import export_to_bvh
 from .Pose2Sim_Blender.common import ShowMessageBox, createMaterial
 
 
@@ -331,56 +332,87 @@ class addMarkers(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         return {'RUNNING_MODAL'}
 
 
-class addModel(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
-    bl_idname = 'mesh.add_osim_model'
-    bl_label = 'Model'
-    bl_description ="Import the 'bodies' of an `.osim` model"
+class addMocap(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
+    bl_idname = 'mesh.add_mocap'
+    bl_label = 'Mocap'
+    bl_description = "Import `.bvh` mocap files, or an .osim file and a .bvh, .mot, or .sto file"
     bl_options = {'REGISTER', 'UNDO'}
 
     filter_glob : StringProperty(
-        name='Model file',
-        default="*.osim",
+        name='Animation files',
+        default="*.bvh;*.osim;*.mot;*.sto",
         options={'HIDDEN'},
         subtype="FILE_PATH")
       
+    # File picker properties
+    files: CollectionProperty(
+        type=bpy.types.OperatorFileListElement,
+        options={'HIDDEN', 'SKIP_SAVE'},
+    )
+
     custom_geom_path: StringProperty(
-        name="Custom geometry path",
-        description="Custom geometry path. Optional, only required if your bone geometries are not at the root of your model nor in the Pose2Sim_Blender or OpenSim installation directories",
+        name="Custom .osim geometry path",
+        description="Custom .osim geometry path. Optional, only required if your bone geometries are not at the root of your model nor in the Pose2Sim_Blender or OpenSim installation directories",
         default='',
     )
-    
+
+    directory: StringProperty(subtype='DIR_PATH')
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "custom_geom_path")
+        layout.separator()
+        layout.label(text="Select one or several .BVH files, OR", icon="INFO")
+        layout.label(text="one .OSIM and one .BVH, .MOT, or .STO file.")
+        layout.label(text="Tip: Hold Shift to select multiple files", icon="INFO")
+
     def execute(self, context):
-        global osim_path
-        osim_path= bpy.path.abspath(self.filepath)
-        model.import_model(osim_path, custom_geom_path=self.custom_geom_path, stlRoot=stlFolder)
+        selected_files = [os.path.join(self.directory, f.name) for f in self.files]
+
+        if len(selected_files) == 0:
+            self.report({'ERROR'}, "No files selected")
+            return {'CANCELLED'}
+
+        # .osim and .bvh, .mot, or .sto
+        elif (
+            len(selected_files) == 2
+            and any(f.endswith('.osim') for f in selected_files)
+            and any(f.endswith(('.bvh', '.mot', '.sto')) for f in selected_files)
+            ):
+                osim_path = selected_files[0] if selected_files[0].endswith('.osim') else selected_files[1]
+                other_path = selected_files[0] if selected_files[0] != osim_path else selected_files[1]
+                if other_path.endswith('.mot') or other_path.endswith('.sto'):
+                    # convert to .bvh
+                    print(f"\nExporting OpenSim results to BVH files...")
+                    bvh_path = os.path.join(self.directory, other_path[:-4] + '_ik.bvh')
+                    export_to_bvh(model_path=osim_path, output_path=bvh_path, motion_path=other_path)
+
+                elif other_path.endswith('.bvh'):
+                    bvh_path = other_path
+
+                else:
+                    self.report({'ERROR'}, "Selected files must be one .osim and one .bvh, .mot, or .sto file")
+                    return {'CANCELLED'}
+
+                # Open osim and
+                mocap.apply_bvh_to_model(bvh_path, osim_path, custom_geom_path=self.custom_geom_path, stlRoot=stlFolder)
+
+        # only .bvh files
+        else:
+            print(f"Selected files: {selected_files}")
+            ignored_files = [f for f in selected_files if not f.endswith('.bvh')]
+            if ignored_files:
+                ShowMessageBox(f"Some selected files are not .bvh: {', '.join(ignored_files)}", "Not a .BVH file")
+            bvh_paths = [f for f in selected_files if f.endswith('.bvh')]
+            for bvh_path in bvh_paths:
+                bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='-Z', axis_up='Y', global_scale=1.0, frame_start=0, use_cyclic=False, update_scene_fps=True, update_scene_duration=True, use_fps_scale=True)
+                armature_obj = bpy.context.object  # importer leaves the new armature active
+                armature_obj.display_type = 'WIRE'
+                armature_obj.data.display_type = 'OCTAHEDRAL'
+ 
         return {'FINISHED'}
     
-
-class addMotion(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
-    bl_idname = 'mesh.add_osim_motion'
-    bl_label = 'Motion'
-    bl_description = "Import a `.mot` or a `.csv` motion file"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    filter_glob : StringProperty(
-        name='Motion file',
-        default="*.mot;*.csv",
-        options={'HIDDEN'},
-        subtype="FILE_PATH")
-    
-    target_framerate: StringProperty(
-        name="Target framerate [fps]",
-        description="Target framerate for animation in frames-per-second. Lower values will speed up import time.",
-        default='auto',
-    )
-    
-    def execute(self, context):
-        global osim_path
-        mot_path=bpy.path.abspath(self.filepath)
-        motion.apply_mot_to_model(mot_path, osim_path, direction='zup', target_framerate=self.target_framerate)
-        return {'FINISHED'}
-    
-
+ 
 class addForces(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_idname = 'mesh.add_osim_forces'
     bl_label = 'Forces'
@@ -483,7 +515,6 @@ class changeColor(bpy.types.Operator):
         for child_col in collection.children:
             result.extend(self.get_collection_objects_recursive(child_col))
         return result
-
 
 
 class frameRange(bpy.types.PropertyGroup):
@@ -609,10 +640,9 @@ class panel1(bpy.types.Panel):
         column_layout2.operator("mesh.film_from_cam",icon='COPYDOWN', text="Film")
         
         layout.label(text='')
-        layout.label(text='Import OpenSim data') 
+        layout.label(text='Import OpenSim or Mocap data') 
         layout.operator("mesh.add_osim_markers",icon='MESH_UVSPHERE', text="Markers") 
-        layout.operator("mesh.add_osim_model",icon='MESH_MONKEY', text="Model")
-        layout.operator("mesh.add_osim_motion",icon='IPO_BACK', text="Motion")
+        layout.operator("mesh.add_mocap",icon='MESH_MONKEY', text="MoCap or IK") 
         layout.operator("mesh.add_osim_forces",icon='EMPTY_SINGLE_ARROW', text="Forces") 
         
         layout.label(text='')
@@ -645,8 +675,7 @@ def register():
     bpy.utils.register_class(filmWithCameras)
     
     bpy.utils.register_class(addMarkers)
-    bpy.utils.register_class(addModel)
-    bpy.utils.register_class(addMotion)
+    bpy.utils.register_class(addMocap)
     bpy.utils.register_class(addForces)
     
     bpy.utils.register_class(frameRange)
@@ -674,8 +703,7 @@ def unregister():
     bpy.utils.unregister_class(filmWithCameras)
     
     bpy.utils.unregister_class(addMarkers)
-    bpy.utils.unregister_class(addModel)
-    bpy.utils.unregister_class(addMotion)
+    bpy.utils.unregister_class(addMocap)
     bpy.utils.unregister_class(addForces)
     
     bpy.utils.unregister_class(frameRange)
