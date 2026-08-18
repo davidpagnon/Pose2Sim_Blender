@@ -288,6 +288,8 @@ def set_frame_from_state(animation, model, state, frame_idx):
 
         # Convert global rotation matrix to Euler ZXY (returns degrees)
         global_euler_deg, warning = mathutils.eulerFromMatrix(global_rotation, 'ZXY')
+        if warning:
+            print(f"[frame {frame_idx}] {body_name}: {warning}")
 
         # Use bvhsdk's setGlobalRotation to automatically compute local rotation
         # setGlobalRotation expects degrees (bvhsdk operates in degrees)
