@@ -16,6 +16,7 @@ Please visit the website! (after leaving a **⭐star⭐**! 😇)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10658948.svg)](https://zenodo.org/doi/10.5281/zenodo.10658947)
 \
 [![Discord](https://img.shields.io/discord/1183750225471492206?logo=Discord&label=Discord%20community)](https://discord.com/invite/4mXUdSFjmt)
+[![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/davidpagnon)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/davidpagnon/Pose2Sim_Blender)
 
 
@@ -45,8 +46,8 @@ It can be used to visualize:
 <br>
 
 > [!IMPORTANT]
-> If you like it, ⭐ please leave a star ⭐ on the [Pose2Sim_Blender GitHub repository](https://github.com/davidpagnon/Pose2Sim_Blender)!\
-> This project is completely free: this is your chance to support the project and make it more visible to the community.
+> This project is completely free and open-source: it you like it and find it useful, please consider supporting it!\
+> You can help make it more visible and sustainable by ⭐ [Giving us a star](https://github.com/davidpagnon/pose2sim_blender) ⭐ or ❤️ [Becoming a sponsor](https://github.com/sponsors/davidpagnon). ❤️
 
 > [!IMPORTANT]
 > If you want to contribute to Sports2D or Pose2Sim, please see [How to contribute](#how-to-contribute-and-to-do-list) or join the Discord community! [![Discord](https://img.shields.io/discord/1183750225471492206?logo=Discord&label=Discord%20community)](https://discord.com/invite/4mXUdSFjmt)

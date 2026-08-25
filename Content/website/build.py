@@ -384,7 +384,7 @@ HTML_TEMPLATE = """\
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-content">
-                <p><a href="https://github.com/davidpagnon/Pose2Sim_Blender" target="_blank">Pose2Sim_Blender GitHub</a> (⭐please leave a star!⭐) &bull;
+                <p><a href="https://github.com/davidpagnon/pose2sim_blender" target="_blank">Pose2Sim_Blender GitHub</a> (⭐Star it⭐ or ❤️<a href="https://github.com/sponsors/davidpagnon" target="_blank">Sponsor it!</a>❤️) &bull;
                    <a href="#how-to-cite">Cite Pose2Sim_Blender</a>
                 </p>
                 <p>Open-source markerless motion capture &bull; BSD-3-Clause License</p>
