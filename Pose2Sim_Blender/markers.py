@@ -384,7 +384,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
         operator = bpy.types.Operator
         c3d_importer.load(operator, bpy.context, \
                           filepath = trc_path, \
-                          use_manual_orientation=True, axis_forward='Y', axis_up='Z')
+                          use_manual_orientation=True, axis_forward='X', axis_up='Y')
                           
         # Shift animation one frame back
         for obj in reversed(bpy.context.scene.objects): # last created armature
