@@ -157,7 +157,7 @@ class showImages(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     single_image: BoolProperty(
         name="Import single image",
         description="If unchecked, image sequences ot videos will be imported.",
-        default=False,
+        default = '*.mp4;*.avi;*.mov;*.mkv;*.wmv;*.flv;*.webm;*.m4v;*.mpeg;*.mpg;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.webp',
     )
 
     frame_offset: IntProperty(
