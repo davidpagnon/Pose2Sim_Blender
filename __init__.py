@@ -154,12 +154,13 @@ class showImages(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     bl_description = "Select a camera, then import images or a video"
     bl_options = {'REGISTER', 'UNDO'}
     
-    single_image: BoolProperty(
-        name="Import single image",
-        description="If unchecked, image sequences ot videos will be imported.",
-        default = '*.mp4;*.avi;*.mov;*.mkv;*.wmv;*.flv;*.webm;*.m4v;*.mpeg;*.mpg;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.webp',
+    filter_glob: StringProperty(
+        name="Image or video files",
+        default='*.mp4;*.avi;*.mov;*.mkv;*.wmv;*.flv;*.webm;*.m4v;*.mpeg;*.mpg;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.webp',
+        options={'HIDDEN'},
+        subtype="FILE_PATH"
     )
-
+    
     frame_offset: IntProperty(
         name="Frame offset",
         description="Number of frames to offset the video (open trc or mot file to find it out)",
@@ -179,7 +180,6 @@ class showImages(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
             img_vid_path=bpy.path.abspath(self.filepath)
             cameras.show_images(camera, 
                                 img_vid_path, 
-                                single_image = self.single_image,
                                 frame_offset = self.frame_offset)
             return {'FINISHED'}
 

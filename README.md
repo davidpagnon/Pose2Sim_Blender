@@ -11,9 +11,10 @@ Please visit the website! (after leaving a **⭐star⭐**! 😇)
 
 <br>
 
-[![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](https://github.com/Naereen/badges/)
+<!-- Add JOSS when available -->
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/license/mit)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10658948.svg)](https://zenodo.org/doi/10.5281/zenodo.10658947)
+[![Stars](https://img.shields.io/github/stars/perfanalytics/pose2sim)](https://github.com/perfanalytics/pose2sim/stargazers)
 \
 [![Discord](https://img.shields.io/discord/1183750225471492206?logo=Discord&label=Discord%20community)](https://discord.com/invite/4mXUdSFjmt)
 [![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/davidpagnon)

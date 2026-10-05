@@ -572,15 +572,10 @@ def show_images(camera, img_vid_path, single_image=False, frame_offset=0):
     img = bpy.context.active_object
     img.matrix_world = np.eye(4)
     img.empty_image_depth = 'DEFAULT' # overlaid by skeleton, markers, etc.
-    if single_image == False:
-        if img.data.source == 'MOVIE':
-            # BUG: if select single image, delete, and then reload as movie, does not update source as movie
-            img.image_user.frame_duration =  img.data.frame_duration
-            img.image_user.frame_start =  frame_offset
-        elif img.data.source == 'FILE': 
-            img.data.source = 'SEQUENCE'
-            img.image_user.frame_duration = len(os.listdir(os.path.join(img_vid_path, '..')))
-            img.image_user.frame_start =  frame_offset
+    if img.data.source == 'MOVIE':
+        # BUG: if select single image, delete, and then reload as movie, does not update source as movie
+        img.image_user.frame_duration =  img.data.frame_duration
+        img.image_user.frame_start =  frame_offset
     else: 
         img.data.source = 'FILE'
     

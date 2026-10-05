@@ -121,6 +121,24 @@ def addMarker(marker_collection, position=(0,0,0), text="MARKER", material=bpy.t
     marker_collection.objects.link(sphere)
            
 
+def find_marker(marker_collection, name):
+    '''
+    Find a marker object whose stripped name matches `name` (case-insensitive).
+    Returns the object, or None if not found.
+    
+    INPUTS:
+    - marker_collection: collection of marker objects
+    - name: name of the marker to find
+
+    OUTPUTS:
+    - The marker object if found, otherwise None
+    '''
+    
+    matches = [o for o in marker_collection.objects
+               if re.sub(r'\.\d+$', '', o.name.strip()).lower() == name.strip().lower()]
+    return matches[0] if matches else None
+    
+
 def create_armature_trc(armature_tree, armature_name):
     '''
     Creates an armature and sets up the bone hierarchy based on the given tree.
@@ -159,19 +177,13 @@ def create_armature_trc(armature_tree, armature_name):
         bone = armature_data.edit_bones.new(node.name)
         bones[node.name] = bone
         if node.parent:
-            # tail (child)
-            try:
-                child_name = node.name
-                tail_marker = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == child_name][0]
-            except:
-                print(f'Could not find {child_name} in the TRC file.')
-                continue
-            # head (parent)
-            try:
-                parent_name = node.parent.name
-                head_marker = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == parent_name][0]
-            except:
-                print(f'Could not find {parent_name} in the TRC file.')
+            tail_marker = find_marker(marker_collection, node.name)
+            head_marker = find_marker(marker_collection, node.parent.name)
+            if tail_marker is None or head_marker is None:
+                missing = node.name if tail_marker is None else node.parent.name
+                print(f'Could not find {missing} in the TRC file, skipping bone {node.name}.')
+                armature_data.edit_bones.remove(bone)
+                bones.pop(node.name, None)
                 continue
             bone.tail = tail_marker.location
             bone.head = head_marker.location
@@ -186,7 +198,10 @@ def create_armature_trc(armature_tree, armature_name):
         bone_name = node.name
         bone = armature_object.pose.bones.get(bone_name)
         if bone and node.parent:
-            head_marker = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == node.name][0]
+            head_marker = find_marker(marker_collection, node.name)
+            if head_marker is None:
+                print(f'Could not find {node.name} in the TRC file, skipping IK.')
+                continue
             armature_object.data.bones.active = armature_object.data.bones.get(bone_name)
             ik_constraint = bone.constraints.new(type='IK')
             ik_constraint.target = head_marker
@@ -199,8 +214,12 @@ def create_armature_trc(armature_tree, armature_name):
         bone = armature_object.pose.bones.get(bone_name)
         if bone and node.parent:
             if node.parent.name in first_children or node.name in first_children:
+                target = find_marker(marker_collection, node.parent.name)
+                if target is None:
+                    print(f'Could not find {node.parent.name} in the TRC file, skipping copy location.')
+                    continue
                 copy_loc_constraint = bone.constraints.new(type='COPY_LOCATION')
-                copy_loc_constraint.target = [o for o in marker_collection.objects if re.sub(r'\.\d+$', '', o.name.strip()) == node.parent.name][0]
+                copy_loc_constraint.target = target
     # Delete the child "copy location" constraint when the parent already has one (dirty fix to make it work for Body and Body with feet)
     for node in PreOrderIter(armature_tree):
         bone_name = node.name
@@ -367,7 +386,17 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
                 obj.location=loc_x,loc_y,loc_z
                 obj.keyframe_insert('location',frame=first_frame+round(n/conv_fac_frame_rate))
         [ob.select_set(True) for ob in marker_collection.objects]
-                
+        
+        # Fallback: if 'head' is missing but 'nose' exists, duplicate it
+        marker_names_lower = {re.sub(r'\.\d+$', '', o.name.strip()).lower(): o for o in marker_collection.objects}
+        if 'head' not in marker_names_lower and 'nose' in marker_names_lower:
+            nose_obj = marker_names_lower['nose']
+            head_obj = nose_obj.copy()
+            head_obj.data = nose_obj.data.copy()
+            head_obj.name = 'head'
+            marker_collection.objects.link(head_obj)
+            print("No 'head' marker found, duplicated 'nose' as 'head'.")
+            
         # create armature
         armature_name = os.path.splitext(os.path.basename(trc_path))[0]
         if armature_type.upper() != 'NONE':
