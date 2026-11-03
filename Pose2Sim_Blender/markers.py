@@ -81,8 +81,16 @@ def load_trc(trc_path):
     - markerNames: list of marker names
     '''
 
+    # read unit
+    with open(trc_path) as f:
+        for _ in range(2): next(f)
+        line = next(f)
+        unit = line.rstrip('\n').split('\t')[4]
+        
     # read data
     trc_data_np = np.genfromtxt(trc_path, skip_header=5, delimiter = '\t')
+    if unit == 'mm':
+        trc_data_np /= 1000
     
     # read marker names
     with open(trc_path) as f:
