@@ -363,7 +363,7 @@ class addMocap(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
         layout.prop(self, "custom_geom_path")
         layout.separator()
         layout.label(text="Select one or several .BVH files, OR", icon="INFO")
-        layout.label(text="one .OSIM and one .BVH, .MOT, or .STO file.")
+        layout.label(text="one .OSIM and one .BVH / .MOT / .STO.")
         layout.label(text="Tip: Hold Shift to select multiple files", icon="INFO")
 
     def execute(self, context):
@@ -405,10 +405,7 @@ class addMocap(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
                 ShowMessageBox(f"Some selected files are not .bvh: {', '.join(ignored_files)}", "Not a .BVH file")
             bvh_paths = [f for f in selected_files if f.endswith('.bvh')]
             for bvh_path in bvh_paths:
-                bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='-Z', axis_up='Y', global_scale=1.0, frame_start=0, use_cyclic=False, update_scene_fps=True, update_scene_duration=True, use_fps_scale=True)
-                armature_obj = bpy.context.object  # importer leaves the new armature active
-                armature_obj.display_type = 'WIRE'
-                armature_obj.data.display_type = 'OCTAHEDRAL'
+                mocap.import_bvh(bvh_path)
  
         return {'FINISHED'}
     
@@ -612,7 +609,6 @@ class glbExport(bpy.types.Operator):#,bpy_extras.io_utils.ExportHelper):
     bl_label = 'Export all data to glTF binary (.glb) format'
     bl_description = "glTF format is the JPEG of 3D: It is compact and readable by most 3D animation softwares"
     bl_options = {'REGISTER', 'UNDO'}
-    
     
     def execute(self, context):
         bpy.ops.export_scene.gltf('INVOKE_DEFAULT')

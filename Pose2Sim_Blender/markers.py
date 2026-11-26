@@ -421,7 +421,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
         operator = bpy.types.Operator
         c3d_importer.load(operator, bpy.context, \
                           filepath = trc_path, \
-                          use_manual_orientation=True, axis_forward='X', axis_up='Y')
+                          use_manual_orientation=True, axis_forward='Z', axis_up='X')
                           
         # Shift animation one frame back
         for obj in reversed(bpy.context.scene.objects): # last created armature
@@ -433,7 +433,7 @@ def import_trc(trc_path, direction='zup', target_framerate='auto', armature_type
         channelbag = anim_utils.action_get_channelbag_for_slot(action, slot)
         for fcurve in channelbag.fcurves:
             for keyframe in fcurve.keyframe_points:
-                keyframe.co.x += 0
+                keyframe.co.x += 1
 
         # create armature
         # Rigged armature not supported for c3d files. Feel free to contribute!

@@ -129,6 +129,7 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
     bodySet = xmldoc.getElementsByTagName('BodySet')[0]
     bodies=bodySet.getElementsByTagName('Body')
     obj = []
+    bodies_dict = {}
     for i,body in enumerate(bodies): 
         # add object to collection
         bodyName=body.getAttribute('name')
@@ -140,6 +141,7 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
             physicalOffset_translation = [0., 0., 0.]
         
         obj += [bpy.data.objects.new(bodyName,None)]
+        bodies_dict[bodyName] = obj[i] 
         collection.objects.link(obj[i])
     
         # an object can be composed of several meshes
@@ -219,6 +221,8 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
     
     print(f'OpenSim model imported from {osim_path}')
 
+    return collection, bodies_dict
+
 
 def get_body_rest_matrices(osim_path, direction='zup'):
     '''
@@ -243,37 +247,76 @@ def get_body_rest_matrices(osim_path, direction='zup'):
     return matrices
 
 
+def _action_fcurves(action):
+    '''
+    All fcurves of an action, Blender 5.x layered-action structure
+    '''
+
+    for layer in action.layers:
+        for strip in layer.strips:
+            if hasattr(strip, 'channelbags'):
+                for channelbag in strip.channelbags:
+                    for fc in channelbag.fcurves:
+                        yield fc
+
+
+def import_bvh(bvh_path):
+    '''
+    Import a .bvh and make sure its first frame sits on Blender frame 0.
+    Returns the armature object.
+    '''
+    
+    scene = bpy.context.scene
+    bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
+    bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='-Z', axis_up='Y', global_scale=1.0,
+                            frame_start=0, use_cyclic=False, update_scene_fps=True,
+                            update_scene_duration=True, use_fps_scale=True)
+    armature_obj = bpy.context.object  # importer leaves the new armature active
+    armature_obj.display_type = 'WIRE'
+    armature_obj.data.display_type = 'OCTAHEDRAL'
+
+    # Shift all keyframes back by one frame
+    for fc in _action_fcurves(armature_obj.animation_data.action):
+        n = len(fc.keyframe_points)
+        co = np.empty(2 * n, dtype=np.float32)
+        fc.keyframe_points.foreach_get('co', co)
+        co[0::2] -= 1
+        fc.keyframe_points.foreach_set('co', co)
+        fc.update()   # recomputes the handles
+
+    scene.frame_start = 0
+    scene.frame_end -= 1
+
+    return armature_obj
+
+
 def apply_bvh_to_model(bvh_path, osim_path, custom_geom_path='', stlRoot='', collection='', color=COLOR):
     '''
     Apply a BVH motion to an OpenSim model in Blender.
     '''
 
-    # Import the BVH motion into Blender
-    bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
-    bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='-Z', axis_up='Y', global_scale=1.0, frame_start=0, use_cyclic=False, update_scene_fps=True, update_scene_duration=True, use_fps_scale=True)
-    armature_obj = bpy.context.object  # importer leaves the new armature active
-    armature_obj.display_type = 'WIRE'
-    armature_obj.data.display_type = 'OCTAHEDRAL'
+    # Import the BVH motion (first frame on frame 0)
+    armature_obj = import_bvh(bvh_path)
 
-    # Import the OpenSim model into Blender (OpenSim not required)
-    import_model(osim_path, custom_geom_path=custom_geom_path, stlRoot=stlRoot)
-    collection = bpy.data.collections[os.path.basename(osim_path)]
+    # Import the OpenSim model: use the collection and bodies it returns,
+    # not a lookup by name (which breaks when importing the same model twice)
+    collection, bodies = import_model(osim_path, custom_geom_path=custom_geom_path,
+                                      stlRoot=stlRoot, collection=collection, color=color)
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[collection.name]
 
     # Parent osim bones to armature in rest pose
-    rest_frame = int(armature_obj.animation_data.action.frame_range[0])
+    rest_frame = round(armature_obj.animation_data.action.frame_range[0])
     bpy.context.scene.frame_set(rest_frame)
     bpy.context.view_layer.update()
     rest_matrices = get_body_rest_matrices(osim_path, direction='zup')
     missing = []
     for body_name, desired_matrix in rest_matrices.items():
-        matching_objects = [obj for obj in collection.objects if obj.name.startswith(body_name)]
-        if not matching_objects:
+        obj = bodies.get(body_name)
+        if obj is None:
             missing.append(body_name)
             continue
-        obj = matching_objects[0]
-        
-        if 'patella' in obj.name:
+
+        if 'patella' in body_name and obj.name in bpy.context.view_layer.objects:
             obj.hide_set(True) # patella's constraints are not taken into account
         if obj.parent is not None:
             continue  # skip if already has a parent
@@ -288,7 +331,7 @@ def apply_bvh_to_model(bvh_path, osim_path, custom_geom_path='', stlRoot='', col
         obj.parent_bone = pbone.name
         obj.matrix_parent_inverse = Matrix.Identity(4)
         bpy.context.view_layer.update()   # make sure the new parent is evaluated first
-        obj.matrix_world = desired_matrix        # Blender back-solves the local offset, tail-quirk included
+        obj.matrix_world = desired_matrix # Blender back-solves the local offset, tail-quirk included
 
     if missing:
         print(f"No bone/body match for: {missing}")
