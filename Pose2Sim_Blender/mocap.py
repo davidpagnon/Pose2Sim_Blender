@@ -262,13 +262,13 @@ def _action_fcurves(action):
 
 def import_bvh(bvh_path):
     '''
-    Import a .bvh animation and shift it back by 1 frame.
+    Import a .bvh and make sure its first frame sits on Blender frame 0.
     Returns the armature object.
     '''
     
     scene = bpy.context.scene
     bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection
-    bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='Z', axis_up='X', global_scale=1.0,
+    bpy.ops.import_anim.bvh(filepath=bvh_path, axis_forward='-Z', axis_up='Y', global_scale=1.0,
                             frame_start=0, use_cyclic=False, update_scene_fps=True,
                             update_scene_duration=True, use_fps_scale=True)
     armature_obj = bpy.context.object  # importer leaves the new armature active
