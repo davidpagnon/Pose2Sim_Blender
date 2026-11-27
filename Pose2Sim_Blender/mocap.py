@@ -31,7 +31,7 @@ import numpy as np
 import opensim as osim
 from mathutils import Matrix, Vector
 from xml.dom import minidom
-from Pose2Sim_Blender.Pose2Sim_Blender.common import createMaterial
+from .common import createMaterial
 try:
     import vtk
 except ImportError:
