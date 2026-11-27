@@ -154,7 +154,7 @@ https://github.com/user-attachments/assets/e976935f-e427-4040-83d5-b9bc9fcf7602
 
 
 
-# How to cite and how to contribute
+# Cite, Contribute, Validate
 
 ### How to cite
 
@@ -203,3 +203,10 @@ If you use Pose2Sim_Blender, please cite [Pagnon et al., 2022b](https://doi.org/
 - [ ] **Rig from OpenSim model and/or .c3d files**
 - [ ] Trace rays from camera to selected image point
 - [ ] Import .sto motion and force files
+
+
+## Validation studies
+
+Pose2Sim: Validation studies listed [there](https://perfanalytics.github.io/pose2sim/#validation-studies).
+
+Sports2D: Validations studies listed [there](https://davidpagnon.github.io/Sports2D/#validation-studies).
