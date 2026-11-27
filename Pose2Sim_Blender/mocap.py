@@ -29,7 +29,7 @@ import bpy
 import os
 import numpy as np
 import opensim as osim
-from mathutils import Matrix
+from mathutils import Matrix, Vector
 from xml.dom import minidom
 from Pose2Sim_Blender.Pose2Sim_Blender.common import createMaterial
 try:
@@ -141,6 +141,7 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
             physicalOffset_translation = [0., 0., 0.]
         
         obj += [bpy.data.objects.new(bodyName,None)]
+        obj[i]["pose2sim_type"] = "skeleton"
         bodies_dict[bodyName] = obj[i] 
         collection.objects.link(obj[i])
     
@@ -186,6 +187,7 @@ def import_model(osim_path, custom_geom_path='', modelRoot='', stlRoot='.', coll
             # Scale meshes
             selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
             mesh_obj=selected_objects[0]
+            mesh_obj["pose2sim_type"] = "skeleton"
             mesh_obj.scale=scaleFactor
             
             # Translation and rotation of PhysicalOffsetFrame if exists
@@ -260,9 +262,60 @@ def _action_fcurves(action):
                         yield fc
 
 
+def make_controller_shape(name, tip):
+    '''
+    Octahedral bone shape, with the same proportions as Blender's default bone display,
+    from (0,0,0) to `tip` (Vector), in bone-local coordinates.
+    Used as a bone custom shape: display only, not linked to the scene.
+    '''
+
+    direction = tip.normalized()
+    width_dir = Vector((1, 0, 0)) if abs(direction.x) < 0.9 else Vector((0, 0, 1))
+    half_width = 0.1 * tip.length
+    side1 = direction.cross(width_dir).normalized() * half_width
+    side2 = direction.cross(side1).normalized() * half_width
+    ring = tip * 0.1
+    verts = [Vector((0, 0, 0)), tip, ring + side1, ring + side2, ring - side1, ring - side2]
+    faces = []
+    for i in range(4):
+        a, b = 2 + i, 2 + (i + 1) % 4
+        faces += [(0, a, b), (1, b, a)]
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata([tuple(v) for v in verts], [], faces)
+    mesh.update()
+
+    return bpy.data.objects.new(name, mesh)
+
+
+def enlarge_forearm_controllers(armature_obj, radius_scale=0.3):
+    '''
+    Enlarge ulna controller and Shrink radius controller
+    (rotating the radius leaves the ulna in place)
+    humerus -> ulna -> radius -> hand
+    '''
+
+    for side in ('l', 'r'):
+        bones, pbones = armature_obj.data.bones, armature_obj.pose.bones
+        # Ulna: same shape as a regular bone, reaching the wrist
+        ulna, hand, ulna_p = bones.get(f'ulna_{side}'), bones.get(f'hand_{side}'), pbones.get(f'ulna_{side}')
+        if ulna and hand and ulna_p:
+            tip = ulna.matrix_local.inverted() @ hand.head_local   # wrist, in the ulna bone's frame
+            ulna_p.custom_shape = make_controller_shape(f'ulna_{side}_controller', tip)
+            ulna_p.use_custom_shape_bone_size = False               # shape in meters, not scaled by bone length
+
+        # Radius: same shape, shorter, along its own bone axis
+        radius, radius_p = bones.get(f'radius_{side}'), pbones.get(f'radius_{side}')
+        if radius and radius_p:
+            tip = Vector((0, radius.length * radius_scale, 0))
+            radius_p.custom_shape = make_controller_shape(f'radius_{side}_controller', tip)
+            radius_p.use_custom_shape_bone_size = False
+            radius.show_wire = True
+
+
 def import_bvh(bvh_path):
     '''
-    Import a .bvh and make sure its first frame sits on Blender frame 0.
+    Import a .bvh animation and shift it back by 1 frame.
+    Shrink radius controller and enlarge ulna controller (rotating the radius leaves the ulna in place)
     Returns the armature object.
     '''
     
@@ -272,8 +325,11 @@ def import_bvh(bvh_path):
                             frame_start=0, use_cyclic=False, update_scene_fps=True,
                             update_scene_duration=True, use_fps_scale=True)
     armature_obj = bpy.context.object  # importer leaves the new armature active
+    armature_obj["pose2sim_type"] = "skeleton"
     armature_obj.display_type = 'WIRE'
     armature_obj.data.display_type = 'OCTAHEDRAL'
+    
+    enlarge_forearm_controllers(armature_obj)
 
     # Shift all keyframes back by one frame
     for fc in _action_fcurves(armature_obj.animation_data.action):

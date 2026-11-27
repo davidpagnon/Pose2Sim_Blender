@@ -64,7 +64,8 @@ import bpy
 import bpy_extras.io_utils
 from bpy.props import IntProperty, BoolProperty, EnumProperty, StringProperty, CollectionProperty
 from .Pose2Sim_Blender import markers, mocap, forces, cameras
-from .Pose2Sim_Blender.osim_to_bvh import export_to_bvh
+from .Pose2Sim_Blender.Utilities.osim_to_bvh import export_to_bvh
+from .Pose2Sim_Blender.Utilities.glb_export import export_to_glb
 from .Pose2Sim_Blender.common import ShowMessageBox, createMaterial
 
 
@@ -604,14 +605,41 @@ class rayFromImagePoint(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class glbExport(bpy.types.Operator):#,bpy_extras.io_utils.ExportHelper):
+class glbExport(bpy.types.Operator,bpy_extras.io_utils.ExportHelper):
     bl_idname = 'mesh.export'
     bl_label = 'Export all data to glTF binary (.glb) format'
-    bl_description = "glTF format is the JPEG of 3D: It is compact and readable by most 3D animation softwares"
+    bl_description = ("glTF format is the JPEG of 3D: It is compact and readable by most 3D animation software. "
+                      "Exports skeleton, markers, forces, and cameras to .glb. "
+                      "Videos, images, camera distortion and principal point are not exported.")
     bl_options = {'REGISTER', 'UNDO'}
     
+    filename_ext = '.glb'
+    filter_glob: StringProperty(default='*.glb', options={'HIDDEN'})
+    
+    export_skeletons: BoolProperty(name="Skeletons", default=True)
+    export_markers: BoolProperty(name="Markers", default=True)
+    export_forces: BoolProperty(name="Forces", default=True)
+    export_cameras: BoolProperty(name="Cameras", default=True)
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="Export:", icon="EXPORT")
+        layout.prop(self, "export_skeletons")
+        layout.prop(self, "export_markers")
+        layout.prop(self, "export_forces")  
+        layout.prop(self, "export_cameras")
+        layout.label(text="Videos and images, camera principal", icon="INFO")
+        layout.label(text="point and distortion are not exported.")
+
     def execute(self, context):
-        bpy.ops.export_scene.gltf('INVOKE_DEFAULT')
+        if not (self.export_skeletons or self.export_markers or self.export_cameras):
+            self.report({'ERROR'}, "Select at least one thing to export")
+            return {'CANCELLED'}
+        export_to_glb(bpy.path.abspath(self.filepath),
+                      skeletons=self.export_skeletons,
+                      markers=self.export_markers,
+                      cameras=self.export_cameras)
+        self.report({'INFO'}, 'Exported to ' + self.filepath)
         return {'FINISHED'}
 
 

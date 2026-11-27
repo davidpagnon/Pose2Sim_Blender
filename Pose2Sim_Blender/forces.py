@@ -97,12 +97,14 @@ def addForce(force_collection, forceName='', text="FORCE", color=COLOR):
 
     #Add arrow    
     arrow = bpy.data.objects.new(forceName,None)
+    arrow["pose2sim_type"] = "force"
     force_collection.objects.link(arrow)
     for obj in bpy.data.objects:
         obj.select_set(False)
     bpy.ops.wm.stl_import(filepath=arrowFile)
     selected_objects = [ o for o in bpy.context.scene.objects if o.select_get() ]
     obj=selected_objects[0]
+    obj["pose2sim_type"] = "force"
     obj.scale=(1,.5,.5)
     obj.parent=arrow
     obj.users_collection[0].objects.unlink(obj)
@@ -168,8 +170,8 @@ def import_forces(grf_path, direction='zup', target_framerate=30):
             obj.keyframe_insert('scale', frame=first_frame+round(n/conv_fac_frame_rate)+1)
 
     # hide axes
-    bpy.ops.object.select_by_type(extend=False, type='EMPTY')
-    empties = bpy.context.selected_objects
-    [empt.hide_set(True) for empt in empties]
+    for obj in force_collection.objects:
+        if obj.type == 'EMPTY':
+            obj.empty_display_size = 0
             
     print(f'Forces imported from {grf_path}')

@@ -120,6 +120,7 @@ def addMarker(marker_collection, position=(0,0,0), text="MARKER", material=bpy.t
 
     mySphere=bpy.data.meshes.new('sphere')
     sphere = bpy.data.objects.new(text, mySphere)
+    sphere["pose2sim_type"] = "marker"
     bm = bmesh.new()
     bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=RADIUS)
     bm.to_mesh(mySphere)
@@ -167,6 +168,7 @@ def create_armature_trc(armature_tree, armature_name):
     # Create armature object
     armature_data = bpy.data.armatures.new(armature_name+'_trc')
     armature_object = bpy.data.objects.new(armature_name, armature_data)
+    armature_object["pose2sim_type"] = "skeleton"
     bpy.context.collection.objects.link(armature_object)
     bpy.context.view_layer.objects.active = armature_object
     armature_object.display_type = 'WIRE'
